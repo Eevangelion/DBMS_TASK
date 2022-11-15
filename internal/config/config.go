@@ -7,7 +7,7 @@ import (
 
 type ServerConfig struct {
 	Address string
-	Port    string
+	Port    int
 }
 
 type Config struct {
@@ -19,7 +19,7 @@ func New() *Config {
 	return &Config{
 		Server: ServerConfig{
 			Address: getEnv("SERVER", "localhost"),
-			Port:    getEnv("PORT", ""),
+			Port:    getEnvAsInt("PORT", 6969),
 		},
 		DebugMode: getEnvAsBool("DEBUG_MODE", true),
 	}
