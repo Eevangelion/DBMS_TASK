@@ -40,19 +40,19 @@ https://drawsql.app/teams/test-team-30/diagrams/jokesdiagram
 - Создание шутки (всплывающее окно в личной странице)
 
 # API
-- GET /feed/new/?page=<int> | /feed/?page=<int> - получить страницу ленты (по дефолту новые шутки)
-- GET /feed/top/?t={hour | day | week | month | all}?page=<int> - получить страницу ленты, где шутки отсортированы по возрастанию популярности
-- GET /settings/profile - получить страницу с настройками профиля
-- GET /settings/develop - получить страницу с интерфейсом для администраторов
-- GET /user/{username} | /user/{username}/?sort=new - получить страницу с данными пользователя (по дефолту новые шутки)
-- GET /user/{username}/?sort=top?t={hour | day | week | month | all} - отсортировать по возрастанию популярности
-- GET /search/?q=<string>?t=keyword - поиск по ключевому слову
-- GET /search/?q=<string>?t=tag - поиск по тэгу
-- GET /search/?q=<string>?t=people - поиск людей
-- POST /user/{username}/create_joke - создать шутку
-- POST /user/{username}/post_joke - опубликовать шутку
-- POST /feed/{new | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int> - отправить жалобу на шутку (из ленты)
-- POST /feed/{username}/{new/ | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int> - отправить жалобу на шутку (со страницы пользователя)
+- `GET` `/feed/new/?page=<int>` | `/feed/?page=<int>` - получить страницу ленты (по дефолту новые шутки)
+- `GET` `/feed/top/?t={hour | day | week | month | all}?page=<int>` - получить страницу ленты, где шутки отсортированы по возрастанию популярности
+- `GET` `/settings/profile` - получить страницу с настройками профиля
+- `GET` `/settings/develop` - получить страницу с интерфейсом для администраторов
+- `GET` `/user/{username}` | `/user/{username}/?sort=new` - получить страницу с данными пользователя (по дефолту новые шутки)
+- `GET` `/user/{username}/?sort=top?t={hour | day | week | month | all}` - отсортировать по возрастанию популярности
+- `GET` `/search/?q=<string>?t=keyword` - поиск по ключевому слову
+- `GET` `/search/?q=<string>?t=tag` - поиск по тэгу
+- `GET` `/search/?q=<string>?t=people` - поиск людей
+- `POST` `/user/{username}/create_joke` - создать шутку
+- `POST` `/user/{username}/post_joke` - опубликовать шутку
+- `POST` `/feed/{new | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int>` - отправить жалобу на шутку (из ленты)
+- `POST` `/feed/{username}/{new/ | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int>` - отправить жалобу на шутку (со страницы пользователя)
 # Технологии разработки
 - Gorilla/Mux
 - React
