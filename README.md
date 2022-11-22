@@ -54,14 +54,15 @@ https://drawsql.app/teams/test-team-30/diagrams/jokesdiagram
 - `POST` `/feed/{new | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int>` - отправить жалобу на шутку (из ленты)
 - `POST` `/feed/{username}/{new/ | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int>` - отправить жалобу на шутку (со страницы пользователя)
 # Технологии разработки
-- Gorilla/Mux
-- React
+- [Gorilla/Mux](https://github.com/gorilla/mux) для API
+- [Pgx](https://github.com/jackc/pgx) для интеграции с PostgreSQL (не ORM)
+- [React](https://ru.reactjs.org/)
 ## Язык программирования
-- Golang
-- JavaScript
+- Golang (Backend)
+- JavaScript (Frontend)
 
 ## СУБД
 PostgreSQL
 
 # Тестирование
-"apitest" Go package 
+[Apitest](https://github.com/steinfletcher/apitest) Go package 
