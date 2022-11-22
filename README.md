@@ -64,4 +64,4 @@ https://drawsql.app/teams/test-team-30/diagrams/jokesdiagram
 PostgreSQL
 
 # Тестирование
-"Testing" Go package 
+"apitest" Go package 
