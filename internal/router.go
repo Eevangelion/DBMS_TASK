@@ -15,9 +15,9 @@ func NewRouter() *mux.Router {
 	customRouter.AppRoutes = append(
 		customRouter.AppRoutes,
 		routes.User,
-		routes.Joke,
-		routes.Report,
-		routes.Tag,
+		// routes.Joke,
+		// routes.Report,
+		// routes.Tag,
 	)
 
 	for _, route := range customRouter.AppRoutes {
