@@ -9,11 +9,10 @@ var User = router.RoutePrefix{
 	Prefix: "/user",
 	SubRoutes: []router.Route{
 		{
-			Name:        "UserIndex",
+			Name:        "UserName",
 			Method:      "GET",
-			Pattern:     "/{id:[0-9]+}",
-			HandlerFunc: handlers.UserIndexHandler,
-			Protected:   false,
+			Pattern:     "/{username}",
+			HandlerFunc: handlers.UserNameHandler,
 		},
 	},
 }
