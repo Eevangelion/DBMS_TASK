@@ -1,11 +1,11 @@
 package db
 
 import (
-	in_memory "github.com/Sakagam1/DBMS_TASK/internal/db/in-memory"
+	"github.com/Sakagam1/DBMS_TASK/internal/repositories"
 )
 
-var DB *in_memory.DataBase
+var UserRepo repositories.IUser = nil
 
-// var DB *postgresql.DataBase
-
-func main() {}
+func init() {
+	UserRepo = GetUserRepository()
+}

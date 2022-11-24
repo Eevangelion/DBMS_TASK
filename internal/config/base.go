@@ -1,8 +1,11 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type ServerConfig struct {
@@ -12,17 +15,31 @@ type ServerConfig struct {
 
 type Config struct {
 	Server    ServerConfig
+	Database  *Database
 	DebugMode bool
 }
 
-func New() *Config {
-	return &Config{
-		Server: ServerConfig{
-			Address: getEnv("SERVER", "localhost"),
-			Port:    getEnvAsInt("PORT", 6969),
-		},
-		DebugMode: getEnvAsBool("DEBUG_MODE", true),
+var Conf *Config = nil
+
+func init() {
+	err := godotenv.Load("././.env")
+	if err != nil {
+		log.Fatal("Error loading .env file:", err)
 	}
+}
+
+func GetConfig() *Config {
+	if Conf == nil {
+		Conf = &Config{
+			Server: ServerConfig{
+				Address: getEnv("SERVER", "localhost"),
+				Port:    getEnvAsInt("PORT", 6969),
+			},
+			Database:  SetupDB(),
+			DebugMode: getEnvAsBool("DEBUG_MODE", true),
+		}
+	}
+	return Conf
 }
 
 func getEnv(key string, defaultValue string) string {
