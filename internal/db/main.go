@@ -5,7 +5,9 @@ import (
 )
 
 var UserRepo repositories.IUser = nil
+var JokeRepo repositories.IJoke = nil
 
 func init() {
 	UserRepo = GetUserRepository()
+	JokeRepo = GetJokeRepository()
 }
