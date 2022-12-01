@@ -9,7 +9,6 @@ import (
 
 func GetUserRepository() repositories.IUser {
 	if UserRepo == nil {
-		UserRepo = new(in_memory.UserRepository)
 		if config.GetConfig().DebugMode == true {
 			UserRepo = new(in_memory.UserRepository)
 		} else {
@@ -17,4 +16,15 @@ func GetUserRepository() repositories.IUser {
 		}
 	}
 	return UserRepo
+}
+
+func GetJokeRepository() repositories.IJoke {
+	if JokeRepo == nil {
+		if config.GetConfig().DebugMode == true {
+			JokeRepo = new(in_memory.JokeRepository)
+		} else {
+			JokeRepo = new(psql.JokeRepository)
+		}
+	}
+	return JokeRepo
 }

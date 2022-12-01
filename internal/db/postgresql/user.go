@@ -9,22 +9,30 @@ type UserRepository struct {
 	user repositories.IUser
 }
 
-func (u UserRepository) GetUserByUsername(username string) (models.User, error) {
-	return models.User{}, nil
+func (u UserRepository) GetUserByUsername(username string) (userOut *models.User, err error) {
+	return
 }
 
-func (u UserRepository) GetUserByEmail(email string) (models.User, error) {
-	return models.User{}, nil
+func (u UserRepository) GetUserByEmail(email string) (userOut *models.User, err error) {
+	return
 }
 
-func (u UserRepository) Create(user *models.User) (err error) {
-	return err
+func (u UserRepository) GetUserByID(id int) (userOut *models.User, err error) {
+	return
 }
 
-func (u UserRepository) Ban(user *models.User) (err error) {
-	return err
+func (u UserRepository) GetAll() (users []models.User, err error) {
+	return
 }
 
-func (u UserRepository) Delete(user *models.User) (err error) {
-	return err
+func (u UserRepository) Create(user *models.User) (userOut *models.User, err error) {
+	return
+}
+
+func (u UserRepository) Ban(id int) (userOut *models.User, err error) {
+	return
+}
+
+func (u UserRepository) Delete(id int) (userOut *models.User, err error) {
+	return
 }
