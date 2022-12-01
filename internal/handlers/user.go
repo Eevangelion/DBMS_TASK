@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
@@ -12,12 +11,8 @@ import (
 
 func UserNameHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	var user models.User
+	var user *models.User
 	username := params["username"]
-	if db.UserRepo == nil {
-		log.Fatal("pizdec")
-		panic("pizdec")
-	}
 	user, err := db.UserRepo.GetUserByUsername(username)
 
 	if err != nil {
@@ -25,5 +20,5 @@ func UserNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&user)
+	json.NewEncoder(w).Encode(user)
 }
