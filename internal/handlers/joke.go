@@ -32,7 +32,7 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	var jokeOut *models.Joke
-	jokeOut, err = db.JokeRepo.Delete(joke.ID)
+	err = db.JokeRepo.Delete(joke.ID)
 	if err != nil {
 		panic(err)
 	}
