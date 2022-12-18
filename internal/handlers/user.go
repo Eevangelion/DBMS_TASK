@@ -13,7 +13,7 @@ func UserNameHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var user *models.User
 	username := params["username"]
-	user, err := db.UserRepo.GetUserByUsername(username)
+	user, err := db.GetUserRepository().GetUserByUsername(username)
 
 	if err != nil {
 		panic(err)
