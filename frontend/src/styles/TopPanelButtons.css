@@ -1,0 +1,86 @@
+.auth {
+    width: 325px;
+    height: 46px;
+    margin-left: 450px;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+.login {
+    width: 100px;
+    height: 46px;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+}
+
+.login-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align:center;
+    width: 100px;
+    height: 40px;
+    border-radius: 45px;
+    background-color: #ddd;
+    text-decoration : none;
+    border-color: transparent;
+    color: black;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.register {
+    width: 200px;
+    height: 46px;
+    margin-left: 25px;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.register-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align:center;
+    width: 200px;
+    height: 40px;
+    border-radius: 45px;
+    background-color: #ddd;
+    text-decoration : none;
+    border-color:transparent;
+    color: black;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.profile {
+    width: 325px;
+    height: 46px;
+    margin-left: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: transparent;
+}
+
+.profile-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align:center;
+    width: 250px;
+    height: 40px;
+    border-radius: 45px;
+    background-color: #ddd;
+    text-decoration : none;
+    border-color:transparent;
+    color: black;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
