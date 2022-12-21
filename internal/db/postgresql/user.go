@@ -203,3 +203,37 @@ func (u UserRepository) GetAll() (users []models.User, err error) {
 	defer rows.Close()
 	return users, nil
 }
+
+func (u UserRepository) GetPeopleByKeyWord(keyword string) (users []models.User, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, err
+	}
+	qry := `select * from public."Users" where "Users".name LIKE '$1'`
+	rows, err := DB.Query(qry, keyword)
+	if err != nil {
+		log.Println("Connection Error:", err)
+	}
+	for rows.Next() {
+		var id, reports, remaining_reports int
+		var name, email, role, unban_date, transformed_password string
+		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
+		if err != nil {
+			log.Println("err while scanning rows", err)
+		}
+		NewUser := models.User{
+			ID:                  id,
+			Name:                name,
+			Email:               email,
+			Reports:             reports,
+			RemainingReports:    remaining_reports,
+			Role:                role,
+			UnbanDate:           unban_date,
+			TransformedPassword: transformed_password,
+		}
+		users = append(users, NewUser)
+	}
+	defer rows.Close()
+	return users, nil
+}
