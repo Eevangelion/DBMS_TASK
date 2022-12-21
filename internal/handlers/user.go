@@ -9,16 +9,54 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func UserNameHandler(w http.ResponseWriter, r *http.Request) {
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	var user *models.User
-	username := params["username"]
-	user, err := db.GetUserRepository().GetUserByUsername(username)
-
+	name := params["username"]
+	email := params["email"]
+	role := params["role"]
+	transformed_password := params["password"]
+	user := &models.User{
+		ID:                  -14,
+		Name:                name,
+		Email:               email,
+		Reports:             0,
+		RemainingReports:    3,
+		Role:                role,
+		UnbanDate:           "2022-12-22",
+		TransformedPassword: transformed_password,
+	}
+	user, err := db.GetUserRepository().Create(user)
 	if err != nil {
 		panic(err)
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
+}
+
+func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var user models.User
+	err := decoder.Decode(&user)
+	if err != nil {
+		panic(err)
+	}
+	var userOut *models.User
+	userOut, err = db.UserRepo.GetUserByID(user.ID)
+	if err != nil {
+		panic(err)
+	}
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(userOut)
+}
+
+func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	keyword_name := params["KeyWord"]
+	var jokes []models.User
+	jokes, err := db.UserRepo.GetPeopleByKeyWord(keyword_name)
+	if err != nil {
+		panic(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(jokes)
 }

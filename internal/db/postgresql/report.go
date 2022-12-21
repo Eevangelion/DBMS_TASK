@@ -46,6 +46,37 @@ func (r ReportRepository) GetReportByID(ReportID int) (reportOut *models.Report,
 	return nil, errors.New("Report with this id does not exist!")
 }
 
+func (r ReportRepository) GetAllReports() (reportsOut []models.Report, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, err
+	}
+	qry := `select * from public."Reports"`
+	rows, err := DB.Query(qry)
+	if err != nil {
+		log.Println("Searching joke error:", err)
+	}
+	var id, receiver_joke_id, sender_id, receiver_id int
+	var description string
+	for rows.Next() {
+		err := rows.Scan(&id, &description, &receiver_joke_id, &sender_id, &receiver_id)
+		if err != nil {
+			log.Println("Err while scanning rows", err)
+		}
+		NewReport := models.Report{
+			ID:             id,
+			Description:    description,
+			ReceiverJokeId: receiver_joke_id,
+			SenderId:       sender_id,
+			ReceiverId:     receiver_id,
+		}
+		reportsOut = append(reportsOut, NewReport)
+	}
+	defer rows.Close()
+	return reportsOut, nil
+}
+
 func (r ReportRepository) Create(report *models.Report) (reportOut *models.Report, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {

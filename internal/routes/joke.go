@@ -9,7 +9,7 @@ var Joke = router.RoutePrefix{
 	Prefix: "/joke",
 	SubRoutes: []router.Route{
 		{
-			Name:        "Create",
+			Name:        "CreateJoke",
 			Method:      "POST",
 			Pattern:     "/create",
 			HandlerFunc: handlers.CreateJokeHandler,
@@ -19,12 +19,6 @@ var Joke = router.RoutePrefix{
 			Method:      "DELETE",
 			Pattern:     "/delete",
 			HandlerFunc: handlers.DeleteJokeHandler,
-		},
-		{
-			Name:        "GetAll",
-			Method:      "GET",
-			Pattern:     "/",
-			HandlerFunc: handlers.GetJokes,
 		},
 	},
 }
