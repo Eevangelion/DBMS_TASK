@@ -21,8 +21,9 @@ func (t TagRepository) GetTagByID(TagID int) (tagOut *models.Tag, err error) {
 	}
 	qry := `select * from public."Tags" where id=$1`
 	rows, err := DB.Query(qry, TagID)
+	defer rows.Close()
 	if err != nil {
-		log.Println("Error while trying to searching tag by id:", err)
+		log.Println("Error while trying to get tag by id:", err)
 	}
 	var id int
 	var name string
@@ -30,10 +31,9 @@ func (t TagRepository) GetTagByID(TagID int) (tagOut *models.Tag, err error) {
 	for rows.Next() {
 		err := rows.Scan(&id, &name)
 		if err != nil {
-			log.Println("Err while scanning rows:", err)
+			log.Println("Error while scanning rows:", err)
 		}
 	}
-	defer rows.Close()
 	if id != -1 {
 		return &models.Tag{
 			ID:   id,
@@ -52,24 +52,26 @@ func (t TagRepository) Create(tag *models.Tag) (tagOut *models.Tag, err error) {
 	qry := `INSERT INTO public."Tags" (name) values ($1)`
 	result, err := DB.Exec(qry, tag.ID)
 	if err != nil {
-		log.Println("Joke creation error:", err)
+		log.Println("Error while trying to create tag:", err)
+		return nil, err
 	}
 	id, err := result.LastInsertId()
 	if err != nil {
-		log.Println("Joke searching while adding joke error:", err)
+		log.Println("Error while trying to create tag:", err)
+		return nil, err
 	}
 	tagOut, err = t.GetTagByID(int(id))
 	return tagOut, err
 }
 
-func (t TagRepository) Delete(tag *models.Tag) (err error) {
+func (t TagRepository) Delete(tag_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return err
 	}
 	qry := `DELETE FROM public."Tags" where id=$1`
-	_, err = DB.Exec(qry, tag.ID)
+	_, err = DB.Exec(qry, tag_id)
 	if err != nil {
 		log.Println("Error while trying to delete tag:", err)
 		return err
