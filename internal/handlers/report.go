@@ -15,13 +15,12 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var reportOut *models.Report
-	reportOut, err = db.ReportRepo.Create(&report)
+	err = db.ReportRepo.Create(&report)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(reportOut)
+	json.NewEncoder(w).Encode(err)
 }
 
 func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,13 +30,12 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var reportOut *models.Report
 	err = db.ReportRepo.Delete(report.ID)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(reportOut)
+	json.NewEncoder(w).Encode(err)
 }
 
 func GetReportHandler(w http.ResponseWriter, r *http.Request) {

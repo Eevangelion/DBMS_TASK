@@ -337,25 +337,19 @@ func (j JokeRepository) GetPageOfJokes(page int, per_page int, sort_mode string)
 	return jokes, nil
 }
 
-func (j JokeRepository) Create(joke *models.Joke) (jokeOut *models.Joke, err error) {
+func (j JokeRepository) Create(joke *models.Joke) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return err
 	}
 	qry := `INSERT INTO public."Jokes" (id, header, description, rating, author_id) values ($1, $2, $3, $4, $5)`
-	result, err := DB.Exec(qry, joke.ID, joke.Header, joke.Description, joke.Rating, joke.AuthorId)
+	_, err = DB.Exec(qry, joke.ID, joke.Header, joke.Description, joke.Rating, joke.AuthorId)
 	if err != nil {
 		log.Println("Joke creation error:", err)
-		return nil, err
+		return err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Println("Error while adding joke error:", err)
-		return nil, err
-	}
-	jokeOut, err = j.GetJokeByID(int(id))
-	return jokeOut, err
+	return nil
 }
 
 func (j JokeRepository) Delete(joke_id int) (err error) {

@@ -125,20 +125,19 @@ func (u UserRepository) GetUserByEmail(Email string) (userOut *models.User, err 
 	return nil, errors.New("User with this email does not exist!")
 }
 
-func (u UserRepository) Create(user *models.User) (userOut *models.User, err error) {
+func (u UserRepository) Create(user *models.User) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return err
 	}
 	qry := `INSERT INTO public."Users" (name, email, role, transformed_password) values ($1, $2, $3, $4)`
 	_, err = DB.Exec(qry, user.Name, user.Email, user.Role, user.TransformedPassword)
 	if err != nil {
 		log.Println("User creation error:", err)
-		return nil, err
+		return err
 	}
-	userOut, err = u.GetUserByUsername(user.Name)
-	return userOut, err
+	return err
 }
 
 func (u UserRepository) Ban(user *models.User) (err error) {
