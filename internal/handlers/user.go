@@ -10,27 +10,18 @@ import (
 )
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	name := params["username"]
-	email := params["email"]
-	role := params["role"]
-	transformed_password := params["password"]
-	user := &models.User{
-		ID:                  -14,
-		Name:                name,
-		Email:               email,
-		Reports:             0,
-		RemainingReports:    3,
-		Role:                role,
-		UnbanDate:           "2022-12-22",
-		TransformedPassword: transformed_password,
+	decoder := json.NewDecoder(r.Body)
+	var user models.User
+	err := decoder.Decode(&user)
+	if err != nil {
+		panic(err)
 	}
-	user, err := db.GetUserRepository().Create(user)
+	err = db.GetUserRepository().Create(&user)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(err)
 }
 
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {

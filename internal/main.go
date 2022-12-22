@@ -22,4 +22,5 @@ func main() {
 			fmt.Sprintf("%s:%d", conf.Server.Address, port), router,
 		),
 	)
+
 }

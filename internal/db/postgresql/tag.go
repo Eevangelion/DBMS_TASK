@@ -43,25 +43,19 @@ func (t TagRepository) GetTagByID(TagID int) (tagOut *models.Tag, err error) {
 	return &models.Tag{}, errors.New("Tag with this id does not exist!")
 }
 
-func (t TagRepository) Create(tag *models.Tag) (tagOut *models.Tag, err error) {
+func (t TagRepository) Create(tag *models.Tag) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return err
 	}
 	qry := `INSERT INTO public."Tags" (name) values ($1)`
-	result, err := DB.Exec(qry, tag.ID)
+	_, err = DB.Exec(qry, tag.ID)
 	if err != nil {
 		log.Println("Error while trying to create tag:", err)
-		return nil, err
+		return err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Println("Error while trying to create tag:", err)
-		return nil, err
-	}
-	tagOut, err = t.GetTagByID(int(id))
-	return tagOut, err
+	return err
 }
 
 func (t TagRepository) Delete(tag_id int) (err error) {

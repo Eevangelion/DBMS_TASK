@@ -18,7 +18,7 @@ func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	var jokeOut *models.Joke
-	jokeOut, err = db.JokeRepo.Create(&joke)
+	err = db.JokeRepo.Create(&joke)
 	if err != nil {
 		panic(err)
 	}
@@ -33,13 +33,12 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var jokeOut *models.Joke
 	err = db.JokeRepo.Delete(joke.ID)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(jokeOut)
+	json.NewEncoder(w).Encode(err)
 }
 
 func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
@@ -83,7 +82,6 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 func SearchJokesByTagHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	tag_name := params["Tag"]
-	var jokes []models.Joke
 	jokes, err := db.JokeRepo.GetJokesByTag(tag_name)
 	if err != nil {
 		panic(err)
@@ -95,7 +93,6 @@ func SearchJokesByTagHandler(w http.ResponseWriter, r *http.Request) {
 func SearchJokesByKeywordHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	keyword := params["Keyword"]
-	var jokes []models.Joke
 	jokes, err := db.JokeRepo.GetJokesByKeyword(keyword)
 	if err != nil {
 		panic(err)

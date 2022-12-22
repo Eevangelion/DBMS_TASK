@@ -81,24 +81,19 @@ func (r ReportRepository) GetAllReports() (reportsOut []models.Report, err error
 	return reportsOut, nil
 }
 
-func (r ReportRepository) Create(report *models.Report) (reportOut *models.Report, err error) {
+func (r ReportRepository) Create(report *models.Report) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return err
 	}
 	qry := `INSERT INTO public."Reports" (header, description, rating, author_id) values ($1, $2, $3, $4)`
-	result, err := DB.Exec(qry, report.Description, report.ReceiverJokeId, report.SenderId, report.ReceiverId)
+	_, err = DB.Exec(qry, report.Description, report.ReceiverJokeId, report.SenderId, report.ReceiverId)
 	if err != nil {
 		log.Println("Error while trying to create report:", err)
+		return err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Println("Error while trying to create report:", err)
-		return nil, err
-	}
-	reportOut, err = r.GetReportByID(int(id))
-	return reportOut, err
+	return err
 }
 
 func (r ReportRepository) Delete(report_id int) (err error) {

@@ -15,13 +15,12 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var tagOut *models.Tag
-	tagOut, err = db.TagRepo.Create(&tag)
+	err = db.TagRepo.Create(&tag)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(tagOut)
+	json.NewEncoder(w).Encode(err)
 }
 
 func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,11 +30,10 @@ func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var jokeOut *models.Joke
 	err = db.TagRepo.Delete(tag.ID)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(jokeOut)
+	json.NewEncoder(w).Encode(err)
 }
