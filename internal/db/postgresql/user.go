@@ -22,8 +22,10 @@ func (u UserRepository) GetUserByID(user_id int) (userOut *models.User, err erro
 	}
 	qry := `select * from public."Users" where id=$1`
 	rows, err := DB.Query(qry, user_id)
+	defer rows.Close()
 	if err != nil {
-		log.Println("Error while searching user by id:", err)
+		log.Println("Error while trying to get user by id:", err)
+		return nil, err
 	}
 	var id, reports, remaining_reports int
 	var name, email, role, unban_date, transformed_password string
@@ -31,10 +33,9 @@ func (u UserRepository) GetUserByID(user_id int) (userOut *models.User, err erro
 	for rows.Next() {
 		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
 		if err != nil {
-			log.Println("Err while scanning rows:", err)
+			log.Println("Error while scanning rows:", err)
 		}
 	}
-	defer rows.Close()
 	if id != -1 {
 		return &models.User{
 			ID:                  id,
@@ -58,8 +59,10 @@ func (u UserRepository) GetUserByUsername(username string) (userOut *models.User
 	}
 	qry := `select * from public."Users" where name=$1`
 	rows, err := DB.Query(qry, username)
+	defer rows.Close()
 	if err != nil {
-		log.Println("Error while searching user by username:", err)
+		log.Println("Error while trying to get user by username:", err)
+		return nil, err
 	}
 	var id, reports, remaining_reports int
 	var name, email, role, unban_date, transformed_password string
@@ -67,10 +70,9 @@ func (u UserRepository) GetUserByUsername(username string) (userOut *models.User
 	for rows.Next() {
 		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
 		if err != nil {
-			log.Println("Err while scanning rows:", err)
+			log.Println("Error while scanning rows:", err)
 		}
 	}
-	defer rows.Close()
 	if id != -1 {
 		return &models.User{
 			ID:                  id,
@@ -94,8 +96,10 @@ func (u UserRepository) GetUserByEmail(Email string) (userOut *models.User, err 
 	}
 	qry := `select * from public."Users" where email=$1`
 	rows, err := DB.Query(qry, Email)
+	defer rows.Close()
 	if err != nil {
-		log.Println("Error while searching user by email:", err)
+		log.Println("Error while trying to get user by email:", err)
+		return nil, err
 	}
 	var id, reports, remaining_reports int
 	var name, email, role, unban_date, transformed_password string
@@ -103,10 +107,9 @@ func (u UserRepository) GetUserByEmail(Email string) (userOut *models.User, err 
 	for rows.Next() {
 		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
 		if err != nil {
-			log.Println("Err while scanning rows", err)
+			log.Println("Error while scanning rows:", err)
 		}
 	}
-	defer rows.Close()
 	if id != -1 {
 		return &models.User{
 			ID:                  id,
@@ -132,6 +135,7 @@ func (u UserRepository) Create(user *models.User) (userOut *models.User, err err
 	_, err = DB.Exec(qry, user.Name, user.Email, user.Role, user.TransformedPassword)
 	if err != nil {
 		log.Println("User creation error:", err)
+		return nil, err
 	}
 	userOut, err = u.GetUserByUsername(user.Name)
 	return userOut, err
@@ -145,11 +149,11 @@ func (u UserRepository) Ban(user *models.User) (err error) {
 	}
 	current_time := time.Now()
 	current_time = current_time.Add(time.Hour * 24 * 7)
-	unban_date := current_time.Format("02.01.2006")
+	unban_date := current_time.Format("2006-01-02")
 	qry := `UPDATE public."Users" SET unban_date=$1 where id=$2`
 	_, err = DB.Exec(qry, unban_date, user.ID)
 	if err != nil {
-		log.Println("User ban error:", err)
+		log.Println("Error while trying to ban user:", err)
 		return err
 	}
 	return nil
@@ -164,7 +168,7 @@ func (u UserRepository) Delete(user *models.User) (err error) {
 	qry := `DELETE FROM public."Users" where name=$1`
 	_, err = DB.Exec(qry, user.Name)
 	if err != nil {
-		log.Println("User deletion error:", err)
+		log.Println("Error while trying to delete user:", err)
 		return err
 	}
 	return nil
@@ -178,15 +182,18 @@ func (u UserRepository) GetAll() (users []models.User, err error) {
 	}
 	qry := `select * from public."Users"`
 	rows, err := DB.Query(qry)
+	defer rows.Close()
 	if err != nil {
 		log.Println("Connection Error:", err)
+		return nil, err
 	}
 	for rows.Next() {
 		var id, reports, remaining_reports int
 		var name, email, role, unban_date, transformed_password string
 		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
 		if err != nil {
-			log.Println("err while scanning rows", err)
+			log.Println("Error while scanning rows:", err)
+			return nil, err
 		}
 		NewUser := models.User{
 			ID:                  id,
@@ -200,7 +207,6 @@ func (u UserRepository) GetAll() (users []models.User, err error) {
 		}
 		users = append(users, NewUser)
 	}
-	defer rows.Close()
 	return users, nil
 }
 
@@ -212,15 +218,18 @@ func (u UserRepository) GetPeopleByKeyWord(keyword string) (users []models.User,
 	}
 	qry := `select * from public."Users" where "Users".name LIKE '$1'`
 	rows, err := DB.Query(qry, keyword)
+	defer rows.Close()
 	if err != nil {
-		log.Println("Connection Error:", err)
+		log.Println("Error while trying to get people by keyword:", err)
+		return nil, err
 	}
 	for rows.Next() {
 		var id, reports, remaining_reports int
 		var name, email, role, unban_date, transformed_password string
 		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
 		if err != nil {
-			log.Println("err while scanning rows", err)
+			log.Println("Error while scanning rows:", err)
+			return nil, err
 		}
 		NewUser := models.User{
 			ID:                  id,
@@ -234,6 +243,5 @@ func (u UserRepository) GetPeopleByKeyWord(keyword string) (users []models.User,
 		}
 		users = append(users, NewUser)
 	}
-	defer rows.Close()
 	return users, nil
 }

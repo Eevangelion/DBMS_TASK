@@ -26,13 +26,13 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var joke models.Joke
-	err := decoder.Decode(&joke)
+	var tag models.Tag
+	err := decoder.Decode(&tag)
 	if err != nil {
 		panic(err)
 	}
 	var jokeOut *models.Joke
-	err = db.JokeRepo.Delete(joke.ID)
+	err = db.TagRepo.Delete(tag.ID)
 	if err != nil {
 		panic(err)
 	}

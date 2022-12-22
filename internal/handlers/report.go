@@ -32,7 +32,7 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	var reportOut *models.Report
-	err = db.ReportRepo.Delete(&report)
+	err = db.ReportRepo.Delete(report.ID)
 	if err != nil {
 		panic(err)
 	}

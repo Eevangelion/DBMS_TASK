@@ -7,5 +7,5 @@ import (
 type ITag interface {
 	GetTagByID(TagID int) (tagOut *models.Tag, err error)
 	Create(tag *models.Tag) (tagOut *models.Tag, err error)
-	Delete(tag *models.Tag) (err error)
+	Delete(tag_id int) (err error)
 }
