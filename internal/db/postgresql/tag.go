@@ -18,18 +18,11 @@ func (t TagRepository) GetTagByID(tag_id int) (tagOut *models.Tag, err error) {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+	var name string
 	qry := `select name from public."Tags" where id=$1`
-	rows, err := DB.Query(qry, tag_id)
-	defer rows.Close()
+	err = DB.QueryRow(qry, tag_id).Scan(&name)
 	if err != nil {
 		log.Println("Error while trying to get tag by id:", err)
-	}
-	var name string
-	for rows.Next() {
-		err := rows.Scan(&name)
-		if err != nil {
-			log.Println("Error while scanning rows:", err)
-		}
 	}
 	return &models.Tag{
 		ID:   tag_id,

@@ -261,20 +261,12 @@ func (j JokeRepository) GetJokeByID(joke_id int) (userOut *models.Joke, err erro
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes" where id=$1`
-	rows, err := DB.Query(qry, joke_id)
-	defer rows.Close()
-	if err != nil {
-		log.Println("Error while searching joke by id:", err)
-	}
 	var rating, author_id int
 	var header, description, creation_date string
-	for rows.Next() {
-		err := rows.Scan(&header, &description, &rating, &author_id, &creation_date)
-		if err != nil {
-			log.Println("Error while scanning rows:", err)
-			return nil, err
-		}
+	qry := `select "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes" where id=$1`
+	err = DB.QueryRow(qry, joke_id).Scan(&header, &description, &rating, &author_id, &creation_date)
+	if err != nil {
+		log.Println("Error while searching joke by id:", err)
 	}
 	NewJoke := models.Joke{
 		ID:           joke_id,

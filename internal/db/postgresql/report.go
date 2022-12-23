@@ -1,7 +1,6 @@
 package psql
 
 import (
-	"errors"
 	"log"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
@@ -13,39 +12,27 @@ type ReportRepository struct {
 	report repositories.IReport
 }
 
-func (r ReportRepository) GetReportByID(ReportID int) (reportOut *models.Report, err error) {
+func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+	var id, receiver_joke_id, sender_id, receiver_id int
+	var description string
 	qry := `select * from public."Reports" where id=$1`
-	rows, err := DB.Query(qry, ReportID)
-	defer rows.Close()
+	err = DB.QueryRow(qry, report_id).Scan(&id, &description, &receiver_joke_id, &sender_id, &receiver_id)
 	if err != nil {
 		log.Println("Error while trying to get report by ID:", err)
 		return nil, err
 	}
-	var id, receiver_joke_id, sender_id, receiver_id int
-	var description string
-	id = -1
-	for rows.Next() {
-		err := rows.Scan(&id, &description, &receiver_joke_id, &sender_id, &receiver_id)
-		if err != nil {
-			log.Println("Error while scanning rows:", err)
-			return nil, err
-		}
-	}
-	if id != -1 {
-		return &models.Report{
-			ID:             id,
-			Description:    description,
-			ReceiverJokeId: receiver_joke_id,
-			SenderId:       sender_id,
-			ReceiverId:     receiver_id,
-		}, nil
-	}
-	return nil, errors.New("Report with this id does not exist!")
+	return &models.Report{
+		ID:             report_id,
+		Description:    description,
+		ReceiverJokeId: receiver_joke_id,
+		SenderId:       sender_id,
+		ReceiverId:     receiver_id,
+	}, nil
 }
 
 func (r ReportRepository) GetAllReports() (reportsOut []models.Report, err error) {
