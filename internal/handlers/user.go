@@ -16,12 +16,12 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	err = db.GetUserRepository().Create(&user)
+	id, err := db.GetUserRepository().Create(&user)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(err)
+	json.NewEncoder(w).Encode(id)
 }
 
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {

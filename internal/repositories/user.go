@@ -11,7 +11,7 @@ type IUser interface {
 	GetAll() (users []models.User, err error)
 	GetPeopleByKeyWord(keyword string) (users []models.User, err error)
 
-	Ban(user *models.User) (err error) // for 1 week (update unban date)
-	Create(user *models.User) (err error)
-	Delete(user *models.User) (err error)
+	Ban(user_id int) (err error) // for 1 week (update unban date)
+	Create(user *models.User) (id int64, err error)
+	Delete(user_id int) (err error)
 }

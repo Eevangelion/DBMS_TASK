@@ -1,7 +1,6 @@
 package psql
 
 import (
-	"errors"
 	"log"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
@@ -19,7 +18,7 @@ func (j JokeRepository) AddToFavorite(user_id int, joke_id int) (err error) {
 		log.Println("Connection error:", err)
 		return err
 	}
-	qry := `INSERT INTO public."Favorite jokes" (joke_id, user_id) values ($1, $2)`
+	qry := `INSERT INTO public."Favorite jokes" (user_id, joke_id) values ($1, $2)`
 	_, err = DB.Exec(qry, user_id, joke_id)
 	if err != nil {
 		log.Println("Adding to favorite error:", err)
@@ -49,27 +48,28 @@ func (j JokeRepository) GetUserFavoriteJokes(user_id int) (jokes []models.Joke, 
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1`
+	qry := `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1`
 	rows, err := DB.Query(qry, user_id)
 	defer rows.Close()
 	if err != nil {
-		log.Println("Connection Error:", err)
+		log.Println("Error while trying to get user favorite jokes:", err)
 		return nil, err
 	}
 	for rows.Next() {
 		var id, rating int
-		var header, description string
-		err := rows.Scan(&id, &header, &description, &rating)
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &creation_date)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
 			return nil, err
 		}
 		NewJoke := models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    user_id,
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     user_id,
+			CreationDate: creation_date,
 		}
 		jokes = append(jokes, NewJoke)
 	}
@@ -82,7 +82,7 @@ func (j JokeRepository) GetJokesByTag(tag_name string) (jokes []models.Joke, err
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name LIKE '$1'`
+	qry := `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1`
 	rows, err := DB.Query(qry, tag_name)
 	defer rows.Close()
 	if err != nil {
@@ -91,18 +91,19 @@ func (j JokeRepository) GetJokesByTag(tag_name string) (jokes []models.Joke, err
 	}
 	for rows.Next() {
 		var id, rating, user_id int
-		var header, description string
-		err := rows.Scan(&id, &header, &description, &rating)
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &user_id, &creation_date)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
 			return nil, err
 		}
 		NewJoke := models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    user_id,
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     user_id,
+			CreationDate: creation_date,
 		}
 		jokes = append(jokes, NewJoke)
 	}
@@ -115,8 +116,8 @@ func (j JokeRepository) GetJokesByKeyword(keyword string) (jokes []models.Joke, 
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select * from public."Jokes" where header LIKE '%$1%' or description LIKE '%$2%'`
-	rows, err := DB.Query(qry, keyword, keyword)
+	qry := `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%'`
+	rows, err := DB.Query(qry)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while getting jokes by keyword:", err)
@@ -124,18 +125,19 @@ func (j JokeRepository) GetJokesByKeyword(keyword string) (jokes []models.Joke, 
 	}
 	for rows.Next() {
 		var id, rating, user_id int
-		var header, description string
-		err := rows.Scan(&id, &header, &description, &rating)
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &user_id, &creation_date)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
 			return nil, err
 		}
 		NewJoke := models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    user_id,
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     user_id,
+			CreationDate: creation_date,
 		}
 		jokes = append(jokes, NewJoke)
 	}
@@ -150,10 +152,10 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, per_page int, sort_m
 	}
 	qry := ``
 	if sort_mode == "no" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 ORDERED BY creation_date DESC LIMIT $1 OFFSET $2`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3`
 	}
 	if sort_mode == "all" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 ORDERED BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
 	}
 	if sort_mode == "hour" {
 		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
@@ -167,7 +169,7 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, per_page int, sort_m
 	if sort_mode == "month" {
 		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(MONTH from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
 	}
-	rows, err := DB.Query(qry, user_id, per_page, page*per_page)
+	rows, err := DB.Query(qry, user_id, per_page, (page-1)*per_page)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while getting user jokes:", err)
@@ -175,17 +177,18 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, per_page int, sort_m
 	}
 	for rows.Next() {
 		var id, rating int
-		var header, description string
-		err := rows.Scan(&id, &header, &description, &rating)
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &creation_date)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
 		}
 		NewJoke := models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    user_id,
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     user_id,
+			CreationDate: creation_date,
 		}
 		jokes = append(jokes, NewJoke)
 	}
@@ -252,38 +255,36 @@ func (j JokeRepository) DeleteTagFromJoke(joke_id int, tag_id int) (err error) {
 	return nil
 }
 
-func (j JokeRepository) GetJokeByID(JokeId int) (userOut *models.Joke, err error) {
+func (j JokeRepository) GetJokeByID(joke_id int) (userOut *models.Joke, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select * from public."Jokes" where id=$1`
-	rows, err := DB.Query(qry, JokeId)
+	qry := `select "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes" where id=$1`
+	rows, err := DB.Query(qry, joke_id)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while searching joke by id:", err)
 	}
-	var id, rating, author_id int
-	var header, description string
-	id = -1
+	var rating, author_id int
+	var header, description, creation_date string
 	for rows.Next() {
-		err := rows.Scan(&id, &header, &description, &rating, &author_id)
+		err := rows.Scan(&header, &description, &rating, &author_id, &creation_date)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
 			return nil, err
 		}
 	}
-	if id != -1 {
-		return &models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    author_id,
-		}, nil
+	NewJoke := models.Joke{
+		ID:           joke_id,
+		Header:       header,
+		Description:  description,
+		Rating:       rating,
+		AuthorId:     author_id,
+		CreationDate: creation_date,
 	}
-	return &models.Joke{}, errors.New("Joke with this id does not exist!")
+	return &NewJoke, nil
 }
 
 func (j JokeRepository) GetPageOfJokes(page int, per_page int, sort_mode string) (jokes []models.Joke, err error) {
@@ -294,24 +295,24 @@ func (j JokeRepository) GetPageOfJokes(page int, per_page int, sort_mode string)
 	}
 	qry := ``
 	if sort_mode == "no" {
-		qry = `select * from public."Jokes" ORDERED BY creation_date DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" ORDER BY creation_date DESC LIMIT $1 OFFSET $2`
 	}
 	if sort_mode == "all" {
-		qry = `select * from public."Jokes" ORDERED BY rating DESC LIMIT 5 OFFSET 1`
+		qry = `select * from public."Jokes" ORDER BY rating DESC LIMIT $1 OFFSET $2`
 	}
 	if sort_mode == "hour" {
-		qry = `select * from public."Jokes" where EXTRACT(HOUR from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC LIMIT 5 OFFSET 1`
+		qry = `select * from public."Jokes" where EXTRACT(HOUR from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC $1 OFFSET $2`
 	}
 	if sort_mode == "day" {
-		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC LIMIT 5 OFFSET 1`
+		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC LIMIT $1 OFFSET $2`
 	}
 	if sort_mode == "week" {
-		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 7 ORDER BY rating DESC LIMIT 5 OFFSET 1`
+		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 7 ORDER BY rating DESC LIMIT $1 OFFSET $2`
 	}
 	if sort_mode == "month" {
-		qry = `select * from public."Jokes" where EXTRACT(MONTH from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC LIMIT 5 OFFSET 1`
+		qry = `select * from public."Jokes" where EXTRACT(MONTH from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC LIMIT $1 OFFSET $2`
 	}
-	rows, err := DB.Query(qry, per_page, per_page*page)
+	rows, err := DB.Query(qry, per_page, per_page*(page-1))
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while trying to get page of jokes:", err)
@@ -319,37 +320,38 @@ func (j JokeRepository) GetPageOfJokes(page int, per_page int, sort_mode string)
 	}
 	for rows.Next() {
 		var id, rating, author_id int
-		var header, description string
-		err := rows.Scan(&id, &header, &description, &rating, &author_id)
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &author_id, &creation_date)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
 			return nil, err
 		}
 		NewJoke := models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    author_id,
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     author_id,
+			CreationDate: creation_date,
 		}
 		jokes = append(jokes, NewJoke)
 	}
 	return jokes, nil
 }
 
-func (j JokeRepository) Create(joke *models.Joke) (err error) {
+func (j JokeRepository) Create(joke *models.Joke) (id int64, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return err
+		return -1, err
 	}
-	qry := `INSERT INTO public."Jokes" (id, header, description, rating, author_id) values ($1, $2, $3, $4, $5)`
-	_, err = DB.Exec(qry, joke.ID, joke.Header, joke.Description, joke.Rating, joke.AuthorId)
+	qry := `INSERT INTO public."Jokes" (header, description, author_id) values ($1, $2, $3) RETURNING id`
+	err = DB.QueryRow(qry, joke.Header, joke.Description, joke.AuthorId).Scan(&id)
 	if err != nil {
-		log.Println("Joke creation error:", err)
-		return err
+		log.Println("Error while trying to create joke:", err)
+		return -1, err
 	}
-	return nil
+	return id, nil
 }
 
 func (j JokeRepository) Delete(joke_id int) (err error) {
@@ -361,7 +363,7 @@ func (j JokeRepository) Delete(joke_id int) (err error) {
 	qry := `DELETE FROM public."Jokes" where id=$1`
 	_, err = DB.Exec(qry, joke_id)
 	if err != nil {
-		log.Println("Joke deletion error:", err)
+		log.Println("Error while trying to delete joke:", err)
 		return err
 	}
 	return nil
