@@ -15,12 +15,12 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	err = db.ReportRepo.Create(&report)
+	id, err := db.ReportRepo.Create(&report)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(err)
+	json.NewEncoder(w).Encode(id)
 }
 
 func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {

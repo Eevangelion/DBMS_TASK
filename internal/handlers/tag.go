@@ -15,7 +15,22 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	err = db.TagRepo.Create(&tag)
+	id, err := db.TagRepo.Create(tag.Name)
+	if err != nil {
+		panic(err)
+	}
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(id)
+}
+
+func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var tag models.Tag
+	err := decoder.Decode(&tag)
+	if err != nil {
+		panic(err)
+	}
+	err = db.TagRepo.Delete(tag.ID)
 	if err != nil {
 		panic(err)
 	}
@@ -23,7 +38,7 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(err)
 }
 
-func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
+func GetAllTagsHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var tag models.Tag
 	err := decoder.Decode(&tag)

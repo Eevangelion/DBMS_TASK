@@ -20,5 +20,11 @@ var Report = router.RoutePrefix{
 			Pattern:     "/delete",
 			HandlerFunc: handlers.DeleteReportHandler,
 		},
+		{
+			Name:        "GetReportByID",
+			Method:      "GET",
+			Pattern:     "/{report_id}",
+			HandlerFunc: handlers.GetReportHandler,
+		},
 	},
 }

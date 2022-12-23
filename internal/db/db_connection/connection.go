@@ -21,12 +21,11 @@ func GetConnectionToDB() (DB *sql.DB, err error) {
 		dbPassword := conf.Database.DbPassword
 		connection_information := fmt.Sprintf("host=%s dbname=%s user=%s password=%s", dbHost, dbName, dbUserName, dbPassword)
 		Connection, err = sql.Open("pgx", connection_information)
-		defer Connection.Close()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Connection Error:", err)
 			return nil, err
 		}
-		err = DB.Ping()
+		err = Connection.Ping()
 		if err != nil {
 			log.Fatal("Connection Error:", err)
 			return nil, err

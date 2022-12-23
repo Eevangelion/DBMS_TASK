@@ -17,13 +17,12 @@ func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	var jokeOut *models.Joke
-	err = db.JokeRepo.Create(&joke)
+	id, err := db.JokeRepo.Create(&joke)
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(jokeOut)
+	json.NewEncoder(w).Encode(id)
 }
 
 func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {

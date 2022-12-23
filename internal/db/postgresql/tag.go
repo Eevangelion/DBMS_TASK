@@ -1,7 +1,6 @@
 package psql
 
 import (
-	"errors"
 	"log"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
@@ -13,49 +12,45 @@ type TagRepository struct {
 	tag repositories.ITag
 }
 
-func (t TagRepository) GetTagByID(TagID int) (tagOut *models.Tag, err error) {
+func (t TagRepository) GetTagByID(tag_id int) (tagOut *models.Tag, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select * from public."Tags" where id=$1`
-	rows, err := DB.Query(qry, TagID)
+	qry := `select name from public."Tags" where id=$1`
+	rows, err := DB.Query(qry, tag_id)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while trying to get tag by id:", err)
 	}
-	var id int
 	var name string
-	id = -1
 	for rows.Next() {
-		err := rows.Scan(&id, &name)
+		err := rows.Scan(&name)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
 		}
 	}
-	if id != -1 {
-		return &models.Tag{
-			ID:   id,
-			Name: name,
-		}, nil
-	}
-	return &models.Tag{}, errors.New("Tag with this id does not exist!")
+	return &models.Tag{
+		ID:   tag_id,
+		Name: name,
+	}, nil
+
 }
 
-func (t TagRepository) Create(tag *models.Tag) (err error) {
+func (t TagRepository) Create(tag_name string) (id int64, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return err
+		return -1, err
 	}
-	qry := `INSERT INTO public."Tags" (name) values ($1)`
-	_, err = DB.Exec(qry, tag.ID)
+	qry := `INSERT INTO public."Tags" (name) values ($1) RETURNING id`
+	err = DB.QueryRow(qry, tag_name).Scan(&id)
 	if err != nil {
 		log.Println("Error while trying to create tag:", err)
-		return err
+		return -1, err
 	}
-	return err
+	return id, err
 }
 
 func (t TagRepository) Delete(tag_id int) (err error) {
@@ -71,4 +66,34 @@ func (t TagRepository) Delete(tag_id int) (err error) {
 		return err
 	}
 	return nil
+}
+
+func (t TagRepository) GetAll() (tags []models.Tag, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, err
+	}
+	qry := `select * from public."Tags"`
+	rows, err := DB.Query(qry)
+	defer rows.Close()
+	if err != nil {
+		log.Println("Error while trying to get all tags:", err)
+		return nil, err
+	}
+	for rows.Next() {
+		var id int
+		var name string
+		err := rows.Scan(&id, &name)
+		if err != nil {
+			log.Println("Error while scanning rows:", err)
+			return nil, err
+		}
+		NewTag := models.Tag{
+			ID:   id,
+			Name: name,
+		}
+		tags = append(tags, NewTag)
+	}
+	return tags, nil
 }
