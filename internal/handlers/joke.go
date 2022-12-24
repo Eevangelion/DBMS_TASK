@@ -46,17 +46,17 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	page, err := strconv.Atoi(params["Page"])
+	page, err := strconv.Atoi(params["page"])
 	if err != nil {
 		panic(err)
 	}
-	per_page, err := strconv.Atoi(params["Per_Page"])
+	pageSize, err := strconv.Atoi(params["pageSize"])
 	if err != nil {
 		panic(err)
 	}
 	sort_mode := params["Sort"]
 	var jokes []models.Joke
-	jokes, err = db.JokeRepo.GetUserJokes(user_id, page, per_page, sort_mode)
+	jokes, err = db.JokeRepo.GetUserJokes(user_id, page, pageSize, sort_mode)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(jokes)
 }

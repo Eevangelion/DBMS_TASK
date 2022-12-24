@@ -175,14 +175,14 @@ func (u UserRepository) GetAll() (users []models.User, err error) {
 	return users, nil
 }
 
-func (u UserRepository) GetPeopleByKeyWord(keyword string) (users []models.User, err error) {
+func (u UserRepository) GetPeopleByKeyWord(keyword string, page int, pageSize int) (users []models.User, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select * from public."Users" where "Users".name LIKE '%` + keyword + `%'`
-	rows, err := DB.Query(qry)
+	qry := `select * from public."Users" where "Users".name LIKE '%` + keyword + `%' DESC LIMIT $1 OFFSET $2`
+	rows, err := DB.Query(qry, pageSize, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while trying to get people by keyword:", err)
