@@ -39,16 +39,10 @@ func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllTagsHandler(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var tag models.Tag
-	err := decoder.Decode(&tag)
-	if err != nil {
-		panic(err)
-	}
-	err = db.TagRepo.Delete(tag.ID)
+	tags, err := db.TagRepo.GetAll()
 	if err != nil {
 		panic(err)
 	}
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(err)
+	json.NewEncoder(w).Encode(tags)
 }

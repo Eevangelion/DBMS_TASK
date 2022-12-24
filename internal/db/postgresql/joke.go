@@ -144,7 +144,7 @@ func (j JokeRepository) GetJokesByKeyword(keyword string) (jokes []models.Joke, 
 	return jokes, nil
 }
 
-func (j JokeRepository) GetUserJokes(user_id int, page int, per_page int, sort_mode string) (jokes []models.Joke, err error) {
+func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_mode string) (jokes []models.Joke, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
@@ -169,7 +169,7 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, per_page int, sort_m
 	if sort_mode == "month" {
 		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(MONTH from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
 	}
-	rows, err := DB.Query(qry, user_id, per_page, (page-1)*per_page)
+	rows, err := DB.Query(qry, user_id, page, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while getting user jokes:", err)
