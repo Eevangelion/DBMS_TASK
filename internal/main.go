@@ -15,6 +15,10 @@ func main() {
 	conf := config.GetConfig()
 	port := conf.Server.Port
 	router := NewRouter()
+	_, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Print("Error while connecting", err)
+	}
 	defer connection.Connection.Close()
 	log.Fatal(
 		http.ListenAndServe(
