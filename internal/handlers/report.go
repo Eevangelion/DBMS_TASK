@@ -3,6 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
@@ -24,13 +27,12 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var report models.Report
-	err := decoder.Decode(&report)
+	params := mux.Vars(r)
+	report_id, err := strconv.Atoi(params["reportID"])
 	if err != nil {
 		panic(err)
 	}
-	err = db.ReportRepo.Delete(report.ID)
+	err = db.ReportRepo.Delete(report_id)
 	if err != nil {
 		panic(err)
 	}
@@ -38,15 +40,13 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(err)
 }
 
-func GetReportHandler(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var report models.Report
-	err := decoder.Decode(&report)
+func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	report_id, err := strconv.Atoi(params["reportID"])
 	if err != nil {
 		panic(err)
 	}
-	var reportOut *models.Report
-	reportOut, err = db.ReportRepo.GetReportByID(report.ID)
+	reportOut, err := db.ReportRepo.GetReportByID(report_id)
 	if err != nil {
 		panic(err)
 	}
