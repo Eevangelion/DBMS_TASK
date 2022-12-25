@@ -10,21 +10,33 @@ var Pages = router.RoutePrefix{
 	SubRoutes: []router.Route{
 		{
 			Name:        "GetNewPages",
-			Method:      "Get",
+			Method:      "GET",
 			Pattern:     "/new/?page=<int>",
 			HandlerFunc: handlers.GetPageOfJokesHandler,
 		},
 		{
 			Name:        "GetTopPages",
-			Method:      "Get",
-			Pattern:     "/top/?t={hour | day | week | month | all}?page=<int>",
+			Method:      "GET",
+			Pattern:     "/top/?t={query}&page=<int>",
 			HandlerFunc: handlers.GetPageOfJokesHandler,
 		},
 		{
 			Name:        "SendReport",
-			Method:      "Get",
-			Pattern:     "/{new | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int>",
+			Method:      "POST",
+			Pattern:     "/create_report/?joke_id={joke_id}",
 			HandlerFunc: handlers.CreateReportHandler,
+		},
+		{
+			Name:        "AddToFavorite",
+			Method:      "POST",
+			Pattern:     "/favorite/?joke_id={joke_id}",
+			HandlerFunc: handlers.AddToFavoriteHandler,
+		},
+		{
+			Name:        "DeleteFromFavorite",
+			Method:      "POST",
+			Pattern:     "/favorite/?joke_id={joke_id}",
+			HandlerFunc: handlers.DeleteFromFavoriteHandler,
 		},
 	},
 }

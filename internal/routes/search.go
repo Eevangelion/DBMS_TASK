@@ -10,20 +10,20 @@ var Search = router.RoutePrefix{
 	SubRoutes: []router.Route{
 		{
 			Name:        "GetJokesWithKeyWord",
-			Method:      "Get",
-			Pattern:     "/?q=<string>?t=keyword",
+			Method:      "GET",
+			Pattern:     "/?q={query}?t=keyword",
 			HandlerFunc: handlers.SearchJokesByKeywordHandler,
 		},
 		{
-			Name:        "Get",
-			Method:      "GetJokesWithTag",
-			Pattern:     "/?q=<string>?t=tag",
+			Name:        "GetJokesWithTag",
+			Method:      "GET",
+			Pattern:     "/?q={query}}?t=tag",
 			HandlerFunc: handlers.SearchJokesByTagHandler,
 		},
 		{
 			Name:        "SendReport",
 			Method:      "Get",
-			Pattern:     "/?q=<string>?t=people",
+			Pattern:     "/?q={query}}?t=people",
 			HandlerFunc: handlers.SearchPeopleHandler,
 		},
 	},

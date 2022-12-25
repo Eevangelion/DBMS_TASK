@@ -100,6 +100,13 @@ func CreateTables(DB *sql.DB) (err error) {
 		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name, email, transformed_password)
 	);
 
+	CREATE TABLE public."UserSubscribes"
+	(
+		receiver_id integer NOT NULL,
+		sender_id integer NOT NULL,
+		PRIMARY KEY (receiver_id, "sender_Id")
+	);
+
 	COMMIT;`
 	_, err = DB.Exec(qry)
 	if err != nil {
@@ -163,6 +170,20 @@ func CreateTables(DB *sql.DB) (err error) {
         ON UPDATE NO ACTION
         ON DELETE CASCADE
         NOT VALID;
+
+	ALTER TABLE IF EXISTS public."UserSubscribes"
+	ADD CONSTRAINT "Receiver_conn" FOREIGN KEY (receiver_id)
+		REFERENCES public."Users" (id) MATCH SIMPLE
+		ON UPDATE NO ACTION
+		ON DELETE CASCADE
+		NOT VALID;
+
+	ALTER TABLE IF EXISTS public."UserSubscribes"
+	ADD	CONSTRAINT "Sender_conn" FOREIGN KEY (sender_id)
+        REFERENCES public."Users" (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+		NOT VALID;
 	
 	COMMIT;`
 	_, err = DB.Exec(qry)

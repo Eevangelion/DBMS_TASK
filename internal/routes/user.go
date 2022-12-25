@@ -15,9 +15,15 @@ var User = router.RoutePrefix{
 			HandlerFunc: handlers.CreateUserHandler,
 		},
 		{
-			Name:        "CreateJokeFromUser",
+			Name:        "CreateJokeFromUserPage",
 			Method:      "POST",
 			Pattern:     "/{username}/create_joke",
+			HandlerFunc: handlers.CreateJokeHandler,
+		},
+		{
+			Name:        "DeleteJokeFromUserPage",
+			Method:      "POST",
+			Pattern:     "/{username}/delete_joke/{ID}",
 			HandlerFunc: handlers.CreateJokeHandler,
 		},
 		{
@@ -29,13 +35,19 @@ var User = router.RoutePrefix{
 		{
 			Name:        "GetUserPageSort",
 			Method:      "GET",
-			Pattern:     "/{username}/?sort=top?t={hour | day | week | month | all}",
+			Pattern:     "/{username}/top/&t={query}",
+			HandlerFunc: handlers.GetUserJokesHandler,
+		},
+		{
+			Name:        "GetUserPageSort",
+			Method:      "GET",
+			Pattern:     "/{username}/new",
 			HandlerFunc: handlers.GetUserJokesHandler,
 		},
 		{
 			Name:        "SendReportFromUserPage",
-			Method:      "GET",
-			Pattern:     "/{username}/{new/ | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int>",
+			Method:      "POST",
+			Pattern:     "/{username}/create_report/?joke_id={joke_id}",
 			HandlerFunc: handlers.CreateReportHandler,
 		},
 	},
