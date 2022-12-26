@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"strconv"
-	"time"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
 	customHTTP "github.com/Sakagam1/DBMS_TASK/internal/http"
@@ -65,18 +64,13 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	lastBanDate, err := time.Parse("02.01.2006", userOut.UnbanDate)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
-	lastBanDate = lastBanDate.Add(-1 * time.Hour * 24 * 7)
 	userResponse := models.UserResponse{
-		ID:          userOut.ID,
-		Name:        userOut.Name,
-		Reports:     userOut.Reports,
-		Favorites:   amount,
-		LastBanDate: lastBanDate.Format("02.01.2006"),
+		ID:        userOut.ID,
+		Name:      userOut.Name,
+		Role:      userOut.Role,
+		Reports:   userOut.Reports,
+		Favorites: amount,
+		UnbanDate: userOut.UnbanDate,
 	}
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
