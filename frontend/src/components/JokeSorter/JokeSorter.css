@@ -1,0 +1,36 @@
+.sorter {
+    width: 100%;
+    height: 46px;
+
+    margin-left: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+
+
+.button-sort {
+    margin-left: 16px;
+    margin-right: 16px;
+    text-decoration: none;
+    font-size: 17px;
+    color: black;
+    cursor: pointer; 
+    background-color: transparent;
+    border: 0px;
+}
+
+.active {
+    margin-left: 16px;
+    margin-right: 16px;
+    text-decoration: none;
+    font-size: 17px;
+    color: #00d;
+    cursor: pointer; 
+    background-color: transparent;
+    border: 0px;
+} 

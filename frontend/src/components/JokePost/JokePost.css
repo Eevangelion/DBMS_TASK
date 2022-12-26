@@ -1,0 +1,125 @@
+.joke-post {
+    width: 750px;
+    height: 200px;
+    background-color: #eee;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.joke-post + .joke-post {
+    margin-top: 10px;
+}
+
+.rating-field {
+    width: 60px;
+    height: 200px;
+    background-color: transparent;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    border-right: 1px solid #ccc;
+}
+
+.rating {
+    margin-top: 15px;
+}
+
+.rating + .add-to-favorite {
+    margin-top: 10px;
+}
+
+.rate-image {
+    width: 40px;
+    height: 40px;
+}
+
+.info {
+    width: 680px;
+    height: 200px;
+    background-color: transparent;
+    margin-left: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+
+.header-panel {
+    width: 674px;
+    height: 25px;
+    background-color: transparent;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+
+.header {
+    width: 340px;
+    height: 15px;
+    margin-top: 10px;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.author {
+    width: 167px;
+    height: 15px;
+    margin-top: 10px;
+    text-align: right;
+    color: #555;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.author-profile {
+    margin-left: 5px;
+    color: #555;
+    text-decoration: none;
+}
+
+.create-date {
+    width: 167px;
+    height: 15px;
+    margin-top: 10px;
+    margin-right: 4px;
+    text-align: right;
+    color: #555;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.tags {
+    width:674px;
+    height:30px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+
+.tag-item {
+    width: 60px;
+    height: 24px;
+    background-color: #0f0;
+    border-radius: 45px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.tag-item + .tag-item {
+    margin-left: 10px;
+}
+
+.description {
+    width: 674px;
+    height:150px;
+    margin-top: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+}

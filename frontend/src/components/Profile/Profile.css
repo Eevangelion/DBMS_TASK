@@ -1,0 +1,48 @@
+.profile-block {
+    width: 400px;
+    height: 230px;
+    background-color: #eee;
+    margin-left: 100px;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.settings {
+    width: 400px;
+    height: 36px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.post-joke {
+    width: 400px;
+    height: 36px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.profile-info {
+    width: 380px;
+    height: 100px;
+    margin-left: 25px;
+    text-align: left;
+}
+
+.link-disabled {
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+
+strong, text {
+
+  line-height: 1.4;
+}
