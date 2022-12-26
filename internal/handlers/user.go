@@ -60,7 +60,7 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sortMode := params["sort"]
-	if sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "all" {
+	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
@@ -76,12 +76,12 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	favorites, err := db.JokeRepo.GetUserFavoriteJokes(userOut.ID, 1, 0, "all")
+	_, amount, err := db.JokeRepo.GetUserFavoriteJokes(userOut.ID, 1, 0, "new")
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	jokes, err := db.JokeRepo.GetUserJokes(userOut.ID, page, pageSize, sortMode)
+	jokes, _, err := db.JokeRepo.GetUserJokes(userOut.ID, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -96,7 +96,7 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		ID:          userOut.ID,
 		Name:        userOut.Name,
 		Reports:     userOut.Reports,
-		Favorites:   len(favorites),
+		Favorites:   amount,
 		LastBanDate: lastBanDate.Format("02.01.2006"),
 		Jokes:       jokes,
 	}
@@ -118,7 +118,7 @@ func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	keyword := params["keyword"]
-	jokes, err := db.UserRepo.GetPeopleByKeyWord(keyword, page, pageSize)
+	jokes, amount, err := db.UserRepo.GetPeopleByKeyWord(keyword, page, pageSize)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -126,6 +126,7 @@ func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
+	json.NewEncoder(w).Encode(amount)
 }
 
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
