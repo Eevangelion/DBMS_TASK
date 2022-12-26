@@ -9,7 +9,7 @@ type IUser interface {
 	GetUserByUsername(username string) (userOut *models.User, err error)
 	GetUserByEmail(Email string) (userOut *models.User, err error)
 	GetAll() (users []models.User, err error)
-	GetPeopleByKeyWord(keyword string, page int, pageSize int) (users []models.User, err error)
+	GetPeopleByKeyWord(keyword string, page int, pageSize int) (users []models.User, amount int, err error)
 
 	Ban(user_id int) (err error) // for 1 week (update unban date)
 	Create(user *models.User) (id int64, err error)

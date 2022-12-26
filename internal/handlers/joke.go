@@ -84,12 +84,11 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sortMode := params["sort"]
-	if sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "all" {
+	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	var jokes []models.Joke
-	jokes, err = db.JokeRepo.GetUserJokes(user_id, page, pageSize, sortMode)
+	jokes, amount, err := db.JokeRepo.GetUserJokes(user_id, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -97,6 +96,7 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
+	json.NewEncoder(w).Encode(amount)
 }
 
 func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
@@ -112,12 +112,11 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sortMode := params["sort"]
-	if sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "all" {
+	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	var jokes []models.Joke
-	jokes, err = db.JokeRepo.GetPageOfJokes(page, pageSize, sortMode)
+	jokes, amount, err := db.JokeRepo.GetPageOfJokes(page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -125,6 +124,7 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
+	json.NewEncoder(w).Encode(amount)
 }
 
 func SearchJokesByTagHandler(w http.ResponseWriter, r *http.Request) {
@@ -141,11 +141,11 @@ func SearchJokesByTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sortMode := params["sort"]
-	if sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "all" {
+	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	jokes, err := db.JokeRepo.GetJokesByTag(tag_name, page, pageSize, sortMode)
+	jokes, amount, err := db.JokeRepo.GetJokesByTag(tag_name, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -153,6 +153,7 @@ func SearchJokesByTagHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
+	json.NewEncoder(w).Encode(amount)
 }
 
 func SearchJokesByKeywordHandler(w http.ResponseWriter, r *http.Request) {
@@ -169,11 +170,11 @@ func SearchJokesByKeywordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sortMode := params["sort"]
-	if sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "all" {
+	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	jokes, err := db.JokeRepo.GetJokesByKeyword(keyword, page, pageSize, sortMode)
+	jokes, amount, err := db.JokeRepo.GetJokesByKeyword(keyword, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -181,6 +182,7 @@ func SearchJokesByKeywordHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
+	json.NewEncoder(w).Encode(amount)
 }
 
 func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
@@ -245,12 +247,11 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sortMode := params["sort"]
-	if sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "all" {
+	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	var jokes []models.Joke
-	jokes, err = db.JokeRepo.GetUserFavoriteJokes(user_id, page, pageSize, sortMode)
+	jokes, amount, err := db.JokeRepo.GetUserFavoriteJokes(user_id, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -258,6 +259,7 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
+	json.NewEncoder(w).Encode(amount)
 }
 
 func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -324,11 +326,11 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sortMode := params["sort"]
-	if sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "all" {
+	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	jokes, err := db.JokeRepo.GetUserSubribedJokes(receiver_id, page, pageSize, sortMode)
+	jokes, amount, err := db.JokeRepo.GetUserSubribedJokes(receiver_id, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -336,6 +338,7 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
+	json.NewEncoder(w).Encode(amount)
 }
 
 func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
