@@ -97,9 +97,16 @@ func CreateTables(DB *sql.DB) (err error) {
 		unban_date date,
 		transformed_password bigint NOT NULL,
 		CONSTRAINT "Users_pkey" PRIMARY KEY (id),
-		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name, email, transformed_password)
+		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name, email, transformed_password),
 		CONSTRAINT "ReportsAreRemaining" CHECK (remaining_reports >= 0) NOT VALID
 	);
+
+	CREATE TABLE IF NOT EXISTS public."GithubUsers"
+	(
+		git_id integer NOT NULL,
+		inner_id integer NOT NULL,
+		CONSTRAINT "GithubUsers_pkey" PRIMARY KEY (git_id, inner_id)
+	)
 
 	CREATE TABLE public."UserSubscribes"
 	(
