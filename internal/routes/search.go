@@ -12,19 +12,19 @@ var Search = router.RoutePrefix{
 			Name:        "GetJokesWithKeyWord",
 			Method:      "GET",
 			Pattern:     "/?q={query}?t=keyword",
-			HandlerFunc: handlers.SearchJokesByKeywordHandler,
+			HandlerFunc: handlers.SearchHandler,
 		},
 		{
 			Name:        "GetJokesWithTag",
 			Method:      "GET",
 			Pattern:     "/?q={query}}?t=tag",
-			HandlerFunc: handlers.SearchJokesByTagHandler,
+			HandlerFunc: handlers.SearchHandler,
 		},
 		{
 			Name:        "SendReport",
 			Method:      "Get",
 			Pattern:     "/?q={query}}?t=people",
-			HandlerFunc: handlers.SearchPeopleHandler,
+			HandlerFunc: handlers.SearchHandler,
 		},
 	},
 }

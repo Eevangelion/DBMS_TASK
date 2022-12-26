@@ -105,30 +105,6 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userResponse)
 }
 
-func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	page, err := strconv.Atoi(params["page"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	pageSize, err := strconv.Atoi(params["pageSize"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	keyword := params["keyword"]
-	jokes, amount, err := db.UserRepo.GetPeopleByKeyWord(keyword, page, pageSize)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(jokes)
-	json.NewEncoder(w).Encode(amount)
-}
-
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userID, err := strconv.Atoi(params["userID"])

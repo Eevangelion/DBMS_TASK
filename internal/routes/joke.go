@@ -20,5 +20,11 @@ var Joke = router.RoutePrefix{
 			Pattern:     "/delete",
 			HandlerFunc: handlers.DeleteJokeHandler,
 		},
+		{
+			Name:        "Get",
+			Method:      "GET",
+			Pattern:     "/tags?id={joke_id}",
+			HandlerFunc: handlers.GetJokeTagsHandler,
+		},
 	},
 }

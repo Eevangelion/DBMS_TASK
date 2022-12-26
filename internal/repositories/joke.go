@@ -17,8 +17,8 @@ type IJoke interface {
 	GetUserJokes(user_id int, page int, pageSize int, sort_mode string) (jokeOut []models.Joke, amount int, err error)
 	GetJokeByID(joke_id int) (userOut *models.Joke, err error)
 	GetPageOfJokes(page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error)
-	GetJokesByTag(tag_name string, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error)
-	GetJokesByKeyword(keyword string, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error)
+	GetJokesByTag(tag_name string, page int, pageSize int) (jokes []models.Joke, err error)
+	GetJokesByKeyword(keyword string, page int, pageSize int) (jokes []models.Joke, err error)
 	Create(joke *models.Joke) (id int64, err error)
 	Delete(joke_id int) (err error)
 }

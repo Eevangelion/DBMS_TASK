@@ -6,16 +6,16 @@ import (
 )
 
 var Tag = router.RoutePrefix{
-	Prefix: "/report",
+	Prefix: "/tag",
 	SubRoutes: []router.Route{
 		{
-			Name:        "CreateReport",
+			Name:        "CreateTag",
 			Method:      "POST",
 			Pattern:     "/create",
 			HandlerFunc: handlers.CreateTagHandler,
 		},
 		{
-			Name:        "Delete",
+			Name:        "DeleteTag",
 			Method:      "DELETE",
 			Pattern:     "/delete",
 			HandlerFunc: handlers.DeleteTagHandler,
