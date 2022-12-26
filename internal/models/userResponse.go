@@ -6,5 +6,4 @@ type UserResponse struct {
 	Reports     int    `json:"reports"`
 	Favorites   int    `json:"remaining_reports"`
 	LastBanDate string `json:"unban_date"`
-	Jokes       []Joke `json:"jokes"`
 }
