@@ -20,5 +20,17 @@ var Settings = router.RoutePrefix{
 			Pattern:     "/develop",
 			HandlerFunc: handlers.GetAllReportsHandler,
 		},
+		{
+			Name:        "DevelopPageApplyReport",
+			Method:      "GET",
+			Pattern:     "/develop/apply_report?report_id={report_id}",
+			HandlerFunc: handlers.ApplyReportHandler,
+		},
+		{
+			Name:        "DevelopPageDenyReport",
+			Method:      "GET",
+			Pattern:     "/develop/deny_report?report_id={report_id}",
+			HandlerFunc: handlers.DenyReportHandler,
+		},
 	},
 }
