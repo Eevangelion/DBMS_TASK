@@ -73,7 +73,7 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	page, err := strconv.Atoi(params["page"])
+	page, err := strconv.Atoi(params["pageArg"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -83,7 +83,7 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	sortMode := params["sort"]
+	sortMode := params["sortArg"]
 	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -101,7 +101,7 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	page, err := strconv.Atoi(params["page"])
+	page, err := strconv.Atoi(params["pageArg"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -111,7 +111,7 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	sortMode := params["sort"]
+	sortMode := params["sortArg"]
 	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -127,67 +127,26 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(amount)
 }
 
-func SearchJokesByTagHandler(w http.ResponseWriter, r *http.Request) {
+func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	tag_name := params["tag"]
-	page, err := strconv.Atoi(params["page"])
+	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	pageSize, err := strconv.Atoi(params["pageSize"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	sortMode := params["sort"]
-	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	jokes, amount, err := db.JokeRepo.GetJokesByTag(tag_name, page, pageSize, sortMode)
+	tags, err := db.JokeRepo.GetJokeTags(joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(jokes)
-	json.NewEncoder(w).Encode(amount)
-}
-
-func SearchJokesByKeywordHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	keyword := params["keyword"]
-	page, err := strconv.Atoi(params["page"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	pageSize, err := strconv.Atoi(params["pageSize"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	sortMode := params["sort"]
-	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	jokes, amount, err := db.JokeRepo.GetJokesByKeyword(keyword, page, pageSize, sortMode)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(jokes)
-	json.NewEncoder(w).Encode(amount)
+	json.NewEncoder(w).Encode(tags)
 }
 
 func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["jokeID"])
+	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -209,7 +168,7 @@ func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["jokeID"])
+	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -231,12 +190,12 @@ func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	user_id, err := strconv.Atoi(params["ID"])
+	user_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	page, err := strconv.Atoi(params["page"])
+	page, err := strconv.Atoi(params["pageArg"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -246,7 +205,7 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	sortMode := params["sort"]
+	sortMode := params["sortArg"]
 	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -315,7 +274,7 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	page, err := strconv.Atoi(params["page"])
+	page, err := strconv.Atoi(params["pageArg"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -325,7 +284,7 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	sortMode := params["sort"]
+	sortMode := params["sortArg"]
 	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -343,7 +302,7 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["jokeID"])
+	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -365,7 +324,7 @@ func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["jokeID"])
+	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -387,7 +346,7 @@ func DeleteTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetJokeByIDHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["jokeID"])
+	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return

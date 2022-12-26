@@ -175,24 +175,18 @@ func (u UserRepository) GetAll() (users []models.User, err error) {
 	return users, nil
 }
 
-func (u UserRepository) GetPeopleByKeyWord(keyword string, page int, pageSize int) (users []models.User, amount int, err error) {
+func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize int) (users []models.User, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, -1, err
+		return nil, err
 	}
 	qry := `select * from public."Users" where "Users".name LIKE '%` + keyword + `%' LIMIT $1 OFFSET $2`
-	qry2 := `select count("Users".id) from public."Users" where "Users".name LIKE '%` + keyword + `%'`
-	err = DB.QueryRow(qry2).Scan(&amount)
-	if err != nil {
-		log.Println("Error while trying to get people by keyword:", err)
-		return nil, -1, err
-	}
 	rows, err := DB.Query(qry, pageSize, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while trying to get people by keyword:", err)
-		return nil, -1, err
+		return nil, err
 	}
 	for rows.Next() {
 		var id, reports, remaining_reports int
@@ -200,7 +194,7 @@ func (u UserRepository) GetPeopleByKeyWord(keyword string, page int, pageSize in
 		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
-			return nil, -1, err
+			return nil, err
 		}
 		NewUser := models.User{
 			ID:                  id,
@@ -214,5 +208,5 @@ func (u UserRepository) GetPeopleByKeyWord(keyword string, page int, pageSize in
 		}
 		users = append(users, NewUser)
 	}
-	return users, amount, nil
+	return users, nil
 }

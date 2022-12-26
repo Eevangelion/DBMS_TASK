@@ -17,6 +17,10 @@ type Config struct {
 	Server    ServerConfig
 	Database  *Database
 	DebugMode bool
+
+	GitHubClientID         string `mapstructure:"GITHUB_OAUTH_CLIENT_ID"`
+	GitHubClientSecret     string `mapstructure:"GITHUB_OAUTH_CLIENT_SECRET"`
+	GitHubOAuthRedirectUrl string `mapstructure:"GITHUB_OAUTH_REDIRECT_URL"`
 }
 
 var Conf *Config = nil
