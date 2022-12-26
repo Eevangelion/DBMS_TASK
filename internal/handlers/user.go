@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
+	customHTTP "github.com/Sakagam1/DBMS_TASK/internal/http"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
 	"github.com/gorilla/mux"
 )
@@ -17,13 +18,16 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := decoder.Decode(&user)
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
 	id, err := db.GetUserRepository().Create(&user)
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(id)
 }
 
@@ -32,41 +36,62 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user_id int
 	err := decoder.Decode(&user_id)
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
 	err = db.GetUserRepository().Delete(user_id)
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(err)
+	w.WriteHeader(http.StatusOK)
 }
 
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	page, err := strconv.Atoi(params["page"])
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
 	pageSize, err := strconv.Atoi(params["pageSize"])
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
 	sortMode := params["sort"]
+	if sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "all" {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var user_id int
 	err = decoder.Decode(&user_id)
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
 	userOut, err := db.UserRepo.GetUserByID(user_id)
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
-	favorites, _ := db.JokeRepo.GetUserFavoriteJokes(userOut.ID, 1, 0, "all")
-	jokes, _ := db.JokeRepo.GetUserJokes(userOut.ID, page, pageSize, sortMode)
+	favorites, err := db.JokeRepo.GetUserFavoriteJokes(userOut.ID, 1, 0, "all")
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	jokes, err := db.JokeRepo.GetUserJokes(userOut.ID, page, pageSize, sortMode)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
 	lastBanDate, err := time.Parse("02.01.2006", userOut.UnbanDate)
-	lastBanDate.Add(-1 * time.Hour * 24 * 7)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	lastBanDate = lastBanDate.Add(-1 * time.Hour * 24 * 7)
 	userResponse := models.UserResponse{
 		ID:          userOut.ID,
 		Name:        userOut.Name,
@@ -76,6 +101,7 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		Jokes:       jokes,
 	}
 	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(userResponse)
 }
 
@@ -83,18 +109,22 @@ func SearchPeopleHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	page, err := strconv.Atoi(params["page"])
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
 	pageSize, err := strconv.Atoi(params["pageSize"])
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
-	keyword_name := params["keyword"]
-	jokes, err := db.UserRepo.GetPeopleByKeyWord(keyword_name, page, pageSize)
+	keyword := params["keyword"]
+	jokes, err := db.UserRepo.GetPeopleByKeyWord(keyword, page, pageSize)
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
 }
 
@@ -102,7 +132,8 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userID, err := strconv.Atoi(params["userID"])
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
 	decoder := json.NewDecoder(r.Body)
 	var password string
@@ -115,8 +146,10 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) {
 		verification = false
 	}
 	if err != nil {
-		panic(err)
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(verification)
 }
