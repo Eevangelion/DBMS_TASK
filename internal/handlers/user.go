@@ -48,25 +48,9 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	page, err := strconv.Atoi(params["page"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	pageSize, err := strconv.Atoi(params["pageSize"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	sortMode := params["sort"]
-	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
 	decoder := json.NewDecoder(r.Body)
 	var user_id int
-	err = decoder.Decode(&user_id)
+	err := decoder.Decode(&user_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -77,11 +61,6 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, amount, err := db.JokeRepo.GetUserFavoriteJokes(userOut.ID, 1, 0, "new")
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
-	jokes, _, err := db.JokeRepo.GetUserJokes(userOut.ID, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -98,7 +77,6 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		Reports:     userOut.Reports,
 		Favorites:   amount,
 		LastBanDate: lastBanDate.Format("02.01.2006"),
-		Jokes:       jokes,
 	}
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
