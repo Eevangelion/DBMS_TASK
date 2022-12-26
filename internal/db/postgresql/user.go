@@ -225,3 +225,37 @@ func (u UserRepository) UserChange(user_id int) (err error) {
 	}
 	return nil
 }
+
+func (u UserRepository) GetUserByGithubID(user_id int) (userOut *models.GitUser, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, err
+	}
+	qry := `select * from public."GithubUsers" where git_id=$1`
+	var git_id, inner_id int
+	err = DB.QueryRow(qry, user_id).Scan(&git_id, &inner_id)
+	if err != nil {
+		log.Println("Error while trying to get user by id:", err)
+		return nil, err
+	}
+	return &models.GitUser{
+		Git_ID:   user_id,
+		Inner_ID: inner_id,
+	}, nil
+}
+
+func (u UserRepository) CreateGithubUserWithID(user_id int, inner_id int) (err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return err
+	}
+	qry := `INSERT INTO public."Users" (git_id,inner_id) values ($1, $2)`
+	_, err = DB.Exec(qry, user_id, inner_id)
+	if err != nil {
+		log.Println("Error while trying to create github user:", err)
+		return err
+	}
+	return nil
+}

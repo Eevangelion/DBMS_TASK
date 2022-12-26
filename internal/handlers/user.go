@@ -9,6 +9,7 @@ import (
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
 	customHTTP "github.com/Sakagam1/DBMS_TASK/internal/http"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
+	"github.com/Sakagam1/DBMS_TASK/internal/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -101,4 +102,63 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(verification)
+}
+
+func GetGithubUser(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var code string
+	err := decoder.Decode(&code)
+	token, err := utils.GetGitHubOauthToken(code)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	user, err := utils.GetGitHubUser(token.Access_token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	userOut, err := db.UserRepo.GetUserByGithubID(user.ID)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	if userOut == nil {
+		new_id, err := db.UserRepo.Create(user)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+			return
+		}
+		err = db.UserRepo.CreateGithubUserWithID(user.ID, int(new_id))
+		userResponse := models.UserResponse{
+			ID:        int(new_id),
+			Name:      user.Name,
+			Role:      user.Role,
+			Reports:   user.Reports,
+			Favorites: 0,
+			UnbanDate: user.UnbanDate,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(userResponse)
+		json.NewEncoder(w).Encode(token)
+	} else {
+		_, amount, err := db.JokeRepo.GetUserFavoriteJokes(user.ID, 1, 0, "new")
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+			return
+		}
+		userResponse := models.UserResponse{
+			ID:        user.ID,
+			Name:      user.Name,
+			Role:      user.Role,
+			Reports:   user.Reports,
+			Favorites: amount,
+			UnbanDate: user.UnbanDate,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(userResponse)
+		json.NewEncoder(w).Encode(token)
+	}
 }

@@ -38,5 +38,11 @@ var User = router.RoutePrefix{
 			Pattern:     "/{username}/create_report/?joke_id={joke_id}",
 			HandlerFunc: handlers.CreateReportHandler,
 		},
+		{
+			Name:        "GetGithubUser",
+			Method:      "GET",
+			Pattern:     "/oauth",
+			HandlerFunc: handlers.GetGithubUser,
+		},
 	},
 }
