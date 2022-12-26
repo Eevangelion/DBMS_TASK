@@ -15,10 +15,8 @@ https://drawsql.app/teams/test-team-30/diagrams/jokesdiagram
 
 ## Общие ограничения целостности
 - Тэги могут добавлять в базу данных/удалять из базы данных только администраторы
-- Каждый пользователь может редактировать только свои шутки
 - Каждый пользователь может добавлять шутки только в своё избранное
 - Пользователь не может отправлять жалобы на свою же шутку
-- Максимальная длина типа text - 4096 знаков
 - Рейтинг - неотрицательное целое число
 
 # Пользовательские роли
@@ -36,27 +34,32 @@ https://drawsql.app/teams/test-team-30/diagrams/jokesdiagram
 - Поиск шуток/людей (интерфейс такой же, как у ленты, меняется только содержимое)
 - Личная страница, где пользователь может опубликовать свои шутки (или же страница другого пользователя. отличие лишь в том, что на чужой странице будет ограничен доступ к публикации шуток)
 - Страница с настройками. Для администраторов будет добавлена отдельная вкладка с интерфейсом, который позволяет просматривать жалобы на других пользователей и добавлять тэги
-- Страница с регистрацией (поля email, username, password) / авторизацией (поля email, password)
 - Создание шутки (всплывающее окно в личной странице)
 
 # API
-- `GET` `/feed/new/?page=<int>` | `/feed/?page=<int>` - получить страницу ленты (по дефолту новые шутки)
-- `GET` `/feed/top/?t={hour | day | week | month | all}?page=<int>` - получить страницу ленты, где шутки отсортированы по возрастанию популярности
+- `GET` `/feed/?sortArg={new | hour | day | week | month | all}&pageArg={pageArg}` - получить страницу ленты
 - `GET` `/settings/profile` - получить страницу с настройками профиля
 - `GET` `/settings/develop` - получить страницу с интерфейсом для администраторов
-- `GET` `/user/{username}` | `/user/{username}/?sort=new` - получить страницу с данными пользователя (по дефолту новые шутки)
-- `GET` `/user/{username}/?sort=top?t={hour | day | week | month | all}` - отсортировать по возрастанию популярности
-- `GET` `/search/?q=<string>?t=keyword` - поиск по ключевому слову
-- `GET` `/search/?q=<string>?t=tag` - поиск по тэгу
-- `GET` `/search/?q=<string>?t=people` - поиск людей
+- `GET` `/user/{username}` - получить данные о пользователе
+- `GET` `/user/{username}/?sortArg={hour | day | week | month | alltime | new}` - отсортировать по возрастанию популярности
+- `GET` `/search/?queryArg={queryArg}&typeArg=keyword&pageArg={pageArg}` - поиск по ключевому слову
+- `GET` `/search/?queryArg={queryArg}&typeArg=tag&pageArg={pageArg}` - поиск по тэгу
+- `GET` `/search/?queryArg={queryArg}&typeArg=people&pageArg={pageArg}` - поиск людей
+- `GET` `/joke/tags?joke_id={joke_id}` - получить тэги шутки
+- `POST` `/report/create?joke_id={joke_id}` - добавить жалобу
 - `POST` `/user/{username}/create_joke` - создать шутку
-- `POST` `/user/{username}/post_joke` - опубликовать шутку
 - `POST` `/feed/{new | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int>` - отправить жалобу на шутку (из ленты)
 - `POST` `/feed/{username}/{new/ | top/?t={hour | day | week | month | all} }?page=<int>/post_report/?joke_id=<int>` - отправить жалобу на шутку (со страницы пользователя)
+- `PUT` `/settings/develop/apply_report?report_id={report_id}` - принять жалобу
+- `PUT` `/settings/develop/deny_report?report_id={report_id}` - отклонить жалобу
+- `PUT` `/joke/addToFavorites?user_id={user_id}&joke_id={joke_id}` - добавить шутку в избранное 
+- `PUT` `/joke/removeFromFavorites?user_id={user_id}&joke_id={joke_id}` - убрать шутку из избранного
+- `DELETE` `/joke/delete?joke_id={joke_id}` -- удалить шутку
 # Технологии разработки
 - [Gorilla/Mux](https://github.com/gorilla/mux) для API
 - [Pgx](https://github.com/jackc/pgx) для интеграции с PostgreSQL (не ORM)
 - [React](https://ru.reactjs.org/)
+- [Redux](https://redux.js.org/)
 ## Язык программирования
 - Golang (Backend)
 - JavaScript (Frontend)
@@ -65,4 +68,4 @@ https://drawsql.app/teams/test-team-30/diagrams/jokesdiagram
 PostgreSQL
 
 # Тестирование
-[Apitest](https://github.com/steinfletcher/apitest) Go package 
+Postman
