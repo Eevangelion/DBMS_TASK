@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from 'react-router-dom';
+import { useGetUserByNameQuery } from "../../services/User";
 import "./Profile.css";
 
 const linkStyle = {
@@ -18,23 +19,30 @@ const linkStyle = {
     fontFamily: "Arial, Helvetica, sans-serif",
 }
 
-function Profile() {
+function Profile(username) {
     const location = useLocation();
-    const username = "Ivan";
+    const {user, error} = useGetUserByNameQuery(username);
+    if (error) {
+        return <div>SDASPDKASPDKASDKDK</div>
+    }
+    const addedToFavorite = user.favorites,
+          reports = user.reports,
+          lastUnbanDate = user.unban_date,
+          role = user.role;
     return (
         <div className="profile-block">
-            <strong>Ivan</strong>
+            <strong>username</strong>
             <strong style={{color: "#999"}}>user/{username}</strong>
-            <div className="settings">
+            <div className="settings-link">
                 <Link to={`/settings`} style={linkStyle}>
                     <strong>Настройки</strong>
                 </Link>
             </div>
             <div className="profile-info">
-                Роль: пользователь<br/>
-                Жалобы: 2 <br/>
-                Добавлено в избранное: 10 <br/> 
-                Последняя дата разблокировки: 17.11.2022
+                Роль: {role}<br/>
+                Жалобы: {reports}<br/>
+                Добавлено в избранное: {addedToFavorite} <br/> 
+                Последняя дата разблокировки: {lastUnbanDate}
             </div>
             <div className="post-joke">
                 <Link to={`/create_joke`} 

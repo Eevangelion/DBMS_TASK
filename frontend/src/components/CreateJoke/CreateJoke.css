@@ -25,6 +25,15 @@
     margin-top: 5px;
 }
 
+.buttons {
+    width: 430px;
+    height: 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .create-button {
     width: 200px;
     height: 30px;
@@ -35,6 +44,25 @@
     text-align: center;
     border-radius: 45px;
     background-color: #00d;
+    text-decoration : none;
+    border: none;
+    cursor: pointer;
+    
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.back-button {
+    width: 200px;
+    height: 30px;
+    margin-top: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 45px;
+    background-color: #aaa;
     text-decoration : none;
     border: none;
     cursor: pointer;

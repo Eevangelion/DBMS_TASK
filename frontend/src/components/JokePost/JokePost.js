@@ -15,8 +15,7 @@ const JokePost = ({joke, tags}) => {
           header = joke.header,
           description = joke.description,
           author = joke.author,
-          createdBy = joke.created_date,
-          tags = tags;
+          createdBy = joke.created_date;
 
     return (
         <li className="joke-post">
@@ -43,12 +42,9 @@ const JokePost = ({joke, tags}) => {
                     </div>
                 </div>
                 <div className="tags">
-                    <div className="tag-item">
-                        Армия
-                    </div>
-                    <div className="tag-item">
-                        Мясо
-                    </div>
+                    {tags.map(tag => {
+                        return <div className="tag-item">{tag}</div>
+                    })}
                 </div>
                 <div className="description">
                     {description.split('\n').map(str => <div>{str}<br/></div>)}

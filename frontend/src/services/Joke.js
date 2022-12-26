@@ -19,36 +19,48 @@ export const jokeService = createApi({
             },
         }),
         deleteJoke: build.mutation({
-            query: (id) => {
+            query: (joke_id) => {
                 const token = localStorage.getItem('userToken');
                 return {
                     url: `/delete`,
                     method: 'DELETE',
                     headers: {authorization: `${token}`},
-                    body: id
+                    body: joke_id
                 }
             },
         }),
         addJokeToFavorites: build.mutation({
-            query: (name, id) => {
+            query: (joke_id) => {
                 const token = localStorage.getItem('userToken');
+                const user_id = localStorage.getItem('userID');
                 return {
                     url: `/addToFavorites`,
                     method: 'PUT',
                     headers: {authorization: `${token}`},
+                    params: {user_id, joke_id},
                 }
             }
         }),
         removeJokeFromFavorites: build.mutation({
-            query: (name, id) => {
+            query: (joke_id) => {
                 const token = localStorage.getItem('userToken');
+                const user_id = localStorage.getItem('userID');
                 return {
                     url: `/removeFromFavorites`,
                     method: 'PUT',
                     headers: {authorization: `${token}`},
+                    params: {user_id, joke_id},
                 }
             }
-        })
+        }), 
+        getTagsByJokeID: build.query({
+            query: (joke_id) => {
+                return {
+                    url: `/tags`,
+                    params: joke_id,
+                }
+            }
+        }),
     })
 })
 
@@ -58,4 +70,5 @@ export const {
     useDeleteJokeMutation,
     useAddJokeToFavoritesMutation,
     useRemoveJokeFromFavoritesMutation,
+    useGetTagsByJokeIDLazyQuery,
 } = jokeService;

@@ -1,5 +1,5 @@
 import './App.css';
-import Main from "./pages/Main";
+import Feed from "./pages/Feed";
 import UserPage from "./pages/UserPage";
 import SearchPage from "./pages/SearchPage";
 import { Route, Routes, useLocation } from 'react-router-dom';
@@ -12,9 +12,10 @@ const App = () => {
   return (
     <>
       <Routes location={state?.backgroundLocation || location}>
-        <Route index element={<Main />}/>
+        <Route index element={<Feed />}/>
+        <Route path='feed' element={<Feed />}/>
         <Route path='user/:username' element={<UserPage />}/>
-        <Route path='search/' element={<SearchPage />}/>
+        <Route path='search/?:q&:t' element={<SearchPage />}/>
       </Routes>
       {state?.backgroundLocation && (
         <Routes>

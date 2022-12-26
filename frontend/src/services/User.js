@@ -2,7 +2,6 @@ import {createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react'
 
 const apiHost = process.env.REACT_APP_API_HOST;
 
-
 export const userService = createApi({
     reducerPath: 'userAPI',
     baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}/user`}),
@@ -14,10 +13,10 @@ export const userService = createApi({
             query: (name, ...params) => {
                 const sortArg = params.sortBy ? (params.sortBy === "top" ? (params.t ? params.t : 'day') : params.sortBy) : 'new';
                 const pageArg = params.page;
-                const args = params.page ? {sortArg, pageArg} : {sortArg};
+                const args = params.page ? {sortArg: sortArg, pageArg:pageArg} : {sortArg: sortArg};
                 return {
                     url: `/${name}/`,
-                    params: args
+                    params: args,
                 }
             },
         }),

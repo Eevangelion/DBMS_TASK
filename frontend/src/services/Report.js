@@ -8,13 +8,14 @@ export const reportService = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}/report`}),
     endpoints: (build) => ({
         createReport: build.mutation({
-            query: (id, report) => {
+            query: (joke_id, report) => {
                 const token = localStorage.getItem('userToken');
                 return {
                     url: `/create`,
                     method: 'POST',
                     headers: {authorization: `${token}`},
-                    body: {id, report}
+                    body: report,
+                    params: joke_id,
                 }
             },
         })

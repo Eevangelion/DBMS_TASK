@@ -11,30 +11,39 @@ export const settingsService = createApi({
             query: () => {
                 const token = localStorage.getItem('userToken');
                 return {
-                    url: '',
+                    url: '/profile',
                     headers: {authorization: `${token}`},
                 }
             },
         }),
+        getDeveloperSettings: build.query({
+            query: () => {
+                const token = localStorage.getItem('userToken');
+                return {
+                    url: '/develop',
+                    headers: {authorization: `${token}`},
+                }
+            }
+        }),
         applyReport: build.mutation({
-            query: (id) => {
+            query: (report_id) => {
                 const token = localStorage.getItem('userToken');
                 return {
                     url: `/develop/apply_report`,
-                    method: 'POST',
+                    method: 'PUT',
                     headers: {authorization: `${token}`},
-                    body: {id}
+                    params: report_id
                 }
             },
         }),
         denyReport: build.mutation({
-            query: (id) => {
+            query: (report_id) => {
                 const token = localStorage.getItem('userToken');
                 return {
                     url: `/develop/deny_report`,
-                    method: 'POST',
+                    method: 'PUT',
                     headers: {authorization: `${token}`},
-                    body: {id}
+                    params: report_id
                 }
             },
         }),

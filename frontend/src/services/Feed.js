@@ -10,9 +10,9 @@ export const feedService = createApi({
         getJokes: build.query({
             query: (...params) => {
                 const token = localStorage.getItem('userToken');
-                const sortArg = params.sortBy ? (params.sortBy === "top" ? params.t : params.sortBy) : 'new';
+                const sortArg = params.sortBy ? (params.sortBy === "top" ? params.t : 'day') : 'new';
                 const pageArg = params.page;
-                const args = params.page ? {sortArg, pageArg} : {sortArg}
+                const args = params.page ? {sortArg, pageArg} : {sortArg};
                 return {
                     url: '',
                     headers: {authorization: `${token}`},
@@ -22,3 +22,7 @@ export const feedService = createApi({
         }),
     })
 })
+
+export const {
+    useGetJokesQuery,
+} = feedService;

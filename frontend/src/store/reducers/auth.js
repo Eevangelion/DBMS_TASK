@@ -39,7 +39,6 @@ export const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-
             .addCase(getJWToken.pending, (state) => {
                 state.loading = true;
                 state.error = undefined;

@@ -1,24 +1,45 @@
-import React, { Component } from "react";
-import "../styles/Main.css";
+import React from "react";
+import {useParams} from "react-router-dom";
+import "../styles/SearchPage.css";
 import JokePost from "../components/JokePost/JokePost";
-import JokeSorter from "../components/JokeSorter/JokeSorter";
 import TopPanel from "../components/TopPanel/TopPanel";
+// import { useGetTagsByJokeIDLazyQuery } from "../services/Joke";
+import { useGetJokesQuery } from "../services/Search";
 
-class SearchPage extends Component{
+const SearchPage = () => {
 
-    render() {
-        return (
+    const { queryArg, typeArg } = useParams();
+
+    // let [getTags, {tags}] = useGetTagsByJokeIDLazyQuery();
+    const {jokes, error} = useGetJokesQuery(queryArg, typeArg);
+
+    if (error) {
+        if ('status' in error) {
+            const errorMessage = 'error' in error ? error.error : JSON.stringify(error.data);
+            return (
+                <div>Error:{errorMessage}</div>
+            );
+        } else {
+            return <div>{error?.message}</div>;
+        }
+    }
+
+    const posts = jokes.map((joke) =>
+    {
+        // tags = getTags(joke.id);
+        return <JokePost joke={joke} tags={[]}/>
+    });
+
+    return (
         <div className="main-page">
             <TopPanel />
             <div className="feed">
-                <JokeSorter />
                 <ul className="joke-post-list">
-                    <JokePost/>
-                    <JokePost/>
+                    {posts}
                 </ul>
             </div>
-        </div>);
-    }
+        </div>
+    );
 }
 
 export default SearchPage;

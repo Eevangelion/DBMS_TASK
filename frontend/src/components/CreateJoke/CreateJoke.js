@@ -27,9 +27,14 @@ const CreateJoke = () => {
         <div className="modal-window">
             <input type="text" className="new-header" placeholder="Заголовок вашей шутки" value={headerText}></input>
             <textarea className="new-description" placeholder="Текст вашей шутки" value={descriptionText}></textarea>
-            <button className="create-button" onClick={onClick}>
-                Создать
-            </button>
+            <div className="buttons">
+                <button className="create-button" onClick={onClick}>
+                    Создать
+                </button>
+                <button className="back-button" onClick={navigate(-1)}>
+                    Назад
+                </button>
+            </div>
         </div>
     )
 }
