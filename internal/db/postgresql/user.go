@@ -210,3 +210,18 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 	}
 	return users, nil
 }
+
+func (u UserRepository) UserChange(user_id int) (err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return err
+	}
+	qry := `UPDATE public."Users" SET reports=reports+1, remaining_reports=remaining_reports-1 where id=1`
+	_, err = DB.Exec(qry, user_id)
+	if err != nil {
+		log.Println("Error while trying to delete user:", err)
+		return err
+	}
+	return nil
+}

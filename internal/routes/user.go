@@ -23,25 +23,13 @@ var User = router.RoutePrefix{
 		{
 			Name:        "DeleteJokeFromUserPage",
 			Method:      "POST",
-			Pattern:     "/{username}/delete_joke/{ID}",
-			HandlerFunc: handlers.CreateJokeHandler,
+			Pattern:     "/{username}/delete_joke/?joke_id={joke_id}",
+			HandlerFunc: handlers.DeleteJokeHandler,
 		},
 		{
 			Name:        "GetUserPage",
 			Method:      "GET",
-			Pattern:     "/{username}/?sort=new",
-			HandlerFunc: handlers.GetUserJokesHandler,
-		},
-		{
-			Name:        "GetUserPageSort",
-			Method:      "GET",
-			Pattern:     "/{username}/top/&t={query}",
-			HandlerFunc: handlers.GetUserJokesHandler,
-		},
-		{
-			Name:        "GetUserPageSort",
-			Method:      "GET",
-			Pattern:     "/{username}/new",
+			Pattern:     "/{username}/?sortArg={sortArg}",
 			HandlerFunc: handlers.GetUserJokesHandler,
 		},
 		{

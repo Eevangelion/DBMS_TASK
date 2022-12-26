@@ -98,6 +98,7 @@ func CreateTables(DB *sql.DB) (err error) {
 		transformed_password bigint NOT NULL,
 		CONSTRAINT "Users_pkey" PRIMARY KEY (id),
 		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name, email, transformed_password)
+		CONSTRAINT "ReportsAreRemaining" CHECK (remaining_reports >= 0) NOT VALID
 	);
 
 	CREATE TABLE public."UserSubscribes"

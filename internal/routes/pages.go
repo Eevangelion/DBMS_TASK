@@ -9,34 +9,16 @@ var Pages = router.RoutePrefix{
 	Prefix: "/feed",
 	SubRoutes: []router.Route{
 		{
-			Name:        "GetNewPages",
+			Name:        "GetPages",
 			Method:      "GET",
-			Pattern:     "/new/?page=<int>",
-			HandlerFunc: handlers.GetPageOfJokesHandler,
-		},
-		{
-			Name:        "GetTopPages",
-			Method:      "GET",
-			Pattern:     "/top/?t={query}&page=<int>",
+			Pattern:     "/?sortArg={sortArg}&pageArg={pageArg}",
 			HandlerFunc: handlers.GetPageOfJokesHandler,
 		},
 		{
 			Name:        "SendReport",
 			Method:      "POST",
-			Pattern:     "/create_report/?joke_id={joke_id}",
+			Pattern:     "/?sortArg={sortArg}&pageArg={pageArg}/post_report/?joke_id={joke_id}",
 			HandlerFunc: handlers.CreateReportHandler,
-		},
-		{
-			Name:        "AddToFavorite",
-			Method:      "POST",
-			Pattern:     "/favorite/?joke_id={joke_id}",
-			HandlerFunc: handlers.AddToFavoriteHandler,
-		},
-		{
-			Name:        "DeleteFromFavorite",
-			Method:      "POST",
-			Pattern:     "/favorite/?joke_id={joke_id}",
-			HandlerFunc: handlers.DeleteFromFavoriteHandler,
 		},
 	},
 }
