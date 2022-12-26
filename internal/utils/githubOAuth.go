@@ -1,4 +1,4 @@
-package githubOAuth
+package utils
 
 import (
 	"bytes"
@@ -8,19 +8,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/config"
+	"github.com/Sakagam1/DBMS_TASK/internal/models"
 )
 
 type GitHubOauthToken struct {
 	Access_token string
-}
-
-type GitHubUserResult struct {
-	Name  string
-	Photo string
-	Email string
 }
 
 func GetGitHubOauthToken(code string) (*GitHubOauthToken, error) {
@@ -71,7 +67,7 @@ func GetGitHubOauthToken(code string) (*GitHubOauthToken, error) {
 	return tokenBody, nil
 }
 
-func GetGitHubUser(access_token string) (*GitHubUserResult, error) {
+func GetGitHubUser(access_token string) (*models.User, error) {
 	rootUrl := "https://api.github.com/user"
 
 	req, err := http.NewRequest("GET", rootUrl, nil)
@@ -105,10 +101,16 @@ func GetGitHubUser(access_token string) (*GitHubUserResult, error) {
 		return nil, err
 	}
 
-	userBody := &GitHubUserResult{
-		Email: GitHubUserRes["email"].(string),
-		Name:  GitHubUserRes["login"].(string),
-		Photo: GitHubUserRes["avatar_url"].(string),
+	user_id, err := strconv.Atoi(GitHubUserRes["id"].(string))
+
+	userBody := &models.User{
+		ID:                  user_id,
+		Name:                GitHubUserRes["login"].(string),
+		Email:               GitHubUserRes["email"].(string),
+		Reports:             0,
+		RemainingReports:    0,
+		UnbanDate:           "date",
+		TransformedPassword: access_token,
 	}
 
 	return userBody, nil
