@@ -106,9 +106,9 @@ func CreateTables(DB *sql.DB) (err error) {
 		git_id integer NOT NULL,
 		inner_id integer NOT NULL,
 		CONSTRAINT "GithubUsers_pkey" PRIMARY KEY (git_id, inner_id)
-	)
+	);
 
-	CREATE TABLE public."UserSubscribes"
+	CREATE TABLE IF NOT EXISTS public."UserSubscribes"
 	(
 		receiver_id integer NOT NULL,
 		sender_id integer NOT NULL,
@@ -121,83 +121,83 @@ func CreateTables(DB *sql.DB) (err error) {
 		log.Fatal("Creation error", err)
 		return err
 	}
-	qry = `begin;
+	// qry = `begin;
 
-	ALTER TABLE IF EXISTS public."Favorite jokes"
-    ADD CONSTRAINT "Jokes_id_conn" FOREIGN KEY (joke_id)
-		REFERENCES public."Jokes" (id) MATCH SIMPLE
-		ON UPDATE NO ACTION
-		ON DELETE CASCADE
-		NOT VALID;
+	// ALTER TABLE IF EXISTS public."Favorite jokes"
+	// ADD CONSTRAINT "Jokes_id_conn" FOREIGN KEY (joke_id)
+	// 	REFERENCES public."Jokes" (id) MATCH SIMPLE
+	// 	ON UPDATE NO ACTION
+	// 	ON DELETE CASCADE
+	// 	NOT VALID;
 
-	ALTER TABLE IF EXISTS public."Favorite jokes"
-	ADD CONSTRAINT "User_id_conn" FOREIGN KEY (user_id)
-		REFERENCES public."Users" (id) MATCH SIMPLE
-		ON UPDATE NO ACTION
-		ON DELETE CASCADE
-		NOT VALID;
+	// ALTER TABLE IF EXISTS public."Favorite jokes"
+	// ADD CONSTRAINT "User_id_conn" FOREIGN KEY (user_id)
+	// 	REFERENCES public."Users" (id) MATCH SIMPLE
+	// 	ON UPDATE NO ACTION
+	// 	ON DELETE CASCADE
+	// 	NOT VALID;
 
-	ALTER TABLE IF EXISTS public."Jokes"
-	ADD CONSTRAINT "Author_id_conn" FOREIGN KEY (author_id)
-		REFERENCES public."Users" (id) MATCH SIMPLE
-		ON UPDATE NO ACTION
-		ON DELETE CASCADE
-		NOT VALID;
-	
-	ALTER TABLE IF EXISTS public."Reports"
-	ADD CONSTRAINT "Receiver_id_conn" FOREIGN KEY (receiver_id)
-        REFERENCES public."Users" (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-        NOT VALID; 
-	
-	ALTER TABLE IF EXISTS public."Reports"
-    ADD CONSTRAINT "Receiver_joke_id_conn" FOREIGN KEY (receiver_joke_id)
-        REFERENCES public."Jokes" (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-        NOT VALID;
+	// ALTER TABLE IF EXISTS public."Jokes"
+	// ADD CONSTRAINT "Author_id_conn" FOREIGN KEY (author_id)
+	// 	REFERENCES public."Users" (id) MATCH SIMPLE
+	// 	ON UPDATE NO ACTION
+	// 	ON DELETE CASCADE
+	// 	NOT VALID;
 
-	ALTER TABLE IF EXISTS public."Reports"
-    ADD CONSTRAINT "Sender_id_conn" FOREIGN KEY (sender_id)
-        REFERENCES public."Users" (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-        NOT VALID;
+	// ALTER TABLE IF EXISTS public."Reports"
+	// ADD CONSTRAINT "Receiver_id_conn" FOREIGN KEY (receiver_id)
+	//     REFERENCES public."Users" (id) MATCH SIMPLE
+	//     ON UPDATE NO ACTION
+	//     ON DELETE CASCADE
+	//     NOT VALID;
 
-	ALTER TABLE IF EXISTS public."TagsJokes"
-	ADD CONSTRAINT "Joke_id_conn" FOREIGN KEY (tag_id)
-        REFERENCES public."Tags" (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-        NOT VALID;
+	// ALTER TABLE IF EXISTS public."Reports"
+	// ADD CONSTRAINT "Receiver_joke_id_conn" FOREIGN KEY (receiver_joke_id)
+	//     REFERENCES public."Jokes" (id) MATCH SIMPLE
+	//     ON UPDATE NO ACTION
+	//     ON DELETE CASCADE
+	//     NOT VALID;
 
-	ALTER TABLE IF EXISTS public."TagsJokes"
-    ADD CONSTRAINT "Tag_id_conn" FOREIGN KEY (joke_id)
-        REFERENCES public."Jokes" (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-        NOT VALID;
+	// ALTER TABLE IF EXISTS public."Reports"
+	// ADD CONSTRAINT "Sender_id_conn" FOREIGN KEY (sender_id)
+	//     REFERENCES public."Users" (id) MATCH SIMPLE
+	//     ON UPDATE NO ACTION
+	//     ON DELETE CASCADE
+	//     NOT VALID;
 
-	ALTER TABLE IF EXISTS public."UserSubscribes"
-	ADD CONSTRAINT "Receiver_conn" FOREIGN KEY (receiver_id)
-		REFERENCES public."Users" (id) MATCH SIMPLE
-		ON UPDATE NO ACTION
-		ON DELETE CASCADE
-		NOT VALID;
+	// ALTER TABLE IF EXISTS public."TagsJokes"
+	// ADD CONSTRAINT "Joke_id_conn" FOREIGN KEY (tag_id)
+	//     REFERENCES public."Tags" (id) MATCH SIMPLE
+	//     ON UPDATE NO ACTION
+	//     ON DELETE CASCADE
+	//     NOT VALID;
 
-	ALTER TABLE IF EXISTS public."UserSubscribes"
-	ADD	CONSTRAINT "Sender_conn" FOREIGN KEY (sender_id)
-        REFERENCES public."Users" (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE CASCADE
-		NOT VALID;
-	
-	COMMIT;`
-	_, err = DB.Exec(qry)
-	if err != nil {
-		log.Fatal("Creation error", err)
-		return err
-	}
+	// ALTER TABLE IF EXISTS public."TagsJokes"
+	// ADD CONSTRAINT "Tag_id_conn" FOREIGN KEY (joke_id)
+	//     REFERENCES public."Jokes" (id) MATCH SIMPLE
+	//     ON UPDATE NO ACTION
+	//     ON DELETE CASCADE
+	//     NOT VALID;
+
+	// ALTER TABLE IF EXISTS public."UserSubscribes"
+	// ADD CONSTRAINT "Receiver_conn" FOREIGN KEY (receiver_id)
+	// 	REFERENCES public."Users" (id) MATCH SIMPLE
+	// 	ON UPDATE NO ACTION
+	// 	ON DELETE CASCADE
+	// 	NOT VALID;
+
+	// ALTER TABLE IF EXISTS public."UserSubscribes"
+	// ADD	CONSTRAINT "Sender_conn" FOREIGN KEY (sender_id)
+	//     REFERENCES public."Users" (id) MATCH SIMPLE
+	//     ON UPDATE NO ACTION
+	//     ON DELETE CASCADE
+	// 	NOT VALID;
+
+	// COMMIT;`
+	// _, err = DB.Exec(qry)
+	// if err != nil {
+	// 	log.Fatal("Creation error", err)
+	// 	return err
+	// }
 	return err
 }

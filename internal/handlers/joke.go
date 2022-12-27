@@ -67,12 +67,10 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	params := mux.Vars(r)
-	user_id, err := strconv.Atoi(params["userID"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
+	username := params["username"]
 	page, err := strconv.Atoi(params["pageArg"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
@@ -88,12 +86,16 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	jokes, amount, err := db.JokeRepo.GetUserJokes(user_id, page, pageSize, sortMode)
+	user, err := db.UserRepo.GetUserByUsername(username)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
+	jokes, amount, err := db.JokeRepo.GetUserJokes(user.ID, page, pageSize, sortMode)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
 	json.NewEncoder(w).Encode(amount)
@@ -122,6 +124,7 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
 	json.NewEncoder(w).Encode(amount)
@@ -140,6 +143,7 @@ func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(tags)
 }
@@ -216,6 +220,7 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jokes)
 	json.NewEncoder(w).Encode(amount)
