@@ -29,7 +29,7 @@ var User = router.RoutePrefix{
 		{
 			Name:        "GetUserPage",
 			Method:      "GET",
-			Pattern:     "/{username}/?sortArg={sortArg}",
+			Pattern:     "/{username}/",
 			HandlerFunc: handlers.GetUserJokesHandler,
 		},
 		{
