@@ -11,13 +11,13 @@ var Pages = router.RoutePrefix{
 		{
 			Name:        "GetPages",
 			Method:      "GET",
-			Pattern:     "/?sortArg={sortArg}&pageArg={pageArg}",
+			Pattern:     "/",
 			HandlerFunc: handlers.GetPageOfJokesHandler,
 		},
 		{
 			Name:        "SendReport",
 			Method:      "POST",
-			Pattern:     "/?sortArg={sortArg}&pageArg={pageArg}/post_report/?joke_id={joke_id}",
+			Pattern:     "/post_report/",
 			HandlerFunc: handlers.CreateReportHandler,
 		},
 	},

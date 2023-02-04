@@ -11,13 +11,13 @@ var Tag = router.RoutePrefix{
 		{
 			Name:        "CreateTag",
 			Method:      "POST",
-			Pattern:     "/create",
+			Pattern:     "/create/",
 			HandlerFunc: handlers.CreateTagHandler,
 		},
 		{
 			Name:        "DeleteTag",
 			Method:      "DELETE",
-			Pattern:     "/delete",
+			Pattern:     "/delete/",
 			HandlerFunc: handlers.DeleteTagHandler,
 		},
 	},
