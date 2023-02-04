@@ -13,6 +13,7 @@ import (
 )
 
 func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var joke models.Joke
 	err := decoder.Decode(&joke)
@@ -25,12 +26,12 @@ func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(id)
 }
 
 func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
 	var user_id int
@@ -67,24 +68,35 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	username := params["username"]
-	page, err := strconv.Atoi(params["pageArg"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
+	var page, pageSize int
+	var err error
+	if _, ok := params["pageArg"]; ok {
+		page, err = strconv.Atoi(params["pageArg"])
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
+		pageSize, err = strconv.Atoi(params["pageSize"])
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
+	} else {
+		page = 1
+		pageSize = 5
 	}
-	pageSize, err := strconv.Atoi(params["pageSize"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	sortMode := params["sortArg"]
-	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
+	var sortMode string
+	if _, ok := params["sortArg"]; ok {
+		sortMode = params["sortArg"]
+		if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: Wrong feed query parameter")
+			return
+		}
+	} else {
+		sortMode = "new"
 	}
 	user, err := db.UserRepo.GetUserByUsername(username)
 	if err != nil {
@@ -97,11 +109,14 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(jokes)
-	json.NewEncoder(w).Encode(amount)
+	json.NewEncoder(w).Encode(models.JokeResponse{
+		Jokes:  jokes,
+		Amount: amount,
+	})
 }
 
 func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	page, err := strconv.Atoi(params["pageArg"])
 	if err != nil {
@@ -123,14 +138,15 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(jokes)
-	json.NewEncoder(w).Encode(amount)
+	json.NewEncoder(w).Encode(models.JokeResponse{
+		Jokes:  jokes,
+		Amount: amount,
+	})
 }
 
 func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -142,13 +158,12 @@ func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(tags)
 }
 
 func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -171,6 +186,7 @@ func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -193,6 +209,7 @@ func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	user_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -219,14 +236,15 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(jokes)
-	json.NewEncoder(w).Encode(amount)
+	json.NewEncoder(w).Encode(models.JokeResponse{
+		Jokes:  jokes,
+		Amount: amount,
+	})
 }
 
 func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
 	var sender_id int
@@ -249,6 +267,7 @@ func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UnSubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
 	var sender_id int
@@ -271,6 +290,7 @@ func UnSubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	params := mux.Vars(r)
 	var receiver_id int
@@ -299,13 +319,15 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(jokes)
-	json.NewEncoder(w).Encode(amount)
+	json.NewEncoder(w).Encode(models.JokeResponse{
+		Jokes:  jokes,
+		Amount: amount,
+	})
 }
 
 func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -328,6 +350,7 @@ func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -350,6 +373,7 @@ func DeleteTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetJokeByIDHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -361,7 +385,6 @@ func GetJokeByIDHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(joke)
 }

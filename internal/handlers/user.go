@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"strconv"
@@ -17,6 +18,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var user models.User
 	err := decoder.Decode(&user)
+	log.Println(user)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -47,7 +49,21 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func GetUserDataHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
+	params := mux.Vars(r)
+	username := params["username"]
+	user, err := db.UserRepo.GetUserByUsername(username)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(user)
+}
+
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var user_id int
 	err := decoder.Decode(&user_id)
@@ -73,12 +89,12 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		Favorites: amount,
 		UnbanDate: userOut.UnbanDate,
 	}
-	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(userResponse)
 }
 
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	userID, err := strconv.Atoi(params["userID"])
 	if err != nil {
@@ -99,12 +115,12 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(verification)
 }
 
 func GetGithubUser(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var code string
 	err := decoder.Decode(&code)
@@ -138,7 +154,6 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 			Favorites: 0,
 			UnbanDate: user.UnbanDate,
 		}
-		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(userResponse)
 		json.NewEncoder(w).Encode(token)
@@ -156,7 +171,6 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 			Favorites: amount,
 			UnbanDate: user.UnbanDate,
 		}
-		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(userResponse)
 		json.NewEncoder(w).Encode(token)

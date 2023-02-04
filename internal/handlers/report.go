@@ -32,6 +32,7 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var report_id int
 	var user_id int
@@ -68,6 +69,7 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	report_id, err := strconv.Atoi(params["reportID"])
 	if err != nil {
@@ -79,12 +81,12 @@ func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(reportOut)
 }
 
 func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var user_id int
 	err := decoder.Decode(&user_id)
@@ -106,12 +108,12 @@ func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(reportOut)
 }
 
 func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	report_id, err := strconv.Atoi(params["report_id"])
 	if err != nil {
@@ -138,6 +140,7 @@ func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DenyReportHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	report_id, err := strconv.Atoi(params["report_id"])
 	if err != nil {
