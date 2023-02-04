@@ -94,8 +94,8 @@ func CreateTables(DB *sql.DB) (err error) {
 		reports integer DEFAULT 0,
 		remaining_reports integer NOT NULL DEFAULT 3,
 		role character varying(64) COLLATE pg_catalog."default" NOT NULL,
-		unban_date date,
-		transformed_password bigint NOT NULL,
+		unban_date date DEFAULT '1970-01-01',
+		transformed_password character varying(128) NOT NULL,
 		CONSTRAINT "Users_pkey" PRIMARY KEY (id),
 		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name, email, transformed_password),
 		CONSTRAINT "ReportsAreRemaining" CHECK (remaining_reports >= 0) NOT VALID
@@ -112,7 +112,7 @@ func CreateTables(DB *sql.DB) (err error) {
 	(
 		receiver_id integer NOT NULL,
 		sender_id integer NOT NULL,
-		PRIMARY KEY (receiver_id, "sender_Id")
+		PRIMARY KEY (receiver_id, "sender_id")
 	);
 
 	COMMIT;`

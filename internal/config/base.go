@@ -37,7 +37,7 @@ func GetConfig() *Config {
 		Conf = &Config{
 			Server: ServerConfig{
 				Address: getEnv("SERVER", "localhost"),
-				Port:    getEnvAsInt("PORT", 6969),
+				Port:    getEnvAsInt("PORT", 8000),
 			},
 			Database:  SetupDB(),
 			DebugMode: getEnvAsBool("DEBUG_MODE", true),

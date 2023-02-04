@@ -12,6 +12,7 @@ import (
 )
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
 	params := mux.Vars(r)
 	tArg := params["tArg"]
 	qArg := params["qArg"]
@@ -31,7 +32,6 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(jokes)
 	}
@@ -41,7 +41,6 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(jokes)
 	}
@@ -51,7 +50,6 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(users)
 	}
