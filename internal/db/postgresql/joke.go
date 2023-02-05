@@ -305,7 +305,7 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_m
 		log.Println("Error while getting user jokes:", err)
 		return nil, -1, err
 	}
-	rows, err := DB.Query(qry, user_id, page, (page-1)*pageSize)
+	rows, err := DB.Query(qry, user_id, pageSize, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while getting user jokes:", err)
@@ -329,6 +329,7 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_m
 		}
 		jokes = append(jokes, NewJoke)
 	}
+	log.Println(rows)
 	return jokes, amount, nil
 }
 
@@ -480,7 +481,7 @@ func (j JokeRepository) GetPageOfJokes(page int, per_page int, sort_mode string)
 	return jokes, amount, nil
 }
 
-func (j JokeRepository) Create(joke *models.Joke) (id int64, err error) {
+func (j JokeRepository) Create(joke *models.JokeRequest) (id int64, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)

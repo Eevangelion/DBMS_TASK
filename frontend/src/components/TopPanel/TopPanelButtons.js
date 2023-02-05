@@ -2,6 +2,7 @@ import React from "react";
 import "./TopPanelButtons.css";
 
 function TopPanelButtons(isAuth) {
+    const username = "nikita";
     if (isAuth === false) {
         return (<div className="auth">
                     <div className="login">
@@ -13,8 +14,8 @@ function TopPanelButtons(isAuth) {
                 </div>)
     } else {
         return (<div className="profile">
-                    <a className="profile-button" href='/user/Ivan'>
-                        <strong>Мой профиль</strong><span style={{color: '#999'}}>{'(Ivan)'}</span>
+                    <a className="profile-button" href={"/user/" + username}>
+                        <strong>Мой профиль</strong><span style={{color: '#999'}}>{"(" + username + ")"}</span>
                     </a> 
                 </div>);
     }

@@ -1,19 +1,19 @@
 import {createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react'
 
 const apiHost = process.env.REACT_APP_API_HOST;
-
+const apiPort = process.env.REACT_APP_API_PORT;
 
 export const jokeService = createApi({
     reducerPath: 'jokeAPI',
-    baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}/joke`}),
+    baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}:${apiPort}/joke`}),
     endpoints: (build) => ({
         createJoke: build.mutation({
             query: (joke) => {
-                const token = localStorage.getItem('userToken');
+                //const token = localStorage.getItem('userToken');
                 return {
-                    url: `/create`,
+                    url: `/create/`,
                     method: 'POST',
-                    headers: { authorization: `${token}`},
+                    //headers: { authorization: `${token}`},
                     body: joke
                 };
             },
@@ -22,7 +22,7 @@ export const jokeService = createApi({
             query: (joke_id) => {
                 const token = localStorage.getItem('userToken');
                 return {
-                    url: `/delete`,
+                    url: `/delete/`,
                     method: 'DELETE',
                     headers: {authorization: `${token}`},
                     body: joke_id
@@ -34,7 +34,7 @@ export const jokeService = createApi({
                 const token = localStorage.getItem('userToken');
                 const user_id = localStorage.getItem('userID');
                 return {
-                    url: `/addToFavorites`,
+                    url: `/addToFavorites/`,
                     method: 'PUT',
                     headers: {authorization: `${token}`},
                     params: {user_id, joke_id},
@@ -46,7 +46,7 @@ export const jokeService = createApi({
                 const token = localStorage.getItem('userToken');
                 const user_id = localStorage.getItem('userID');
                 return {
-                    url: `/removeFromFavorites`,
+                    url: `/removeFromFavorites/`,
                     method: 'PUT',
                     headers: {authorization: `${token}`},
                     params: {user_id, joke_id},
@@ -56,7 +56,7 @@ export const jokeService = createApi({
         getTagsByJokeID: build.query({
             query: (joke_id) => {
                 return {
-                    url: `/tags`,
+                    url: `/tags/`,
                     params: joke_id,
                 }
             }

@@ -1,21 +1,30 @@
 import React from "react";
 import "./JokePost.css";
 import rateImage from "../../styles/img/logo.png";
+import {useGetUserByIDQuery} from "../../services/User";
 
 
 const JokePost = ({joke, tags}) => {
 
-    // const rating = 25,
-    //       header = "История об одном солдате",
-    //       description = "Чертит студент на доске окружность, а она у него ровная получается. Как будто циркулем нарисовал. Препод его спрашивает:\n- Вы где научились так окружности рисовать?\n- А я в армии два года мясорубку крутил.",
-    //       author = "Ivan",
-    //       createdBy = "2 часа назад";
+    const userID = localStorage.getItem("userID");
+    const {
+        data: user,
+        isLoading: loadingUser,
+    } = useGetUserByIDQuery(userID);
+    
+    const loadingFrame = <li>Загрузка...</li>;
+
+    if (loadingUser) {
+        return loadingFrame;
+    }
+
+    const authorName = user.name;
 
     const rating = joke.rating,
           header = joke.header,
           description = joke.description,
-          author = joke.author,
-          createdBy = joke.created_date;
+          author = authorName,
+          createdBy = joke.creation_date;
 
     return (
         <li className="joke-post">

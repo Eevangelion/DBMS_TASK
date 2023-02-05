@@ -15,7 +15,7 @@ import (
 func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
-	var joke models.Joke
+	var joke models.JokeRequest
 	err := decoder.Decode(&joke)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
@@ -104,10 +104,6 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jokes, amount, err := db.JokeRepo.GetUserJokes(user.ID, page, pageSize, sortMode)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(models.JokeResponse{
 		Jokes:  jokes,

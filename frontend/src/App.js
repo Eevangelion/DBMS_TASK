@@ -9,6 +9,7 @@ const App = () => {
 
   let location = useLocation();
   let state = location.state;
+  localStorage.setItem("userID", 1);
   return (
     <>
       <Routes location={state?.backgroundLocation || location}>

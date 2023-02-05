@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import { useNavigate } from "react-router-dom"
 import { useCreateJokeMutation } from "../../services/Joke";
 import './CreateJoke.css';
@@ -6,9 +7,9 @@ const CreateJoke = () => {
     const navigate = useNavigate();
 
     const [createJoke] = useCreateJokeMutation();
-    let headerText, 
-        descriptionText;
-    const userID = localStorage.getItem('userID');
+    const [headerText, setHeaderText] = useState('');
+    const [descriptionText, setDescriptionText] = useState('');
+    const userID = Number(localStorage.getItem('userID'));
 
     const onClick = async (headerText, descriptionText) => {
         try {
@@ -17,21 +18,21 @@ const CreateJoke = () => {
                 description: descriptionText,
                 author_id: userID,
             });
+            navigate(-1);
         } catch (error) {
             throw error;
         }
-        navigate(-1);
     }
 
     return (
         <div className="modal-window">
-            <input type="text" className="new-header" placeholder="Заголовок вашей шутки" value={headerText}></input>
-            <textarea className="new-description" placeholder="Текст вашей шутки" value={descriptionText}></textarea>
+            <textarea className="new-header" placeholder="Заголовок вашей шутки" onChange={e=>setHeaderText(e.target.value)} value={headerText} ></textarea>
+            <textarea className="new-description" placeholder="Текст вашей шутки" onChange={e=>setDescriptionText(e.target.value)} value={descriptionText} ></textarea>
             <div className="buttons">
-                <button className="create-button" onClick={onClick}>
+                <button className="create-button" onClick={()=>onClick(headerText, descriptionText)}>
                     Создать
                 </button>
-                <button className="back-button" onClick={navigate(-1)}>
+                <button className="back-button" onClick={() => navigate(-1)}>
                     Назад
                 </button>
             </div>

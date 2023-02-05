@@ -1,11 +1,11 @@
 import {createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react'
 
 const apiHost = process.env.REACT_APP_API_HOST;
-
+const apiPort = process.env.REACT_APP_API_PORT;
 
 export const settingsService = createApi({
     reducerPath: 'settingsAPI',
-    baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}/settings`}),
+    baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}:${apiPort}/settings`}),
     endpoints: (build) => ({
         getSettings: build.query({
             query: () => {

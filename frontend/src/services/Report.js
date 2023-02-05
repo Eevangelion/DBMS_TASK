@@ -1,11 +1,11 @@
 import {createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react'
 
 const apiHost = process.env.REACT_APP_API_HOST;
-
+const apiPort = process.env.REACT_APP_API_PORT;
 
 export const reportService = createApi({
     reducerPath: 'reportAPI',
-    baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}/report`}),
+    baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}:${apiPort}/report`}),
     endpoints: (build) => ({
         createReport: build.mutation({
             query: (joke_id, report) => {

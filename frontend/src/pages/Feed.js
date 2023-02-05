@@ -11,19 +11,29 @@ const Feed = () => {
 
     // let [getTags, {tags}] = useGetTagsByJokeIDLazyQuery();
 
-    const {jokes, error} = useGetJokesByAuthorNameQuery();
+    const username="nikita";
+    const {
+        data: response,
+        isLoading: loadingJokes,
+    } = useGetJokesByAuthorNameQuery(username);
 
-    if (!jokes || error) {
-        if (error && 'status' in error) {
-            const errorMessage = 'error' in error ? error.error : JSON.stringify(error.data);
-            return (
-                <div>Error:{errorMessage}</div>
-            );
-        } else {
-            return <div>{error?.message}</div>;
-        }
+    const loadingFrame = <div>Загрузка...</div>;
+
+    const noJokesFrame = <div className="main-page">
+                            <TopPanel />
+                            <div className="feed">
+                                <JokeSorter />
+                                <div>Пользователь пока ничего не опубликовал</div>
+                            </div>
+                        </div>;
+
+    if (loadingJokes) {
+        return loadingFrame;
     }
-
+    const {jokes, amount} = response; 
+    if (!jokes) {
+        return noJokesFrame;
+    }
 
     const posts = jokes.map((joke) =>
     {
@@ -36,8 +46,9 @@ const Feed = () => {
             <TopPanel />
             <div className="feed">
                 <JokeSorter />
+                <div>Всего опубликовано: {amount}</div> <br/>
                 <ul className="joke-post-list">
-                    <div>{posts}</div>
+                    {posts}
                 </ul>
             </div>
         </div>

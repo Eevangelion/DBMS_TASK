@@ -19,19 +19,31 @@ const linkStyle = {
     fontFamily: "Arial, Helvetica, sans-serif",
 }
 
-function Profile(username) {
+const Profile = (username) => {
     const location = useLocation();
-    const {user, error} = useGetUserByNameQuery(username);
-    if (error) {
-        return <div>SDASPDKASPDKASDKDK</div>
+    const {
+        data: user,
+        isLoading: loadingUser,
+    } = useGetUserByNameQuery(username);
+    // const {
+    //     data: addedToFavorite,
+    //     isLoading: loadingFavoriteJokes,
+    // } = useGetFavoritesByNameQuery(username);
+    const loadingFrame = <div className="profile-block">Загрузка...</div>;
+    const noUserFrame = <div className="profile-block">Пользователя с таким именем не существует</div>;
+    if (loadingUser) {
+        return loadingFrame;
     }
-    const addedToFavorite = user.favorites,
-          reports = user.reports,
+    if (!user) {
+        return noUserFrame;
+    }
+    
+    const reports = user.reports,
           lastUnbanDate = user.unban_date,
           role = user.role;
     return (
         <div className="profile-block">
-            <strong>username</strong>
+            <strong>{username}</strong>
             <strong style={{color: "#999"}}>user/{username}</strong>
             <div className="settings-link">
                 <Link to={`/settings`} style={linkStyle}>
@@ -41,7 +53,7 @@ function Profile(username) {
             <div className="profile-info">
                 Роль: {role}<br/>
                 Жалобы: {reports}<br/>
-                Добавлено в избранное: {addedToFavorite} <br/> 
+                {/* Добавлено в избранное: {addedToFavorite.length} <br/> */}
                 Последняя дата разблокировки: {lastUnbanDate}
             </div>
             <div className="post-joke">

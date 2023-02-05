@@ -19,6 +19,7 @@ func main() {
 	if err != nil {
 		log.Print("Error while connecting", err)
 	}
+	log.Println(conf.Server.Port)
 	defer connection.Connection.Close()
 	log.Fatal(
 		http.ListenAndServe(
