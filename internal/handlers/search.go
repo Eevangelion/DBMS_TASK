@@ -15,9 +15,9 @@ import (
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	params := mux.Vars(r)
-	tArg := params["t"]
-	qArg := params["q"]
-	pageURL := r.URL.Query().Get("page")
+	tArg := params["tArg"]
+	qArg := params["qArg"]
+	pageURL := r.URL.Query().Get("pageArg")
 	pageSizeURL := r.URL.Query().Get("pageSize")
 	var page, pageSize int
 	if pageURL == "" {
@@ -33,15 +33,6 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		pageSize, err = strconv.Atoi(pageSizeURL)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-			return
-		}
-	}
-	sortMode := r.URL.Query().Get("sort")
-	if sortMode == "" {
-		sortMode = "new"
-	} else {
-		if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
-			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: Wrong feed query parameter")
 			return
 		}
 	}
