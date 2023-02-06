@@ -19,6 +19,16 @@ func (u UserRepository) GetUserByID(user_id int) (userOut *models.User, err erro
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+	var amount int
+	qry2 := `select count(name) from public."Users" where id=$1`
+	err = DB.QueryRow(qry2, user_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get user by id:", err)
+		return nil, err
+	}
+	if amount == 0 {
+		return userOut, nil
+	}
 	var reports, remaining_reports int
 	var name, email, role, unban_date, transformed_password string
 	qry := `select name, email, reports, remaining_reports, role, unban_date, transformed_password from public."Users" where id=$1`
@@ -45,6 +55,16 @@ func (u UserRepository) GetUserByUsername(username string) (userOut *models.User
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+	var amount int
+	qry2 := `select count(id) from public."Users" where name=$1`
+	err = DB.QueryRow(qry2, username).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get user by username:", err)
+		return nil, err
+	}
+	if amount == 0 {
+		return userOut, nil
+	}
 	var id, reports, remaining_reports int
 	var email, role, unban_date, transformed_password string
 	qry := `select id, email, reports, remaining_reports, role, unban_date, transformed_password from public."Users" where name=$1`
@@ -70,6 +90,16 @@ func (u UserRepository) GetUserByEmail(Email string) (userOut *models.User, err 
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
+	}
+	var amount int
+	qry2 := `select count(id) from public."Users" where email=$1`
+	err = DB.QueryRow(qry2, Email).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get user by email:", err)
+		return nil, err
+	}
+	if amount == 0 {
+		return userOut, nil
 	}
 	var id, reports, remaining_reports int
 	var name, role, unban_date, transformed_password string
@@ -232,11 +262,21 @@ func (u UserRepository) GetUserByGithubID(user_id int) (userOut *models.GitUser,
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+	var amount int
+	qry2 := `select count(git_id) from public."GithubUsers" where git_id=$1`
+	err = DB.QueryRow(qry2, user_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get github user by id:", err)
+		return nil, err
+	}
+	if amount == 0 {
+		return userOut, nil
+	}
 	qry := `select * from public."GithubUsers" where git_id=$1`
 	var git_id, inner_id int
 	err = DB.QueryRow(qry, user_id).Scan(&git_id, &inner_id)
 	if err != nil {
-		log.Println("Error while trying to get user by id:", err)
+		log.Println("Error while trying to get github user by id:", err)
 		return nil, err
 	}
 	return &models.GitUser{

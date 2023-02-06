@@ -18,9 +18,18 @@ func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+	var amount int
 	var id, receiver_joke_id, sender_id, receiver_id int
 	var description string
 	qry := `select * from public."Reports" where id=$1`
+	qry2 := `select count("Reports".id) from public."Reports" where id=$1`
+	err = DB.QueryRow(qry2, report_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get report by ID:", err)
+	}
+	if amount == 0 {
+		return reportOut, nil
+	}
 	err = DB.QueryRow(qry, report_id).Scan(&id, &description, &receiver_joke_id, &sender_id, &receiver_id)
 	if err != nil {
 		log.Println("Error while trying to get report by ID:", err)

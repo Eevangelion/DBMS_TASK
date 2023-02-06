@@ -20,6 +20,7 @@ func main() {
 		log.Print("Error while connecting", err)
 	}
 	defer connection.Connection.Close()
+
 	log.Fatal(
 		http.ListenAndServe(
 			fmt.Sprintf("%s:%d", conf.Server.Address, port), router,
