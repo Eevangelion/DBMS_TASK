@@ -104,6 +104,13 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	if user == nil {
+		json.NewEncoder(w).Encode(models.JokeResponse{
+			Jokes:  nil,
+			Amount: 0,
+		})
+		return
+	}
 	jokes, amount, err := db.JokeRepo.GetUserJokes(user.ID, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -387,7 +394,7 @@ func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func DeleteTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
+func DeleteTagFromJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
