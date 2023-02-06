@@ -115,7 +115,15 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user == nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: no user found")
+		json.NewEncoder(w).Encode(models.JokeResponse{
+			Jokes:  nil,
+			Amount: 0,
+		})
+		return
+	}
+	jokes, amount, err := db.JokeRepo.GetUserJokes(user.ID, page, pageSize, sortMode)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
 	jokes, amount, err := db.JokeRepo.GetUserJokes(user.ID, page, pageSize, sortMode)

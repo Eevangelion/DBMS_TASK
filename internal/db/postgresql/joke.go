@@ -360,7 +360,7 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_m
 		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(MONTH from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(MONTH from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
 	}
-	err = DB.QueryRow(qry2, user_id).Scan(&amount)
+	err = DB.QueryRow(qry2, user_id, pageSize, (page-1)*pageSize).Scan(&amount)
 	if err != nil {
 		log.Println("Error while getting user jokes:", err)
 		return nil, -1, err
@@ -371,6 +371,7 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_m
 		log.Println("Error while getting user jokes:", err)
 		return nil, -1, err
 	}
+	log.Println("Error while getting user jokes:", "aaaaaaaaa")
 	for rows.Next() {
 		var id, rating int
 		var header, description, creation_date string
