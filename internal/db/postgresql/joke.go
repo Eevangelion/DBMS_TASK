@@ -393,15 +393,24 @@ func (j JokeRepository) DeleteTagFromJoke(joke_id int, tag_id int) (err error) {
 	return nil
 }
 
-func (j JokeRepository) GetJokeByID(joke_id int) (userOut *models.Joke, err error) {
+func (j JokeRepository) GetJokeByID(joke_id int) (jokeOut *models.Joke, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+	var amount int
 	var rating, author_id int
 	var header, description, creation_date string
 	qry := `select "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes" where id=$1`
+	qry2 := `select count("Jokes".header) from public."Jokes" where id=$1`
+	err = DB.QueryRow(qry2, joke_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while searching joke by id:", err)
+	}
+	if amount == 0 {
+		return jokeOut, nil
+	}
 	err = DB.QueryRow(qry, joke_id).Scan(&header, &description, &rating, &author_id, &creation_date)
 	if err != nil {
 		log.Println("Error while searching joke by id:", err)

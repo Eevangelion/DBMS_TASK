@@ -71,32 +71,33 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	params := mux.Vars(r)
 	username := params["username"]
+	pageURL := r.URL.Query().Get("pageArg")
+	pageSizeURL := r.URL.Query().Get("pageSize")
 	var page, pageSize int
-	var err error
-	if _, ok := params["pageArg"]; ok {
-		page, err = strconv.Atoi(params["pageArg"])
-		if err != nil {
-			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-			return
-		}
-		pageSize, err = strconv.Atoi(params["pageSize"])
-		if err != nil {
-			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-			return
-		}
-	} else {
+	if pageURL == "" {
 		page = 1
 		pageSize = 5
+	} else {
+		var err error
+		page, err = strconv.Atoi(pageURL)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
+		pageSize, err = strconv.Atoi(pageSizeURL)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
 	}
-	var sortMode string
-	if _, ok := params["sortArg"]; ok {
-		sortMode = params["sortArg"]
+	sortMode := r.URL.Query().Get("sortMode")
+	if sortMode == "" {
+		sortMode = "new"
+	} else {
 		if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
 			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: Wrong feed query parameter")
 			return
 		}
-	} else {
-		sortMode = "new"
 	}
 	user, err := db.UserRepo.GetUserByUsername(username)
 	if err != nil {
@@ -113,21 +114,33 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	page, err := strconv.Atoi(params["pageArg"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
+	pageURL := r.URL.Query().Get("pageArg")
+	pageSizeURL := r.URL.Query().Get("pageSize")
+	var page, pageSize int
+	if pageURL == "" {
+		page = 1
+		pageSize = 5
+	} else {
+		var err error
+		page, err = strconv.Atoi(pageURL)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
+		pageSize, err = strconv.Atoi(pageSizeURL)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
 	}
-	pageSize, err := strconv.Atoi(params["pageSize"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	sortMode := params["sortArg"]
-	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
+	sortMode := r.URL.Query().Get("sortMode")
+	if sortMode == "" {
+		sortMode = "new"
+	} else {
+		if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: Wrong feed query parameter")
+			return
+		}
 	}
 	jokes, amount, err := db.JokeRepo.GetPageOfJokes(page, pageSize, sortMode)
 	if err != nil {
@@ -212,20 +225,33 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	page, err := strconv.Atoi(params["pageArg"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
+	pageURL := r.URL.Query().Get("pageArg")
+	pageSizeURL := r.URL.Query().Get("pageSize")
+	var page, pageSize int
+	if pageURL == "" {
+		page = 1
+		pageSize = 5
+	} else {
+		var err error
+		page, err = strconv.Atoi(pageURL)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
+		pageSize, err = strconv.Atoi(pageSizeURL)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
 	}
-	pageSize, err := strconv.Atoi(params["pageSize"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	sortMode := params["sortArg"]
-	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
+	sortMode := r.URL.Query().Get("sortMode")
+	if sortMode == "" {
+		sortMode = "new"
+	} else {
+		if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: Wrong feed query parameter")
+			return
+		}
 	}
 	jokes, amount, err := db.JokeRepo.GetUserFavoriteJokes(user_id, page, pageSize, sortMode)
 	if err != nil {
@@ -262,7 +288,7 @@ func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func UnSubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
+func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
@@ -288,27 +314,39 @@ func UnSubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
 func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
-	params := mux.Vars(r)
 	var receiver_id int
 	err := decoder.Decode(&receiver_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	page, err := strconv.Atoi(params["pageArg"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
+	pageURL := r.URL.Query().Get("pageArg")
+	pageSizeURL := r.URL.Query().Get("pageSize")
+	var page, pageSize int
+	if pageURL == "" {
+		page = 1
+		pageSize = 5
+	} else {
+		var err error
+		page, err = strconv.Atoi(pageURL)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
+		pageSize, err = strconv.Atoi(pageSizeURL)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+			return
+		}
 	}
-	pageSize, err := strconv.Atoi(params["pageSize"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	sortMode := params["sortArg"]
-	if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
+	sortMode := r.URL.Query().Get("sortMode")
+	if sortMode == "" {
+		sortMode = "new"
+	} else {
+		if sortMode != "new" && sortMode != "hour" && sortMode != "day" && sortMode != "week" && sortMode != "month" && sortMode != "alltime" {
+			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: Wrong feed query parameter")
+			return
+		}
 	}
 	jokes, amount, err := db.JokeRepo.GetUserSubribedJokes(receiver_id, page, pageSize, sortMode)
 	if err != nil {

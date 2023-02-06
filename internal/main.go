@@ -21,6 +21,7 @@ func main() {
 	}
 	log.Println(conf.Server.Port)
 	defer connection.Connection.Close()
+
 	log.Fatal(
 		http.ListenAndServe(
 			fmt.Sprintf("%s:%d", conf.Server.Address, port), router,
