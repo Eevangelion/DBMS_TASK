@@ -23,7 +23,7 @@ var Joke = router.RoutePrefix{
 		{
 			Name:        "Get",
 			Method:      "GET",
-			Pattern:     "/tags/",
+			Pattern:     "/tags/{id}",
 			HandlerFunc: handlers.GetJokeTagsHandler,
 		},
 		{

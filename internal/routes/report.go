@@ -11,13 +11,13 @@ var Report = router.RoutePrefix{
 		{
 			Name:        "CreateReport",
 			Method:      "POST",
-			Pattern:     "/create",
+			Pattern:     "/create/",
 			HandlerFunc: handlers.CreateReportHandler,
 		},
 		{
 			Name:        "DeleteReport",
 			Method:      "DELETE",
-			Pattern:     "/delete",
+			Pattern:     "/delete/",
 			HandlerFunc: handlers.DeleteReportHandler,
 		},
 		{
