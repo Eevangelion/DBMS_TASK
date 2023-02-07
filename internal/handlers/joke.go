@@ -15,12 +15,16 @@ import (
 func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
-	var joke models.JokeRequest
-	err := decoder.Decode(&joke)
+	var jokeRequest models.JokeRequest
+	err := decoder.Decode(&jokeRequest)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	var joke models.Joke
+	joke.AuthorId = jokeRequest.AuthorId
+	joke.Description = jokeRequest.Description
+	joke.Header = jokeRequest.Header
 	id, err := db.JokeRepo.Create(&joke)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -35,24 +39,30 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
 	var user_id int
-	err := decoder.Decode(&joke_id)
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	err = decoder.Decode(&user_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
+	joke_id = f["joke_id"]
+	user_id = f["user_id"]
 	user, err := db.UserRepo.GetUserByID(user_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	if user == nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no user found")
+		return
+	}
 	joke, err := db.JokeRepo.GetJokeByID(joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	if joke == nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no joke found")
 		return
 	}
 	if user.Role != "admin" && joke.AuthorId != user_id {
@@ -180,19 +190,17 @@ func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
 	decoder := json.NewDecoder(r.Body)
+	var joke_id int
 	var user_id int
-	err = decoder.Decode(&user_id)
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	joke_id = f["joke_id"]
+	user_id = f["user_id"]
 	err = db.JokeRepo.AddToFavorite(user_id, joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -203,19 +211,17 @@ func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
 	decoder := json.NewDecoder(r.Body)
+	var joke_id int
 	var user_id int
-	err = decoder.Decode(&user_id)
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	joke_id = f["joke_id"]
+	user_id = f["user_id"]
 	err = db.JokeRepo.DeleteFromFavorite(user_id, joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

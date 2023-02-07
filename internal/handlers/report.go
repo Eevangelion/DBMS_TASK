@@ -15,12 +15,18 @@ import (
 
 func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var report models.Report
-	err := decoder.Decode(&report)
+	var reportRequest models.ReportRequest
+	err := decoder.Decode(&reportRequest)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	var report models.Report
+	report.Description = reportRequest.Description
+	report.ReceiverJokeId = reportRequest.ReceiverJokeId
+	report.SenderId = reportRequest.SenderId
+	joke, err := db.JokeRepo.GetJokeByID(report.ReceiverJokeId)
+	report.ReceiverId = joke.AuthorId
 	id, err := db.ReportRepo.Create(&report)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -36,24 +42,30 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var report_id int
 	var user_id int
-	err := decoder.Decode(&report_id)
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	err = decoder.Decode(&user_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	report, err := db.ReportRepo.GetReportByID(user_id)
+	report_id = f["report_id"]
+	user_id = f["user_id"]
+	report, err := db.ReportRepo.GetReportByID(report_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	if report == nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: no report found")
 		return
 	}
 	user, err := db.UserRepo.GetUserByID(user_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	if user == nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: no user found")
 		return
 	}
 	if user.Role != "admin" && user_id != report.SenderId {
@@ -71,7 +83,7 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	params := mux.Vars(r)
-	report_id, err := strconv.Atoi(params["reportID"])
+	report_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
