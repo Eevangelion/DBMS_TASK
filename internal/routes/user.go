@@ -24,7 +24,7 @@ var User = router.RoutePrefix{
 			Name:        "GetUserPageByName",
 			Method:      "GET",
 			Pattern:     "/{username}/data/",
-			HandlerFunc: handlers.GetUserDataByNameHandler,
+			HandlerFunc: handlers.GetUserDataHandler,
 		},
 		{
 			Name:        "GetGithubUser",

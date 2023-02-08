@@ -25,6 +25,20 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 	report.Description = reportRequest.Description
 	report.ReceiverJokeId = reportRequest.ReceiverJokeId
 	report.SenderId = reportRequest.SenderId
+	user, err := db.UserRepo.GetUserByID(report.SenderId)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	if user.RemainingReports == 0 {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: no reports remains")
+		return
+	}
+	err = db.UserRepo.UserChange(report.SenderId)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
 	joke, err := db.JokeRepo.GetJokeByID(report.ReceiverJokeId)
 	report.ReceiverId = joke.AuthorId
 	id, err := db.ReportRepo.Create(&report)
