@@ -91,13 +91,13 @@ func CreateTables(DB *sql.DB) (err error) {
 		id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
 		name character varying(64) COLLATE pg_catalog."default" NOT NULL,
 		email character varying(128) COLLATE pg_catalog."default" NOT NULL,
-		reports integer DEFAULT 0,
+		reports integer NOT NULL DEFAULT 0,
 		remaining_reports integer NOT NULL DEFAULT 3,
 		role character varying(64) COLLATE pg_catalog."default" NOT NULL,
-		unban_date date DEFAULT '1861-03-03'::date NOT NULL,
-		transformed_password character varying(128) NOT NULL,
+		unban_date date NOT NULL DEFAULT '1861-03-03'::date,
+		transformed_password character varying(128) COLLATE pg_catalog."default" NOT NULL,
 		CONSTRAINT "Users_pkey" PRIMARY KEY (id),
-		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name, email, transformed_password),
+		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name, email),
 		CONSTRAINT "ReportsAreRemaining" CHECK (remaining_reports >= 0) NOT VALID
 	);
 

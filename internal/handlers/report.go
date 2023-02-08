@@ -25,6 +25,20 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 	report.Description = reportRequest.Description
 	report.ReceiverJokeId = reportRequest.ReceiverJokeId
 	report.SenderId = reportRequest.SenderId
+	user, err := db.UserRepo.GetUserByID(report.SenderId)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	if user.RemainingReports == 0 {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: no reports remains")
+		return
+	}
+	err = db.UserRepo.UserChange(report.SenderId)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
 	joke, err := db.JokeRepo.GetJokeByID(report.ReceiverJokeId)
 	report.ReceiverId = joke.AuthorId
 	id, err := db.ReportRepo.Create(&report)
@@ -99,9 +113,8 @@ func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	decoder := json.NewDecoder(r.Body)
-	var user_id int
-	err := decoder.Decode(&user_id)
+	params := mux.Vars(r)
+	user_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -126,19 +139,32 @@ func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	report_id, err := strconv.Atoi(params["report_id"])
+	decoder := json.NewDecoder(r.Body)
+	var report_id int
+	var user_id int
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	report, err := db.ReportRepo.GetReportByID(report_id)
-	err = db.UserRepo.Ban(report.ReceiverId)
+	report_id = f["report_id"]
+	user_id = f["user_id"]
+	user, err := db.UserRepo.GetUserByID(user_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	err = db.UserRepo.UserChange(report.SenderId)
+	if user.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
+	report, err := db.ReportRepo.GetReportByID(report_id)
+	if report == nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no report_found")
+		return
+	}
+	err = db.UserRepo.Ban(report.ReceiverId)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -153,16 +179,29 @@ func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 
 func DenyReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	report_id, err := strconv.Atoi(params["report_id"])
+	decoder := json.NewDecoder(r.Body)
+	var report_id int
+	var user_id int
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	report, err := db.ReportRepo.GetReportByID(report_id)
-	err = db.UserRepo.UserChange(report.SenderId)
+	report_id = f["report_id"]
+	user_id = f["user_id"]
+	user, err := db.UserRepo.GetUserByID(user_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	if user.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
+	report, err := db.ReportRepo.GetReportByID(report_id)
+	if report == nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no report_found")
 		return
 	}
 	err = db.ReportRepo.Delete(report_id)

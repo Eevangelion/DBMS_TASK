@@ -9,10 +9,12 @@ type IUser interface {
 	GetUserByUsername(username string) (userOut *models.User, err error)
 	GetUserByEmail(Email string) (userOut *models.User, err error)
 	GetAll() (users []models.User, err error)
-	GetPeopleByKeyword(keyword string, page int, pageSize int) (users []models.User, err error)
+	GetPeopleByKeyword(keyword string, page int, pageSize int) (users []models.UserResponseSearch, err error)
 	UserChange(user_id int) (err error)
 	GetUserByGithubID(user_id int) (userOut *models.GitUser, err error)
 	CreateGithubUserWithID(user_id int, inner_id int) (err error)
+	GetSubscribedPeopleCount(user_id int) (amount int, err error)
+	GetUserJokesCount(user_id int) (amount int, err error)
 
 	Ban(user_id int) (err error) // for 1 week (update unban date)
 	Create(user *models.User) (id int64, err error)

@@ -11,13 +11,13 @@ var Settings = router.RoutePrefix{
 		{
 			Name:        "Profile",
 			Method:      "GET",
-			Pattern:     "/profile/",
+			Pattern:     "/profile/{id}",
 			HandlerFunc: handlers.GetUserSettingsHandler,
 		},
 		{
 			Name:        "DevelopPage",
 			Method:      "GET",
-			Pattern:     "/develop/",
+			Pattern:     "/develop/{id}",
 			HandlerFunc: handlers.GetAllReportsHandler,
 		},
 		{

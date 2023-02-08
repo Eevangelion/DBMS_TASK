@@ -55,14 +55,14 @@ func (t TagRepository) Create(tag_name string) (id int64, err error) {
 	return id, err
 }
 
-func (t TagRepository) Delete(tag_id int) (err error) {
+func (t TagRepository) Delete(tag_name string) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return err
 	}
-	qry := `DELETE FROM public."Tags" where id=$1`
-	_, err = DB.Exec(qry, tag_id)
+	qry := `DELETE FROM public."Tags" where name=$1`
+	_, err = DB.Exec(qry, tag_name)
 	if err != nil {
 		log.Println("Error while trying to delete tag:", err)
 		return err

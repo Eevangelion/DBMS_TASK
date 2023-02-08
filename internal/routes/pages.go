@@ -14,11 +14,5 @@ var Pages = router.RoutePrefix{
 			Pattern:     "/",
 			HandlerFunc: handlers.GetPageOfJokesHandler,
 		},
-		{
-			Name:        "SendReport",
-			Method:      "POST",
-			Pattern:     "/post_report/",
-			HandlerFunc: handlers.CreateReportHandler,
-		},
 	},
 }
