@@ -27,12 +27,6 @@ var User = router.RoutePrefix{
 			HandlerFunc: handlers.GetUserDataByNameHandler,
 		},
 		{
-			Name:        "GetUserPageByID",
-			Method:      "GET",
-			Pattern:     "/{id}/",
-			HandlerFunc: handlers.GetUserDataByIDHandler,
-		},
-		{
 			Name:        "GetGithubUser",
 			Method:      "GET",
 			Pattern:     "/oauth/",
