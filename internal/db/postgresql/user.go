@@ -128,7 +128,7 @@ func (u UserRepository) Create(user *models.User) (id int64, err error) {
 		return -1, err
 	}
 	qry := `INSERT INTO public."Users" (name, email, role, transformed_password) values ($1, $2, $3, $4) RETURNING id`
-	err = DB.QueryRow(qry, user.Name, user.Email, user.Role, user.TransformedPassword).Scan(&id)
+	err = DB.QueryRow(qry, user.Name, user.Email, "guest", user.TransformedPassword).Scan(&id)
 	if err != nil {
 		log.Println("User creation error:", err)
 		return -1, err
@@ -205,7 +205,7 @@ func (u UserRepository) GetAll() (users []models.User, err error) {
 	return users, nil
 }
 
-func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize int) (users []models.User, err error) {
+func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize int) (users []models.UserResponseSearch, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
@@ -226,15 +226,14 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 			log.Println("Error while scanning rows:", err)
 			return nil, err
 		}
-		NewUser := models.User{
-			ID:                  id,
-			Name:                name,
-			Email:               email,
-			Reports:             reports,
-			RemainingReports:    remaining_reports,
-			Role:                role,
-			UnbanDate:           unban_date,
-			TransformedPassword: transformed_password,
+		amount, err := u.GetUserJokesCount(id)
+		count, err := u.GetSubscribedPeopleCount(id)
+		NewUser := models.UserResponseSearch{
+			ID:               id,
+			Name:             name,
+			Role:             role,
+			PostsCount:       amount,
+			SubscribersCount: count,
 		}
 		users = append(users, NewUser)
 	}
@@ -247,10 +246,10 @@ func (u UserRepository) UserChange(user_id int) (err error) {
 		log.Println("Connection error:", err)
 		return err
 	}
-	qry := `UPDATE public."Users" SET reports=reports+1, remaining_reports=remaining_reports-1 where id=1`
+	qry := `UPDATE public."Users" SET reports=reports+1, remaining_reports=remaining_reports-1 where id=$1`
 	_, err = DB.Exec(qry, user_id)
 	if err != nil {
-		log.Println("Error while trying to delete user:", err)
+		log.Println("Error while trying to change user reports count:", err)
 		return err
 	}
 	return nil
@@ -298,4 +297,26 @@ func (u UserRepository) CreateGithubUserWithID(user_id int, inner_id int) (err e
 		return err
 	}
 	return nil
+}
+
+func (u UserRepository) GetSubscribedPeopleCount(user_id int) (amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return 0, err
+	}
+	qry := `select count(receiver_id) from public."UserSubscribes" where receiver_id=$1`
+	err = DB.QueryRow(qry, user_id).Scan(&amount)
+	return amount, nil
+}
+
+func (u UserRepository) GetUserJokesCount(user_id int) (amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return 0, err
+	}
+	qry := `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1`
+	err = DB.QueryRow(qry, user_id).Scan(&amount)
+	return amount, nil
 }

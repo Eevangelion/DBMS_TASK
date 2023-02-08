@@ -5,6 +5,6 @@ type UserResponse struct {
 	Name      string `json:"name"`
 	Role      string `json:"role"`
 	Reports   int    `json:"reports"`
-	Favorites int    `json:"remaining_reports"`
+	Favorites int    `json:"favorites_count"`
 	UnbanDate string `json:"unban_date"`
 }

@@ -14,13 +14,18 @@ import (
 func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
-	var tag models.Tag
-	err := decoder.Decode(&tag)
+	var tagRequest models.TagRequest
+	err := decoder.Decode(&tagRequest)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	id, err := db.TagRepo.Create(tag.Name)
+	user, err := db.UserRepo.GetUserByID(tagRequest.UserID)
+	if user.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no permission")
+		return
+	}
+	id, err := db.TagRepo.Create(tagRequest.Name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -31,25 +36,19 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	tag_id, err := strconv.Atoi(params["tagID"])
 	decoder := json.NewDecoder(r.Body)
-	var user_id int
-	err = decoder.Decode(&user_id)
+	var tagRequest models.TagRequest
+	err := decoder.Decode(&tagRequest)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	user, err := db.UserRepo.GetUserByID(user_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
+	user, err := db.UserRepo.GetUserByID(tagRequest.UserID)
 	if user.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no permission")
 		return
 	}
-	err = db.TagRepo.Delete(tag_id)
+	err = db.TagRepo.Delete(tagRequest.Name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return

@@ -115,10 +115,7 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user == nil {
-		json.NewEncoder(w).Encode(models.JokeResponse{
-			Jokes:  nil,
-			Amount: 0,
-		})
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: no user found")
 		return
 	}
 	jokes, amount, err := db.JokeRepo.GetUserJokes(user.ID, page, pageSize, sortMode)
@@ -282,52 +279,6 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
-	decoder := json.NewDecoder(r.Body)
-	var receiver_id int
-	var sender_id int
-	err := decoder.Decode(&receiver_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	err = decoder.Decode(&sender_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	err = db.JokeRepo.SubscribeToUser(receiver_id, sender_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-}
-
-func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
-	decoder := json.NewDecoder(r.Body)
-	var receiver_id int
-	var sender_id int
-	err := decoder.Decode(&receiver_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	err = decoder.Decode(&sender_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	err = db.JokeRepo.UnSubscribeFromUser(receiver_id, sender_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-}
-
 func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
@@ -365,7 +316,7 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	jokes, amount, err := db.JokeRepo.GetUserSubribedJokes(receiver_id, page, pageSize, sortMode)
+	jokes, amount, err := db.JokeRepo.GetUserSubscribedJokes(receiver_id, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
