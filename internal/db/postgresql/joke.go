@@ -118,6 +118,12 @@ func (j JokeRepository) AddToFavorite(user_id int, joke_id int) (err error) {
 		log.Println("Error while trying to add to favorite:", err)
 		return err
 	}
+	qry2 := `UPDATE public."Jokes" SET rating=rating+1 where id=$1`
+	_, err = DB.Exec(qry2, joke_id)
+	if err != nil {
+		log.Println("Error while trying to update rating:", err)
+		return err
+	}
 	return nil
 }
 
@@ -131,6 +137,12 @@ func (j JokeRepository) DeleteFromFavorite(user_id int, joke_id int) (err error)
 	_, err = DB.Exec(qry, user_id, joke_id)
 	if err != nil {
 		log.Println("Error while trying to delete from favorite:", err)
+		return err
+	}
+	qry2 := `UPDATE public."Jokes" SET rating=rating-1 where id=$1`
+	_, err = DB.Exec(qry2, joke_id)
+	if err != nil {
+		log.Println("Error while trying to update rating:", err)
 		return err
 	}
 	return nil

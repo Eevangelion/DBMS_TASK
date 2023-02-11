@@ -281,9 +281,8 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	decoder := json.NewDecoder(r.Body)
-	var receiver_id int
-	err := decoder.Decode(&receiver_id)
+	params := mux.Vars(r)
+	receiver_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
