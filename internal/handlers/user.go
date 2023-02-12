@@ -236,3 +236,50 @@ func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func ChangeUserNameHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
+	decoder := json.NewDecoder(r.Body)
+	var new_name string
+	var f map[string]string
+	err := decoder.Decode(&f)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
+	user_id, err := strconv.Atoi(f["user_id"])
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
+	new_name = f["name"]
+	err = db.UserRepo.ChangeUserName(user_id, new_name)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func ChangeUserPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
+	decoder := json.NewDecoder(r.Body)
+	var f map[string]string
+	err := decoder.Decode(&f)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
+	user_id, err := strconv.Atoi(f["user_id"])
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
+	new_transformed_password := f["transformed_password"]
+	err = db.UserRepo.ChangeUserPassword(user_id, new_transformed_password)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

@@ -240,7 +240,7 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 	return users, nil
 }
 
-func (u UserRepository) UserChange(user_id int) (err error) {
+func (u UserRepository) ChangeUserReport(user_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
@@ -248,6 +248,36 @@ func (u UserRepository) UserChange(user_id int) (err error) {
 	}
 	qry := `UPDATE public."Users" SET reports=reports+1, remaining_reports=remaining_reports-1 where id=$1`
 	_, err = DB.Exec(qry, user_id)
+	if err != nil {
+		log.Println("Error while trying to change user reports count:", err)
+		return err
+	}
+	return nil
+}
+
+func (u UserRepository) ChangeUserName(user_id int, new_name string) (err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return err
+	}
+	qry := `UPDATE public."Users" SET name=$1 where id=$2`
+	_, err = DB.Exec(qry, new_name, user_id)
+	if err != nil {
+		log.Println("Error while trying to change user user name:", err)
+		return err
+	}
+	return nil
+}
+
+func (u UserRepository) ChangeUserPassword(user_id int, new_transformed_password string) (err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return err
+	}
+	qry := `UPDATE public."Users" SET transformed_password=$1 where id=$2`
+	_, err = DB.Exec(qry, new_transformed_password, user_id)
 	if err != nil {
 		log.Println("Error while trying to change user reports count:", err)
 		return err
