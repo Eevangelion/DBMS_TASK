@@ -30,6 +30,13 @@ func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	for _, tag := range jokeRequest.Tags {
+		err = db.JokeRepo.AddTagToJoke(int(id), tag.ID)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+			return
+		}
+	}
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(id)
 }
