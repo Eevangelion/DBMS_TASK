@@ -34,7 +34,7 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: no reports remains")
 		return
 	}
-	err = db.UserRepo.UserChange(report.SenderId)
+	err = db.UserRepo.ChangeUserReport(report.SenderId)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
