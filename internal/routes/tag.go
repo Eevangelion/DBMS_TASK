@@ -20,5 +20,11 @@ var Tag = router.RoutePrefix{
 			Pattern:     "/delete/",
 			HandlerFunc: handlers.DeleteTagHandler,
 		},
+		{
+			Name:        "GetAllTags",
+			Method:      "GET",
+			Pattern:     "/",
+			HandlerFunc: handlers.GetAllTagsHandler,
+		},
 	},
 }

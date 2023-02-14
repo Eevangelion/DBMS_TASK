@@ -23,7 +23,7 @@ var Joke = router.RoutePrefix{
 		{
 			Name:        "Get",
 			Method:      "GET",
-			Pattern:     "/tags/{id}",
+			Pattern:     "/tags/{id}/",
 			HandlerFunc: handlers.GetJokeTagsHandler,
 		},
 		{
@@ -37,6 +37,18 @@ var Joke = router.RoutePrefix{
 			Method:      "DELETE",
 			Pattern:     "/removeFromFavorites/",
 			HandlerFunc: handlers.DeleteFromFavoriteHandler,
+		},
+		{
+			Name:        "AddTagToJoke",
+			Method:      "POST",
+			Pattern:     "/addTag/",
+			HandlerFunc: handlers.AddTagToJokeHandler,
+		},
+		{
+			Name:        "RemoveTagFromJoke",
+			Method:      "POST",
+			Pattern:     "/removeTag/",
+			HandlerFunc: handlers.DeleteTagFromJokeHandler,
 		},
 	},
 }

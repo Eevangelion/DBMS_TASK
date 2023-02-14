@@ -1,0 +1,31 @@
+.mainPage {
+    width: 100vw;
+    height:100vh;
+    margin-left:-8px;
+}
+.feed {
+    width: 68vw;
+    height: 100vh;
+    margin-top: 4.5vh;
+}
+.info {
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+
+.txt {
+    margin-left: 2.5vw;
+    margin-top: 1vw;
+    font-size: 1vw;
+}
+ul {
+    margin-left: 2.5vw;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding: 0;
+}

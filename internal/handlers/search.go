@@ -18,7 +18,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	tArg := params["t"]
 	qArg := params["q"]
 	pageURL := r.URL.Query().Get("page")
-	pageSizeURL := r.URL.Query().Get("pageSize")
+	pageSizeURL := r.URL.Query().Get("page_size")
 	var page, pageSize int
 	if pageURL == "" {
 		page = 1

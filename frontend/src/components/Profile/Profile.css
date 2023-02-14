@@ -1,38 +1,39 @@
 .profile-block {
-    width: 400px;
-    height: 230px;
+    width: 22vw;
+    height: 18vh;
     background-color: #eee;
-    margin-left: 100px;
-    margin-top: 15px;
+    margin-top: 6vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
+    font-size: 1.4vh;
     font-family: Arial, Helvetica, sans-serif;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    border-radius: 0.5vh;
+    border: 0.1vh solid #ccc;
 }
 
 .settings-link {
-    width: 400px;
-    height: 36px;
+    width: 22vw;
+    height: 2vh;
     display: flex;
     flex-direction: row;
     justify-content: center;
 }
 
 .post-joke {
-    width: 400px;
-    height: 36px;
+    width: 22vw;
+    height: 2vh;
     display: flex;
     flex-direction: row;
     justify-content: center;
 }
 
 .profile-info {
-    width: 380px;
-    height: 100px;
-    margin-left: 25px;
+    width: 22vw;
+    height: 6vh;
+    margin-top: 1vh;
+    margin-left: 1.5vw;
     text-align: left;
 }
 

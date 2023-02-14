@@ -21,7 +21,7 @@ const JokeSorter = () => {
                 Новые
             </button>
 
-            <div style={{marginTop: "14px", marginLeft: "16px", marginRight: "16px", fontFamily: "Arial, Helvetica, sans-serif"}}>Лучшее за:</div>
+            <div style={{marginTop: "1.6vh", marginLeft: "1.5vw", marginRight: "2vw", fontFamily: "Arial, Helvetica, sans-serif", fontSize: "0.8vw"}}>Лучшее за:</div>
             
             <button
                 onClick={() => dispatch(selectSort('hour'))}

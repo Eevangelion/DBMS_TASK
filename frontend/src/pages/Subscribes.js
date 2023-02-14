@@ -1,13 +1,13 @@
 import React, {useState} from "react";
 import { useSelector } from "react-redux";
 import Pagination from '@mui/material/Pagination';
-import { useParams } from "react-router-dom";
-import styles from "../styles/UserPage.module.css";
+import PageSelector from "../components/PageSelector/PageSelector";
+import styles from "../styles/Subscribes.module.css";
 import JokePost from "../components/JokePost/JokePost";
-import Profile from "../components/Profile/Profile";
-import TopPanel from "../components/TopPanel/TopPanel";
 import JokeSorter from "../components/JokeSorter/JokeSorter";
-import {useGetJokesByAuthorNameQuery} from "../services/Joke";
+import TopPanel from "../components/TopPanel/TopPanel";
+import { useGetSubscribedByIDQuery } from "../services/Joke";
+
 
 
 const paginateStyle = {
@@ -20,17 +20,16 @@ const paginateStyle = {
     marginTop: "1vw",
 }
 
-const UserPage = (props) => {
+const Subscribes = (props) => {
 
     const [pageState, setPage] = useState(1);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
-
-    const {username} = useParams();
+    const userID = localStorage.getItem("userID");
 
     const {
         data: response,
         isLoading: loadingJokes,
-    } = useGetJokesByAuthorNameQuery({name: username, page: pageState, sortBy: activeButton});
+    } = useGetSubscribedByIDQuery({id: userID, page: pageState, sortBy: activeButton});
 
     if (loadingJokes) {
         return <div>Загрузка...</div>;
@@ -39,36 +38,37 @@ const UserPage = (props) => {
     if (!jokes) {
         return <div className={styles.mainPage}>
                     <TopPanel />
-                    <div className={styles.userInfo}>
+                    <div className={styles.info}>
                         <div className={styles.feed}>
                             <JokeSorter />
-                            <div className={styles.txt}>Пользователь пока ничего не опубликовал</div>
+                            <div className={styles.txt}>Пользователи, на которых вы подписаны, пока ничего не опубликовали</div>
                         </div>
-                        <Profile username={username} />
+                        <PageSelector pageState={false}/>
                     </div>
                 </div>;
     }
-    console.log(jokes);
+
     const posts = jokes.map((joke) =>
     {
         return <JokePost joke={joke}/>
     });
+
     return (
         <div className={styles.mainPage}>
             <TopPanel />
-            <div className={styles.userInfo}>
+            <div className={styles.info}>
                 <div className={styles.feed}>
                     <JokeSorter />
                     <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>
-                    <ul className="joke-post-list">
+                    <ul className={styles.jokePostList}>
                         {posts}
                     </ul>
                     <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
                 </div>
-                <Profile username={username} />
+                <PageSelector pageState={false} />
             </div>
         </div>
     );
 }
 
-export default UserPage;
+export default Subscribes;

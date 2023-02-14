@@ -15,6 +15,30 @@ var User = router.RoutePrefix{
 			HandlerFunc: handlers.CreateUserHandler,
 		},
 		{
+			Name:        "CreateJokeFromUserPage",
+			Method:      "POST",
+			Pattern:     "/{username}/create_joke/",
+			HandlerFunc: handlers.CreateJokeHandler,
+		},
+		{
+			Name:        "DeleteJokeFromUserPage",
+			Method:      "POST",
+			Pattern:     "/{username}/delete_joke/",
+			HandlerFunc: handlers.DeleteJokeHandler,
+		},
+		{
+			Name:        "GetUserSubscribedJokesByID",
+			Method:      "GET",
+			Pattern:     "/subscribed/",
+			HandlerFunc: handlers.GetUserSubscribedJokesHandler,
+		},
+		{
+			Name:        "GetUserFavoriteJokesByID",
+			Method:      "GET",
+			Pattern:     "/favorites/{id}/",
+			HandlerFunc: handlers.GetUserFavoriteJokesHandler,
+		},
+		{
 			Name:        "GetUserJokes",
 			Method:      "GET",
 			Pattern:     "/{username}/jokes/",
@@ -24,7 +48,19 @@ var User = router.RoutePrefix{
 			Name:        "GetUserPageByName",
 			Method:      "GET",
 			Pattern:     "/{username}/data/",
-			HandlerFunc: handlers.GetUserDataHandler,
+			HandlerFunc: handlers.GetUserDataByNameHandler,
+		},
+		{
+			Name:        "GetUserPageByID",
+			Method:      "GET",
+			Pattern:     "/{id}/",
+			HandlerFunc: handlers.GetUserDataByIDHandler,
+		},
+		{
+			Name:        "SendReportFromUserPage",
+			Method:      "POST",
+			Pattern:     "/{username}/create_report/",
+			HandlerFunc: handlers.CreateReportHandler,
 		},
 		{
 			Name:        "GetGithubUser",

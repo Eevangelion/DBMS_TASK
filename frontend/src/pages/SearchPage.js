@@ -1,28 +1,29 @@
 import React from "react";
+import Pagination from '@mui/material/Pagination';
 import {useParams} from "react-router-dom";
-import "../styles/SearchPage.css";
+import styles from "../styles/SearchPage.module.css";
 import JokePost from "../components/JokePost/JokePost";
 import TopPanel from "../components/TopPanel/TopPanel";
 // import { useGetTagsByJokeIDLazyQuery } from "../services/Joke";
 import { useGetJokesQuery } from "../services/Search";
 
-const SearchPage = () => {
+const paginateStyle = {
+    textDecoration : "none",
+    color: "white",
+    fontWeight: "bold",
+    fontFamily: "Arial, Helvetica, sans-serif",
+    fontSize: "1.4vh",
+    marginLeft: "2.5vw",
+    marginTop: "1vw",
+}
+
+const SearchPage = (props) => {
 
     const { queryArg, typeArg } = useParams();
 
     // let [getTags, {tags}] = useGetTagsByJokeIDLazyQuery();
     const {jokes, error} = useGetJokesQuery(queryArg, typeArg);
 
-    if (error) {
-        if ('status' in error) {
-            const errorMessage = 'error' in error ? error.error : JSON.stringify(error.data);
-            return (
-                <div>Error:{errorMessage}</div>
-            );
-        } else {
-            return <div>{error?.message}</div>;
-        }
-    }
 
     const posts = jokes.map((joke) =>
     {
@@ -31,13 +32,14 @@ const SearchPage = () => {
     });
 
     return (
-        <div className="main-page">
+        <div className={styles.mainPage}>
             <TopPanel />
-            <div className="feed">
+            <div className={styles.feed}>
                 <ul className="joke-post-list">
                     {posts}
                 </ul>
             </div>
+            <Pagination count={Math.ceil(5/5)} style={paginateStyle} shape="rounded"/>
         </div>
     );
 }

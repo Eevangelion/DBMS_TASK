@@ -9,9 +9,15 @@ var Search = router.RoutePrefix{
 	Prefix: "/search",
 	SubRoutes: []router.Route{
 		{
-			Name:        "GetJokesWithKeyWord",
+			Name:        "GetJokesSearch",
 			Method:      "GET",
-			Pattern:     "/{t}/{q}/",
+			Pattern:     "/{type}/{query}/",
+			HandlerFunc: handlers.SearchHandler,
+		},
+		{
+			Name:        "SendReport",
+			Method:      "POST",
+			Pattern:     "/send_report/",
 			HandlerFunc: handlers.SearchHandler,
 		},
 	},

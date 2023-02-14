@@ -9,12 +9,12 @@ export const searchService = createApi({
     endpoints: (build) => ({
         getJokes: build.query({
             query: (q, t, ...params) => {
-                const queryArg = q;
-                const typeArg = t;
+                const query = q;
+                const type = t;
                 const pageArg = params.page;
-                const args = params.page ? {queryArg, typeArg, pageArg} : {queryArg, typeArg};
+                const args = params.page ? {page: pageArg} : null;
                 return {
-                    url: '',
+                    url: `/${type}/${query}/`,
                     params: args
                 }
             },

@@ -1,6 +1,6 @@
 import { useNavigate, useLocation, Link } from "react-router-dom"
 import { useGetUserByIDQuery } from "../../services/Joke";
-import './Settings.css';
+import './DevelopSettings.css';
 
 const linkStyle = {
     display: "flex",
@@ -19,7 +19,7 @@ const linkStyle = {
 }
 
 
-const Settings = () => {
+const DevelopSettings = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const userID = localStorage.getItem('userID');
@@ -35,20 +35,15 @@ const Settings = () => {
 
     const settingsWindow = (
         <div className="modal-window">
-            <div className="buttons">
-                <button className="back-button" onClick={() => navigate(-1)}>
-                    Назад
-                </button>
-            </div>
+            Доступ к данному ресурсу ограничен.
         </div>
     );
 
     const developSettingsWindow = (
         <div className="modal-window">
             <div className="buttons">
-                <Link to={`/developsettings`} 
-                      style={linkStyle}
-                      state={{ backgroundLocation: location }}>
+                <Link to={`/tagredactor`} 
+                      style={linkStyle}>
                     <strong>Настройки разработчика</strong>
                 </Link>
                 <button className="back-button" onClick={() => navigate(-1)}>
@@ -65,4 +60,4 @@ const Settings = () => {
     }
 }
 
-export default Settings;
+export default DevelopSettings;

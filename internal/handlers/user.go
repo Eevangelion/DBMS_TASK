@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"strconv"
@@ -15,16 +16,13 @@ import (
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	var userRequest models.UserRequest
-	err := decoder.Decode(&userRequest)
+	var user models.User
+	err := decoder.Decode(&user)
+	log.Println(user)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	var user models.User
-	user.Name = userRequest.Name
-	user.Email = userRequest.Email
-	user.TransformedPassword = userRequest.TransformedPassword
 	id, err := db.GetUserRepository().Create(&user)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -60,27 +58,32 @@ func GetUserDataByNameHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	if user == nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no user found")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(user)
+}
+
+func GetUserDataByIDHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w, r)
+	params := mux.Vars(r)
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	userData := models.UserData{
-		ID:               user.ID,
-		Name:             user.Name,
-		Email:            user.Email,
-		Role:             user.Role,
-		Reports:          user.Reports,
-		RemainingReports: user.RemainingReports,
-		UnbanDate:        user.UnbanDate,
+	user, err := db.UserRepo.GetUserByID(id)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(userData)
+	json.NewEncoder(w).Encode(user)
 }
 
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	user_id, err := strconv.Atoi(params["id"])
+	decoder := json.NewDecoder(r.Body)
+	var user_id int
+	err := decoder.Decode(&user_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return

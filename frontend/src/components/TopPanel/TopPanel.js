@@ -5,9 +5,11 @@ import "./TopPanel.css";
 function TopPanel() {
     return (
     <div className="top-panel">
-        <a className="main-page-redirect" href="/">
-            <img className="main-page-redirect-image" src={logo} alt=":("/>
-        </a>
+        <div className="main-page-redirect">
+            <a className="main-page-redirect-link" href="/">
+                <img className="main-page-redirect-image" src={logo} alt=":("/>
+            </a>
+        </div>
         
         <div className="search-panel">
             <form action="/search/" autoComplete="off" className="form-search" method="get" role="search">

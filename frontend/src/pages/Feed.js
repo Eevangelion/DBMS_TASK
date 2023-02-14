@@ -1,55 +1,70 @@
-import React from "react";
-import "../styles/Feed.css";
+import React, {useState} from "react";
+import { useSelector } from "react-redux";
+import Pagination from '@mui/material/Pagination';
+import styles from "../styles/Feed.module.css";
 import JokePost from "../components/JokePost/JokePost";
 import JokeSorter from "../components/JokeSorter/JokeSorter";
 import TopPanel from "../components/TopPanel/TopPanel";
-import { useGetJokesByAuthorNameQuery } from "../services/User";
-// import { useGetTagsByJokeIDLazyQuery } from "../services/Joke";
-
-const Feed = () => {
+import PageSelector from "../components/PageSelector/PageSelector";
+import { useGetJokesQuery } from "../services/Joke";
 
 
-    // let [getTags, {tags}] = useGetTagsByJokeIDLazyQuery();
+const paginateStyle = {
+    textDecoration : "none",
+    color: "white",
+    fontWeight: "bold",
+    fontFamily: "Arial, Helvetica, sans-serif",
+    fontSize: "1.4vh",
+    marginLeft: "2.5vw",
+    marginTop: "1vw",
+}
 
-    const username="nikita";
+const Feed = (props) => {
+
+    const [pageState, setPage] = useState(1);
+    const activeButton = useSelector(state => state.buttonsReducer.sort);
+
     const {
         data: response,
         isLoading: loadingJokes,
-    } = useGetJokesByAuthorNameQuery(username);
+    } = useGetJokesQuery({page: pageState, sortBy: activeButton});
 
-    const loadingFrame = <div>Загрузка...</div>;
-
-    const noJokesFrame = <div className="main-page">
-                            <TopPanel />
-                            <div className="feed">
-                                <JokeSorter />
-                                <div>Пользователь пока ничего не опубликовал</div>
-                            </div>
-                        </div>;
 
     if (loadingJokes) {
-        return loadingFrame;
+        return <div>Загрузка...</div>;
     }
     const {jokes, amount} = response; 
     if (!jokes) {
-        return noJokesFrame;
+        return <div className={styles.mainPage}>
+                    <TopPanel />
+                    <div className={styles.info}>
+                        <div className={styles.feed}>
+                            <JokeSorter />
+                            <div className={styles.txt}>Никто пока ничего не публиковал</div>
+                        </div>
+                        <PageSelector pageState={true} />
+                    </div>
+                </div>;
     }
 
     const posts = jokes.map((joke) =>
     {
-        // tags = getTags(joke.id);
-        return <JokePost joke={joke} tags={[]}/>
+        return <JokePost joke={joke}/>
     });
 
     return (
-        <div className="main-page">
+        <div className={styles.mainPage}>
             <TopPanel />
-            <div className="feed">
-                <JokeSorter />
-                <div>Всего опубликовано: {amount}</div> <br/>
-                <ul className="joke-post-list">
-                    {posts}
-                </ul>
+            <div className={styles.info}>
+                <div className={styles.feed}>
+                    <JokeSorter />
+                    <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>
+                    <ul className={styles.jokePostList}>
+                        {posts}
+                    </ul>
+                    <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                </div>
+                <PageSelector pageState={true} />
             </div>
         </div>
     );

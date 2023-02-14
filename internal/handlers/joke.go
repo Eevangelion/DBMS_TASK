@@ -25,7 +25,16 @@ func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 	joke.AuthorId = jokeRequest.AuthorId
 	joke.Description = jokeRequest.Description
 	joke.Header = jokeRequest.Header
+	var tags []models.Tag
+	tags = jokeRequest.Tags
 	id, err := db.JokeRepo.Create(&joke)
+	for _, tag := range tags {
+		err = db.JokeRepo.AddTagToJoke(int(id), tag.ID)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+			return
+		}
+	}
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -81,8 +90,8 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	params := mux.Vars(r)
 	username := params["username"]
-	pageURL := r.URL.Query().Get("pageArg")
-	pageSizeURL := r.URL.Query().Get("pageSize")
+	pageURL := r.URL.Query().Get("page")
+	pageSizeURL := r.URL.Query().Get("page_size")
 	var page, pageSize int
 	if pageURL == "" {
 		page = 1
@@ -94,13 +103,17 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 			return
 		}
-		pageSize, err = strconv.Atoi(pageSizeURL)
-		if err != nil {
-			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-			return
+		if pageSizeURL == "" {
+			pageSize = 5
+		} else {
+			pageSize, err = strconv.Atoi(pageSizeURL)
+			if err != nil {
+				customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+				return
+			}
 		}
 	}
-	sortMode := r.URL.Query().Get("sortMode")
+	sortMode := r.URL.Query().Get("sort")
 	if sortMode == "" {
 		sortMode = "new"
 	} else {
@@ -123,7 +136,6 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	jokes, amount, err := db.JokeRepo.GetUserJokes(user.ID, page, pageSize, sortMode)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(models.JokeResponse{
 		Jokes:  jokes,
@@ -133,8 +145,8 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	pageURL := r.URL.Query().Get("pageArg")
-	pageSizeURL := r.URL.Query().Get("pageSize")
+	pageURL := r.URL.Query().Get("page")
+	pageSizeURL := r.URL.Query().Get("page_size")
 	var page, pageSize int
 	if pageURL == "" {
 		page = 1
@@ -146,13 +158,17 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 			return
 		}
-		pageSize, err = strconv.Atoi(pageSizeURL)
-		if err != nil {
-			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-			return
+		if pageSizeURL == "" {
+			pageSize = 5
+		} else {
+			pageSize, err = strconv.Atoi(pageSizeURL)
+			if err != nil {
+				customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+				return
+			}
 		}
 	}
-	sortMode := r.URL.Query().Get("sortMode")
+	sortMode := r.URL.Query().Get("sort")
 	if sortMode == "" {
 		sortMode = "new"
 	} else {
@@ -282,15 +298,16 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	decoder := json.NewDecoder(r.Body)
+	receiver_id_URL := r.URL.Query().Get("id")
 	var receiver_id int
-	err := decoder.Decode(&receiver_id)
+	var err error
+	receiver_id, err = strconv.Atoi(receiver_id_URL)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	pageURL := r.URL.Query().Get("pageArg")
-	pageSizeURL := r.URL.Query().Get("pageSize")
+	pageURL := r.URL.Query().Get("page")
+	pageSizeURL := r.URL.Query().Get("page_size")
 	var page, pageSize int
 	if pageURL == "" {
 		page = 1
@@ -302,13 +319,17 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 			return
 		}
-		pageSize, err = strconv.Atoi(pageSizeURL)
-		if err != nil {
-			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-			return
+		if pageSizeURL == "" {
+			pageSize = 5
+		} else {
+			pageSize, err = strconv.Atoi(pageSizeURL)
+			if err != nil {
+				customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+				return
+			}
 		}
 	}
-	sortMode := r.URL.Query().Get("sortMode")
+	sortMode := r.URL.Query().Get("sort")
 	if sortMode == "" {
 		sortMode = "new"
 	} else {
@@ -331,19 +352,17 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
 	decoder := json.NewDecoder(r.Body)
+	var joke_id int
 	var tag_id int
-	err = decoder.Decode(&tag_id)
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	joke_id = f["joke_id"]
+	tag_id = f["tag_id"]
 	err = db.JokeRepo.AddTagToJoke(joke_id, tag_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -354,19 +373,17 @@ func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTagFromJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
-	params := mux.Vars(r)
-	joke_id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
 	decoder := json.NewDecoder(r.Body)
+	var joke_id int
 	var tag_id int
-	err = decoder.Decode(&tag_id)
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	joke_id = f["joke_id"]
+	tag_id = f["tag_id"]
 	err = db.JokeRepo.DeleteTagFromJoke(joke_id, tag_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
