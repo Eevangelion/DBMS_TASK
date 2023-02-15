@@ -240,14 +240,29 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 	return users, nil
 }
 
-func (u UserRepository) ChangeUserReport(user_id int) (err error) {
+func (u UserRepository) ChangeUserRemainingReports(user_sender_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return err
 	}
-	qry := `UPDATE public."Users" SET reports=reports+1, remaining_reports=remaining_reports-1 where id=$1`
-	_, err = DB.Exec(qry, user_id)
+	qry := `UPDATE public."Users" SET remaining_reports=remaining_reports-1 where id=$1`
+	_, err = DB.Exec(qry, user_sender_id)
+	if err != nil {
+		log.Println("Error while trying to change user reports count:", err)
+		return err
+	}
+	return nil
+}
+
+func (u UserRepository) ChangeUserReportsCount(user_receiver_id int) (err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return err
+	}
+	qry := `UPDATE public."Users" SET reports=reports+1 where id=$1`
+	_, err = DB.Exec(qry, user_receiver_id)
 	if err != nil {
 		log.Println("Error while trying to change user reports count:", err)
 		return err

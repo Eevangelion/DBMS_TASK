@@ -34,12 +34,16 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: no reports remains")
 		return
 	}
-	err = db.UserRepo.ChangeUserReport(report.SenderId)
+	joke, err := db.JokeRepo.GetJokeByID(report.ReceiverJokeId)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	joke, err := db.JokeRepo.GetJokeByID(report.ReceiverJokeId)
+	err = db.UserRepo.ChangeUserRemainingReports(report.SenderId)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
 	report.ReceiverId = joke.AuthorId
 	id, err := db.ReportRepo.Create(&report)
 	if err != nil {
@@ -165,6 +169,11 @@ func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = db.UserRepo.Ban(report.ReceiverId)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	err = db.UserRepo.ChangeUserReportsCount(report.ReceiverId)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
