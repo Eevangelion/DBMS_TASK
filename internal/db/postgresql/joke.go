@@ -21,7 +21,7 @@ func (j JokeRepository) SubscribeToUser(receiver_id int, sender_id int) (err err
 	qry := `INSERT INTO public."UserSubscribes" (receiver_id, sender_id) values ($1, $2)`
 	_, err = DB.Exec(qry, receiver_id, sender_id)
 	if err != nil {
-		log.Println("Error while trying to subscribe:", err)
+		log.Println("Error while trying to subscribe to user:", err)
 		return err
 	}
 	return nil
@@ -36,7 +36,7 @@ func (j JokeRepository) UnSubscribeFromUser(receiver_id int, sender_id int) (err
 	qry := `DELETE FROM public."UserSubscribes" where receiver_id=$1 and sender_id=$2`
 	_, err = DB.Exec(qry, receiver_id, sender_id)
 	if err != nil {
-		log.Println("Error while trying to UnSubscribe:", err)
+		log.Println("Error while trying to UnSubscribe from user:", err)
 		return err
 	}
 	return nil
@@ -76,13 +76,13 @@ func (j JokeRepository) GetUserSubscribedJokes(user_id int, page int, pageSize i
 	}
 	err = DB.QueryRow(qry2, user_id).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get user favorite jokes:", err)
+		log.Println("Error while trying to get user subscribed jokes (amount):", err)
 		return nil, -1, err
 	}
 	rows, err := DB.Query(qry, user_id, pageSize, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {
-		log.Println("Error while trying to get user favorite jokes:", err)
+		log.Println("Error while trying to get user subscribed jokes:", err)
 		return nil, -1, err
 	}
 	for rows.Next() {
@@ -182,7 +182,7 @@ func (j JokeRepository) GetUserFavoriteJokes(user_id int, page int, pageSize int
 	}
 	err = DB.QueryRow(qry2, user_id).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get user favorite jokes:", err)
+		log.Println("Error while trying to get user favorite jokes (amount):", err)
 		return nil, -1, err
 	}
 	rows, err := DB.Query(qry, user_id, pageSize, (page-1)*pageSize)
@@ -246,7 +246,7 @@ func (j JokeRepository) GetJokesByTag(tag_name string, page int, pageSize int, s
 	}
 	err = DB.QueryRow(qry2, tag_name).Scan(&amount)
 	if err != nil {
-		log.Println("Error while getting user jokes:", err)
+		log.Println("Error while getting jokes by tag (amount):", err)
 		return nil, 0, err
 	}
 	rows, err := DB.Query(qry, tag_name, pageSize, (page-1)*pageSize)
@@ -310,7 +310,7 @@ func (j JokeRepository) GetJokesByKeyword(keyword string, page int, pageSize int
 	}
 	err = DB.QueryRow(qry2).Scan(&amount)
 	if err != nil {
-		log.Println("Error while getting user jokes:", err)
+		log.Println("Error while getting jokes by keyword (amount):", err)
 		return nil, 0, err
 	}
 	rows, err := DB.Query(qry, pageSize, (page-1)*pageSize)
@@ -374,7 +374,7 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_m
 	}
 	err = DB.QueryRow(qry2, user_id).Scan(&amount)
 	if err != nil {
-		log.Println("Error while getting user jokes:", err)
+		log.Println("Error while getting user jokes (amount):", err)
 		return nil, -1, err
 	}
 	rows, err := DB.Query(qry, user_id, pageSize, (page-1)*pageSize)
@@ -458,7 +458,7 @@ func (j JokeRepository) DeleteTagFromJoke(joke_id int, tag_id int) (err error) {
 	qry := `DELETE FROM public."TagsJokes" where tag_id=$1 and joke_id=$2`
 	_, err = DB.Exec(qry, tag_id, joke_id)
 	if err != nil {
-		log.Println("Error while trying to add tag to joke:", err)
+		log.Println("Error while trying to delete tag from joke:", err)
 		return err
 	}
 	return nil
@@ -477,7 +477,7 @@ func (j JokeRepository) GetJokeByID(joke_id int) (jokeOut *models.Joke, err erro
 	qry2 := `select count("Jokes".header) from public."Jokes" where id=$1`
 	err = DB.QueryRow(qry2, joke_id).Scan(&amount)
 	if err != nil {
-		log.Println("Error while searching joke by id:", err)
+		log.Println("Error while searching joke by id (amount):", err)
 	}
 	if amount == 0 {
 		return jokeOut, nil
@@ -531,7 +531,7 @@ func (j JokeRepository) GetPageOfJokes(page int, per_page int, sort_mode string)
 	}
 	err = DB.QueryRow(qry2).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get page of jokes:", err)
+		log.Println("Error while trying to get page of jokes (amount):", err)
 		return nil, -1, err
 	}
 	rows, err := DB.Query(qry, per_page, per_page*(page-1))

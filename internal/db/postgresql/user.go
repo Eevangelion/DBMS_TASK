@@ -23,7 +23,7 @@ func (u UserRepository) GetUserByID(user_id int) (userOut *models.User, err erro
 	qry2 := `select count(name) from public."Users" where id=$1`
 	err = DB.QueryRow(qry2, user_id).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get user by id:", err)
+		log.Println("Error while trying to get user by id (amount):", err)
 		return nil, err
 	}
 	if amount == 0 {
@@ -59,7 +59,7 @@ func (u UserRepository) GetUserByUsername(username string) (userOut *models.User
 	qry2 := `select count(id) from public."Users" where name=$1`
 	err = DB.QueryRow(qry2, username).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get user by username:", err)
+		log.Println("Error while trying to get user by username (amount):", err)
 		return nil, err
 	}
 	if amount == 0 {
@@ -95,7 +95,7 @@ func (u UserRepository) GetUserByEmail(Email string) (userOut *models.User, err 
 	qry2 := `select count(id) from public."Users" where email=$1`
 	err = DB.QueryRow(qry2, Email).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get user by email:", err)
+		log.Println("Error while trying to get user by email (amount):", err)
 		return nil, err
 	}
 	if amount == 0 {
@@ -130,7 +130,7 @@ func (u UserRepository) Create(user *models.User) (id int64, err error) {
 	qry := `INSERT INTO public."Users" (name, email, role, transformed_password) values ($1, $2, $3, $4) RETURNING id`
 	err = DB.QueryRow(qry, user.Name, user.Email, "guest", user.TransformedPassword).Scan(&id)
 	if err != nil {
-		log.Println("User creation error:", err)
+		log.Println("Error while trying to create user:", err)
 		return -1, err
 	}
 	return id, err
@@ -249,7 +249,7 @@ func (u UserRepository) ChangeUserRemainingReports(user_sender_id int) (err erro
 	qry := `UPDATE public."Users" SET remaining_reports=remaining_reports-1 where id=$1`
 	_, err = DB.Exec(qry, user_sender_id)
 	if err != nil {
-		log.Println("Error while trying to change user reports count:", err)
+		log.Println("Error while trying to change remaining user reports:", err)
 		return err
 	}
 	return nil
@@ -279,7 +279,7 @@ func (u UserRepository) ChangeUserName(user_id int, new_name string) (err error)
 	qry := `UPDATE public."Users" SET name=$1 where id=$2`
 	_, err = DB.Exec(qry, new_name, user_id)
 	if err != nil {
-		log.Println("Error while trying to change user user name:", err)
+		log.Println("Error while trying to change user name:", err)
 		return err
 	}
 	return nil
@@ -294,7 +294,7 @@ func (u UserRepository) ChangeUserPassword(user_id int, new_transformed_password
 	qry := `UPDATE public."Users" SET transformed_password=$1 where id=$2`
 	_, err = DB.Exec(qry, new_transformed_password, user_id)
 	if err != nil {
-		log.Println("Error while trying to change user reports count:", err)
+		log.Println("Error while trying to change user password:", err)
 		return err
 	}
 	return nil
@@ -310,7 +310,7 @@ func (u UserRepository) GetUserByGithubID(user_id int) (userOut *models.GitUser,
 	qry2 := `select count(git_id) from public."GithubUsers" where git_id=$1`
 	err = DB.QueryRow(qry2, user_id).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get github user by id:", err)
+		log.Println("Error while trying to get github user by id (amount):", err)
 		return nil, err
 	}
 	if amount == 0 {
@@ -352,6 +352,10 @@ func (u UserRepository) GetSubscribedPeopleCount(user_id int) (amount int, err e
 	}
 	qry := `select count(receiver_id) from public."UserSubscribes" where receiver_id=$1`
 	err = DB.QueryRow(qry, user_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get subscribed people count:", err)
+		return 0, err
+	}
 	return amount, nil
 }
 
@@ -363,5 +367,9 @@ func (u UserRepository) GetUserJokesCount(user_id int) (amount int, err error) {
 	}
 	qry := `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1`
 	err = DB.QueryRow(qry, user_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get user jokes count:", err)
+		return 0, err
+	}
 	return amount, nil
 }
