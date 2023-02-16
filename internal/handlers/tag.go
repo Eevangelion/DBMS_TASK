@@ -43,11 +43,6 @@ func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	user, err := db.UserRepo.GetUserByID(tagRequest.UserID)
-	if user.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no permission")
-		return
-	}
 	err = db.TagRepo.Delete(tagRequest.Name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
