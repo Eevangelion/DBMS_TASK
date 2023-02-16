@@ -25,7 +25,7 @@ func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report
 	qry2 := `select count("Reports".id) from public."Reports" where id=$1`
 	err = DB.QueryRow(qry2, report_id).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get report by ID:", err)
+		log.Println("Error while trying to get report by ID (amount):", err)
 	}
 	if amount == 0 {
 		return reportOut, nil

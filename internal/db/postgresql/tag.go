@@ -24,7 +24,7 @@ func (t TagRepository) GetTagByID(tag_id int) (tagOut *models.Tag, err error) {
 	qry2 := `select count(name) from public."Tags" where id=$1`
 	err = DB.QueryRow(qry2, tag_id).Scan(&amount)
 	if err != nil {
-		log.Println("Error while trying to get report by ID:", err)
+		log.Println("Error while trying to get tag by ID (amount):", err)
 	}
 	if amount == 0 {
 		return tagOut, nil
