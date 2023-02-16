@@ -51,27 +51,27 @@ func (j JokeRepository) GetUserSubscribedJokes(user_id int, page int, pageSize i
 	qry := ``
 	qry2 := ``
 	if sort_mode == "new" {
-		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 ORDER BY creation_date LIMIT $2 OFFSET $3`
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1`
 	}
 	if sort_mode == "alltime" {
-		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1`
 	}
 	if sort_mode == "hour" {
-		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
 	}
 	if sort_mode == "day" {
-		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
 	}
 	if sort_mode == "week" {
-		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
 	}
 	if sort_mode == "month" {
-		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".sender_id and "Users".id="Jokes".author_id and "UserSubscribes".receiver_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
 	}
 	err = DB.QueryRow(qry2, user_id).Scan(&amount)
@@ -157,27 +157,27 @@ func (j JokeRepository) GetUserFavoriteJokes(user_id int, page int, pageSize int
 	qry := ``
 	qry2 := ``
 	if sort_mode == "new" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 ORDER BY creation_date LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1`
 	}
 	if sort_mode == "alltime" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1`
 	}
 	if sort_mode == "hour" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
 	}
 	if sort_mode == "day" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
 	}
 	if sort_mode == "week" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
 	}
 	if sort_mode == "month" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
 	}
 	err = DB.QueryRow(qry2, user_id).Scan(&amount)
@@ -221,27 +221,27 @@ func (j JokeRepository) GetJokesByTag(tag_name string, page int, pageSize int, s
 	qry := ``
 	qry2 := ``
 	if sort_mode == "new" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 ORDER BY creation_date LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1`
 	}
 	if sort_mode == "alltime" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1`
 	}
 	if sort_mode == "hour" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
 	}
 	if sort_mode == "day" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
 	}
 	if sort_mode == "week" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
 	}
 	if sort_mode == "month" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
 	}
 	err = DB.QueryRow(qry2, tag_name).Scan(&amount)
@@ -285,27 +285,27 @@ func (j JokeRepository) GetJokesByKeyword(keyword string, page int, pageSize int
 	qry := ``
 	qry2 := ``
 	if sort_mode == "new" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' ORDER BY creation_date LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' ORDER BY creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count(id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%'`
 	}
 	if sort_mode == "alltime" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%'`
 	}
 	if sort_mode == "hour" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
 	}
 	if sort_mode == "day" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
 	}
 	if sort_mode == "week" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
 	}
 	if sort_mode == "month" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
 	}
 	err = DB.QueryRow(qry2).Scan(&amount)
@@ -353,23 +353,23 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_m
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1`
 	}
 	if sort_mode == "alltime" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1`
 	}
 	if sort_mode == "hour" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
 	}
 	if sort_mode == "day" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
 	}
 	if sort_mode == "week" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
 	}
 	if sort_mode == "month" {
-		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC LIMIT $2 OFFSET $3`
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
 		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
 	}
 	err = DB.QueryRow(qry2, user_id).Scan(&amount)
@@ -511,23 +511,23 @@ func (j JokeRepository) GetPageOfJokes(page int, per_page int, sort_mode string)
 		qry2 = `select COUNT ("Jokes".id) from public."Jokes"`
 	}
 	if sort_mode == "alltime" {
-		qry = `select * from public."Jokes" ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select COUNT ("Jokes".id) from public."Jokes"`
 	}
 	if sort_mode == "hour" {
-		qry = `select * from public."Jokes" where EXTRACT(HOUR from (CURRENT_TIMESTAMP - creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) < 1 ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where EXTRACT(HOUR from (CURRENT_TIMESTAMP - creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where EXTRACT(HOUR from (CURRENT_TIMESTAMP - creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) < 1`
 	}
 	if sort_mode == "day" {
-		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 1`
 	}
 	if sort_mode == "week" {
-		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 7 ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 7`
 	}
 	if sort_mode == "month" {
-		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 31 ORDER BY rating DESC LIMIT $1 OFFSET $2`
+		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
 		qry2 = `select count("Jokes".id) from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 31`
 	}
 	err = DB.QueryRow(qry2).Scan(&amount)
