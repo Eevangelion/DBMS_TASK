@@ -249,7 +249,7 @@ func (u UserRepository) ChangeUserRemainingReports(user_sender_id int) (err erro
 	qry := `UPDATE public."Users" SET remaining_reports=remaining_reports-1 where id=$1`
 	_, err = DB.Exec(qry, user_sender_id)
 	if err != nil {
-		log.Println("Error while trying to change user reports count:", err)
+		log.Println("Error while trying to change remaining user reports:", err)
 		return err
 	}
 	return nil
