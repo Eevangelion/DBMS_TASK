@@ -54,7 +54,6 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
-	var user_id int
 	var f map[string]int
 	err := decoder.Decode(&f)
 	if err != nil {
@@ -62,16 +61,6 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	joke_id = f["joke_id"]
-	user_id = f["user_id"]
-	user, err := db.UserRepo.GetUserByID(user_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-		return
-	}
-	if user == nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no user found")
-		return
-	}
 	joke, err := db.JokeRepo.GetJokeByID(joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -79,10 +68,6 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if joke == nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no joke found")
-		return
-	}
-	if user.Role != "admin" && joke.AuthorId != user_id {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
 		return
 	}
 	err = db.JokeRepo.Delete(joke_id)
