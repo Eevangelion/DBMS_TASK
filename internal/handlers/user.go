@@ -199,16 +199,14 @@ func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
 	var sender_id int
-	err := decoder.Decode(&receiver_id)
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	err = decoder.Decode(&sender_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
+	receiver_id = f["receiver_id"]
+	sender_id = f["sender_id"]
 	err = db.JokeRepo.SubscribeToUser(receiver_id, sender_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -222,16 +220,14 @@ func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
 	var sender_id int
-	err := decoder.Decode(&receiver_id)
+	var f map[string]int
+	err := decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	err = decoder.Decode(&sender_id)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
+	receiver_id = f["receiver_id"]
+	sender_id = f["sender_id"]
 	err = db.JokeRepo.UnSubscribeFromUser(receiver_id, sender_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
