@@ -30,10 +30,14 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 			return
 		}
-		pageSize, err = strconv.Atoi(pageSizeURL)
-		if err != nil {
-			customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-			return
+		if pageSizeURL == "" {
+			pageSize = 5
+		} else {
+			pageSize, err = strconv.Atoi(pageSizeURL)
+			if err != nil {
+				customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+				return
+			}
 		}
 	}
 	sortMode := r.URL.Query().Get("sort")

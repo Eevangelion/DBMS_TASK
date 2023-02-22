@@ -24,15 +24,14 @@ export const jokeService = createApi({
                     params: args,
                 }
             },
-            providesTags: ['Jokes']
+            providesTags: ['Jokes', 'Tags']
         }),
         getFavoritesByID: build.query({
             query: (id) => ({url: `/user/favorites/${id}/`}),
-            providesTags: ['Jokes']
+            providesTags: ['Jokes', 'Tags']
         }),
         getSubscribedByID: build.query({
             query: ({id, ...params}) => {
-                console.log(id, params);
                 const sortArg = params.sortBy ? (params.sortBy === "top" ? (params.t ? params.t : 'day') : params.sortBy) : null;
                 const pageArg = params.page;
                 const args = (pageArg && sortArg) ? {id: id, sort: sortArg, page:pageArg} : (sortArg ? {id: id, sort: sortArg} : (pageArg ? {id: id, page: pageArg} : {id: id}));
@@ -41,7 +40,7 @@ export const jokeService = createApi({
                     params: args,
                 }
             },
-            providesTags: ['Jokes']
+            providesTags: ['Jokes', 'Tags']
         }),
         getJokes: build.query({
             query: (...params) => {
@@ -54,7 +53,22 @@ export const jokeService = createApi({
                     params: args,
                 }
             },
-            providesTags: ['Jokes']
+            providesTags: ['Jokes', 'Tags']
+        }),
+        getSearchResult: build.query({
+            query: ({q, t, ...params}) => {
+                console.log(q, t);
+                const query = q;
+                const type = t;
+                const sortArg = params.sortBy ? (params.sortBy === "top" ? (params.t ? params.t : 'day') : params.sortBy) : null;
+                const pageArg = params.page;
+                const args = (pageArg && sortArg) ? {sort: sortArg, page:pageArg} : (sortArg ? {sort: sortArg} : (pageArg ? {page: pageArg} : null));
+                return {
+                    url: `/search/${type}/${query}/`,
+                    params: args,
+                }
+            },
+            providesTags: ['Jokes', 'Tags']
         }),
         createJoke: build.mutation({
             query: (body) => {
@@ -172,7 +186,7 @@ export const jokeService = createApi({
         }),
         createReport: build.mutation({
             query: ({description, jokeID}) => {
-                const userID = localStorage.getItem("userID");
+                const userID = Number(localStorage.getItem("userID"));
                 return {
                     url: `/report/create/`,
                     method: 'POST',
@@ -196,6 +210,20 @@ export const jokeService = createApi({
                     }
                 }
             }
+        }),
+        subscribeToUser: build.mutation({
+            query: (receiverID) => {
+                const userID = localStorage.getItem("userID");
+                return {
+                    url: `/user/subscribe/`,
+                    method: 'POST',
+                    body: {
+                        receiver_id: Number(receiverID),
+                        sender_id: Number(userID),
+                    }
+                }
+
+            }
         })
     })
 })
@@ -208,6 +236,7 @@ export const {
     useGetSubscribedByIDQuery,
     useGetJokesByAuthorNameQuery,
     useGetJokesQuery,
+    useGetSearchResultQuery,
     useCreateJokeMutation,
     useDeleteJokeMutation,
     useAddJokeToFavoritesMutation,
@@ -216,4 +245,7 @@ export const {
     useGetTagsQuery,
     useCreateTagMutation,
     useDeleteTagMutation,
+    useCreateReportMutation,
+    useRemoveReportMutation,
+    useSubscribeToUserMutation,
 } = jokeService;

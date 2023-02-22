@@ -58,14 +58,27 @@ func GetUserDataByNameHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	if user == nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no user found")
+		return
+	}
+	userData := models.UserData{
+		ID:               user.ID,
+		Name:             user.Name,
+		Email:            user.Email,
+		Role:             user.Role,
+		Reports:          user.Reports,
+		RemainingReports: user.RemainingReports,
+		UnbanDate:        user.UnbanDate,
+	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(userData)
 }
-
 func GetUserDataByIDHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	params := mux.Vars(r)
-	id, err := strconv.Atoi(params["id"])
+	str_id := params["id"]
+	id, err := strconv.Atoi(str_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -75,8 +88,21 @@ func GetUserDataByIDHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	if user == nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no user found")
+		return
+	}
+	userData := models.UserData{
+		ID:               user.ID,
+		Name:             user.Name,
+		Email:            user.Email,
+		Role:             user.Role,
+		Reports:          user.Reports,
+		RemainingReports: user.RemainingReports,
+		UnbanDate:        user.UnbanDate,
+	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(userData)
 }
 
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {

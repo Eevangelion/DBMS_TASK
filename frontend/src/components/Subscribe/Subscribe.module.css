@@ -1,60 +1,23 @@
 .modalWindow {
     position: fixed;
-    width: 80vw;
-    height: 85vh;
-    background-color: #fff;
+    width: 26vw;
+    height: 26vh;
+    background-color: #eee;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     border: 0.1vh solid #ccc;
     border-radius: 0.5vh;
-    top: 4vw;
-    left: 20vh;
+    top: 24vh;
+    left: 37vw;
     z-index: 2;
 }
 
-.modalFooter {
-    padding: 1vw;
-}
 
-.modalHeader {
-    height: 3vh;
-    margin-left: 1.5vw;
-    font-size: 0.8vw;
-    color: #555;
-    font-weight: bold;
-}
-
-.modalBody {
-    height: 68vh;
-    padding-top: 2vh;
-    padding-left: 4vw;
-    border-top: 0.1vh solid #ccc;
-    align-items: center;
-}
-
-.newHeader {
-    width: 70vw;
-    height: 3vh;
-    border: 0.1vh solid black;
-    padding-left: 0.1vw;
-    padding-top: 0.3vh;
-    font-size: 0.8vw;
-}
-
-.newDescription {
-    width: 70vw;
-    height: 45vh;
-    font-size: 0.8vw;
-    border: 0.1vh solid black;
-    padding-left: 0.1vw;
-    padding-top: 0.3vh;
-    margin-top: 1vh;
-}
-
-.modalFooter {
-    width: 80vw;
-    height: 12vh;
+.buttons {
+    width: 20vw;
+    height: 7vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -62,7 +25,7 @@
 }
 
 .createButton {
-    width: 40vw;
+    width: 20vw;
     height: 3vh;
     margin-top: 1vh;
     display: flex;
@@ -82,7 +45,7 @@
 }
 
 .backButton {
-    width: 40vw;
+    width: 20vw;
     height: 3vh;
     margin-top: 1vh;
     display: flex;
@@ -116,7 +79,6 @@
     width:70vw;
     height:5vh;
     margin-top: 2vh;
-    align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: left;

@@ -54,13 +54,7 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w, r)
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	joke_id = f["joke_id"]
+	err := decoder.Decode(&joke_id)
 	joke, err := db.JokeRepo.GetJokeByID(joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

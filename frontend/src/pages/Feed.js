@@ -1,9 +1,10 @@
 import React, {useState} from "react";
 import { useSelector } from "react-redux";
+import Button from "react-bootstrap/esm/Button";
 import Pagination from '@mui/material/Pagination';
 import styles from "../styles/Feed.module.css";
 import JokePost from "../components/JokePost/JokePost";
-import JokeSorter from "../components/JokeSorter/JokeSorter";
+import JokeSorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
 import PageSelector from "../components/PageSelector/PageSelector";
 import { useGetJokesQuery } from "../services/Joke";
@@ -23,6 +24,7 @@ const Feed = (props) => {
 
     const [pageState, setPage] = useState(1);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
+    const isActive = useSelector(state => state.pagesReducer.feedIsActive);
 
     const {
         data: response,
@@ -37,7 +39,7 @@ const Feed = (props) => {
     if (!jokes) {
         return <div className={styles.mainPage}>
                     <TopPanel />
-                    <div className={styles.info}>
+                    <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                         <div className={styles.feed}>
                             <JokeSorter />
                             <div className={styles.txt}>Никто пока ничего не публиковал</div>
@@ -55,7 +57,7 @@ const Feed = (props) => {
     return (
         <div className={styles.mainPage}>
             <TopPanel />
-            <div className={styles.info}>
+            <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                 <div className={styles.feed}>
                     <JokeSorter />
                     <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>

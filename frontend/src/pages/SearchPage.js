@@ -1,12 +1,13 @@
-import React from "react";
+import React, {useState} from "react";
+import { useSelector } from "react-redux";
 import Pagination from '@mui/material/Pagination';
-import {useParams} from "react-router-dom";
+import {useParams, useSearchParams} from "react-router-dom";
 import styles from "../styles/SearchPage.module.css";
 import JokePost from "../components/JokePost/JokePost";
+import Sorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
-// import { useGetTagsByJokeIDLazyQuery } from "../services/Joke";
-import { useGetJokesQuery } from "../services/Search";
-
+import { useGetSearchResultQuery } from "../services/Joke";
+import UserPost from "../components/UserPost/UserPost";
 const paginateStyle = {
     textDecoration : "none",
     color: "white",
@@ -19,29 +20,91 @@ const paginateStyle = {
 
 const SearchPage = (props) => {
 
-    const { queryArg, typeArg } = useParams();
+    const [pageState, setPage] = useState(1);
+    const activeButton = useSelector(state => state.buttonsReducer.sort);
+    const isActive = useSelector(state => state.pagesReducer.searchPageIsActive);
 
-    // let [getTags, {tags}] = useGetTagsByJokeIDLazyQuery();
-    const {jokes, error} = useGetJokesQuery(queryArg, typeArg);
+    const [searchParams] = useSearchParams();
+    const { type: typeArg } = useParams();
+    const queryArg = searchParams.get('query');
 
 
-    const posts = jokes.map((joke) =>
-    {
-        // tags = getTags(joke.id);
-        return <JokePost joke={joke} tags={[]}/>
-    });
+    const {
+        data: response,
+        isLoading: loadingSearch,
+    } = useGetSearchResultQuery({q: queryArg, t: typeArg, page: pageState, sortBy: activeButton});
 
-    return (
-        <div className={styles.mainPage}>
-            <TopPanel />
-            <div className={styles.feed}>
-                <ul className="joke-post-list">
-                    {posts}
-                </ul>
+    if (loadingSearch) {
+        return <div className={styles.mainPage}>Загрузка...</div>;
+    }
+    if (typeArg === 'keyword' || typeArg === 'tag') {
+        const {jokes, amount} = response; 
+
+        if (!jokes) {
+            return <div className={styles.mainPage}>
+                        <TopPanel />
+                        <div className={styles.feed}>
+                            <Sorter />
+                            <div className={styles.txt}>По данному запросу ничего не найдено</div>
+                            <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                        </div>
+                    </div>;
+        }
+
+        const posts = jokes.map((joke) =>
+        {
+            return <JokePost joke={joke}/>
+        });
+        return (
+            <div className={styles.mainPage}>
+                <TopPanel />
+                <div className={styles.feed} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
+                    <Sorter />
+                    <div className={styles.txt}>Результаты поиска по {typeArg === 'keyword' ? `ключевому слову ${queryArg}` : `тэгу ${queryArg}`}</div> <br/>
+                    <ul className={styles.jokePostList}>
+                        {posts}
+                    </ul>
+                    <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                </div>
             </div>
-            <Pagination count={Math.ceil(5/5)} style={paginateStyle} shape="rounded"/>
-        </div>
-    );
+        );
+    } else {
+        const people = response; 
+        const amount = people.length;
+
+        if (!people) {
+            return <div className={styles.mainPage}>
+                        <TopPanel />
+                        <div className={styles.info}>
+                            <div className={styles.feed}>
+                                <Sorter />
+                                <div className={styles.txt}>По данному запросу ничего не найдено</div>
+                                <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                            </div>
+                        </div>
+                    </div>;
+        }
+
+        const posts = people.map((user) =>
+        {
+            return <UserPost user={user}/>
+        });
+        return (
+            <div className={styles.mainPage}>
+                <TopPanel />
+                <div className={styles.info}>
+                    <div className={styles.feed}>
+                        <Sorter />
+                        <div className={styles.txt}>Пользователи с именем {queryArg}</div> <br/>
+                        <ul className={styles.peoplePostList}>
+                            {posts}
+                        </ul>
+                        <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 }
 
 export default SearchPage;

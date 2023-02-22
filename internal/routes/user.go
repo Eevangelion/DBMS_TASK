@@ -68,5 +68,11 @@ var User = router.RoutePrefix{
 			Pattern:     "/oauth/",
 			HandlerFunc: handlers.GetGithubUser,
 		},
+		{
+			Name:        "SubscribeToUser",
+			Method:      "POST",
+			Pattern:     "/subscribe/",
+			HandlerFunc: handlers.SubscribeToUserHandler,
+		},
 	},
 }

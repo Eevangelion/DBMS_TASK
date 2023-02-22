@@ -1,5 +1,7 @@
 import React from "react";
 import { Link, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import Button from "react-bootstrap/esm/Button";
 import { useGetUserByNameQuery } from "../../services/Joke";
 import "./Profile.css";
 
@@ -39,6 +41,7 @@ const disabledLinkStyle = {
 
 
 const Profile = (props) => {
+    const userPageIsActive = useSelector(state => state.pagesReducer.userPageIsActive);
     const location = useLocation();
     const {
         data: user,
@@ -61,48 +64,48 @@ const Profile = (props) => {
           lastUnbanDate = user.unban_date,
           role = user.role;
     return (
-        <div className="profile-block">
+        <div className="profile-block" style={userPageIsActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
             <strong>{props.username}</strong>
             <strong style={{color: "#999"}}>user/{props.username}</strong>
-            <div className={"settings-link"}>
-                {
-                    userAccount ?
-                        <Link   to={`/settings`} 
-                                style={linkStyle}
-                                state={{ backgroundLocation: location }}>
-                            <strong>Настройки</strong>
-                        </Link> : 
-                        <Link 
-                                to={`/settings`}
-                                style={disabledLinkStyle}
-                                onClick={ (event) => event.preventDefault() }
-                                state={{ backgroundLocation: location }}>
-                            <strong>Настройки</strong>
-                        </Link>
-                }
-            </div>
+            {
+                userAccount ?
+                <div className={"settings-link"}>
+                    <Link   to={`/settings`} 
+                            style={userPageIsActive ? linkStyle : disabledLinkStyle}
+                            state={{ backgroundLocation: location }}
+                            onClick={(event) => {if (!userPageIsActive) event.preventDefault()}}
+                    >
+                        <strong>Настройки</strong>
+                    </Link> 
+                </div> : <></>
+            }
             <div className="profile-info">
-                Роль: {role}<br/>
+                Роль: {role === "admin" ? "Администратор" : "Пользователь"}<br/>
                 Жалобы: {reports}<br/>
                 {/* Добавлено в избранное: {addedToFavorite.length} <br/> */}
                 Последняя дата разблокировки: {(Date.now() - Date.parse(lastUnbanDate))/1000}
             </div>
-            <div className="post-joke">
-                {
-                    userAccount ?
-                        <Link to={`/create_joke`} 
-                            style={linkStyle}
-                            state={{ backgroundLocation: location }}>
-                            <strong>Создать шутку</strong>
-                        </Link> : 
-                        <Link to={`/create_joke`} 
-                            style={disabledLinkStyle}
-                            state={{ backgroundLocation: location }}
-                            onClick={ (event) => event.preventDefault() }>
-                            <strong>Создать шутку</strong>
-                        </Link>
-                } 
-            </div>
+            {
+                userAccount ?
+                <div className="post-joke">
+                    <Link to={`/create_joke`} 
+                        style={userPageIsActive ? linkStyle : disabledLinkStyle}
+                        state={{ backgroundLocation: location }}
+                        onClick={(event) => {if (!userPageIsActive) event.preventDefault()}}
+                    >
+                        <strong>Создать шутку</strong>
+                    </Link>
+                </div> : 
+                <div className="subscribe">
+                    <Link   to={`/subscribe/${user.id}`}
+                            style={userPageIsActive ? linkStyle : disabledLinkStyle}
+                            state={{ backgroundLocation: location}}
+                            onClick={(event) => {if (!userPageIsActive) event.preventDefault()}}
+                    >
+                        <strong>Подписаться</strong>
+                    </Link> 
+                </div>
+            }
         </div>
     );
 }

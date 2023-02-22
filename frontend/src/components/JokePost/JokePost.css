@@ -1,8 +1,8 @@
 .joke-post {
     width: 56vw;
     min-height: 20vh;
-    background-color: #eee;
     display: flex;
+    background-color: #fff;
     flex-direction: row;
     justify-content: left;
     border: 0.1vh solid #ccc;
@@ -16,12 +16,11 @@
 .rating-field {
     width: 2.5vw;
     min-height: 20vh;
-    background-color: transparent;
+    background-color: #fafafa;
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: left;
-    border-right: 0.1vh solid #ccc;
 }
 
 .rating {
@@ -59,7 +58,7 @@
 }
 
 .header {
-    width: 33vw;
+    width: 40vw;
     height: 1.8vh;
     margin-top: 0.8vh;
     background-color: transparent;
@@ -76,14 +75,14 @@
     color: #555;
     background-color: transparent;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 0.8vw;
+    font-size: 0.65vw;
 }
 
 .author-profile {
     margin-left: 0.2vw;
     color: #555;
     text-decoration: none;
-    font-size: 0.8vw;
+    font-size: 0.65vw;
 }
 
 .create-date {
@@ -95,7 +94,7 @@
     color: #555;
     background-color: transparent;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 0.8vw;
+    font-size: 0.65vw;
 }
 
 .tags {
@@ -141,16 +140,17 @@
 }
 
 .button-popover {
-    width: 53.5vw;
-    height: 5.6vh;
+    width: 53.55vw;
+    height: 3.75vh;
     display: flex;
     flex-direction: row;
     justify-content: right;
 }
 
 button {
-    width: 3vw;
-    height: 3vw;
+    width: 2vw;
+    height: 2vw;
+    background-color: #fff;
     border-radius: 0.5vh;
     border: 0.1vh solid #ccc;
     font-size: 0.8vw;

@@ -1,10 +1,12 @@
 import React from "react";
-import {useState, useEffect} from 'react';
+import {useState } from 'react';
 import { Link, useLocation } from "react-router-dom";
-import {Typography, Popover, Button} from '@mui/material';
+import {Popover} from '@mui/material';
 import "./JokePost.css";
 import rateImage from "../../styles/img/logo.png";
-import { useGetUserByIDQuery, useGetTagsByJokeIDQuery,useAddJokeToFavoritesMutation,useRemoveJokeFromFavoritesMutation, useGetFavoritesByIDQuery } from "../../services/Joke";
+import darkRateImage from "../../styles/img/logo_dark.png";
+import { useSelector } from "react-redux";
+import { useGetUserByIDQuery, useGetTagsByJokeIDQuery,useAddJokeToFavoritesMutation,useRemoveJokeFromFavoritesMutation, useGetFavoritesByIDQuery, useDeleteJokeMutation } from "../../services/Joke";
 
 
 const linkStyle = {
@@ -22,10 +24,20 @@ const linkStyle = {
 }
 
 const JokePost = (props) => {
+    const userPageIsActive = useSelector(state => state.pagesReducer.userPageIsActive);
+    const feedIsActive = useSelector(state => state.pagesReducer.feedIsActive);
+    const searchPageIsActive = useSelector(state => state.pagesReducer.searchPageIsActive);
+    const subscribesIsActive = useSelector(state => state.pagesReducer.subscribesIsActive);
+    const isActive = (
+        userPageIsActive &&
+        feedIsActive &&
+        searchPageIsActive &&
+        subscribesIsActive
+    );
     const location = useLocation();
 
     const userID = localStorage.getItem("userID");
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const {
         data: user,
@@ -37,6 +49,7 @@ const JokePost = (props) => {
     } = useGetTagsByJokeIDQuery(props.joke.id);
     const [addJokeToFavorites] = useAddJokeToFavoritesMutation();
     const [removeJokeFromFavorites] = useRemoveJokeFromFavoritesMutation();
+    const [deleteJoke] = useDeleteJokeMutation();
 
     const {
         data: favorites,
@@ -53,12 +66,24 @@ const JokePost = (props) => {
     }
 
     const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+        if (isActive)
+            setAnchorEl(event.currentTarget);
+        else event.preventDefault();
     };
 
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handleClickDeleteJoke = () => {
+        if (props.joke.author_id !== Number(userID)) {
+            // modal window with error
+            return;
+        }
+        handleClose(); 
+        deleteJoke(props.joke.id)
+    };
+
     const open = Boolean(anchorEl);
 
     if (loadingUser || loadingTags || loadingFavorites) {
@@ -137,27 +162,32 @@ const JokePost = (props) => {
                                 </div>
                                 <div className="tags">
                                     {tags.map(tag => {
-                                        return <div className="tag-item">{tag.name}</div>
+                                        return <div className="tag-item" style={isActive ? {} : {backgroundColor: "#070"}}>{tag.name}</div>
                                     })}
                                 </div>
                             </>);
     }
 
     return (
-        <li className="joke-post">
-            <div className="rating-field">
+        <li className="joke-post" style={isActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
+            <div className="rating-field" style={isActive ? {} : {backgroundColor: "#737474"}}>
                 <div className="rating">{rating}</div>
-                <Link
-                        className="add-to-favorite"
-                        onClick={() => {
-                        if (!addedToFavorite) {
-                            addJokeToFavorites(props.joke.id);
-                        } else {
-                            removeJokeFromFavorites(props.joke.id);
-                        }; addedToFavorite = !addedToFavorite;}}
-                >
-                    <img className="rate-image" src={rateImage} alt="?"/>
-                </Link>
+                    <Link
+                            className="add-to-favorite"
+                            onClick={(event) => {
+                                if (isActive) {
+                                    if (!addedToFavorite) {
+                                        addJokeToFavorites(props.joke.id);
+                                    } else {
+                                        removeJokeFromFavorites(props.joke.id);
+                                    }; addedToFavorite = !addedToFavorite;
+                                } else {
+                                    event.preventDefault();
+                                }
+                            }}
+                    >
+                        <img className="rate-image" src={isActive ? rateImage : darkRateImage} alt="?"/>
+                    </Link>
             </div>
 
             <div className="info">
@@ -169,7 +199,7 @@ const JokePost = (props) => {
                     <button 
                         variant="contained" 
                         onClick={handleClick}
-                        style={{}}>
+                        style={isActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
                         ...
                     </button>
                     <Popover
@@ -181,8 +211,8 @@ const JokePost = (props) => {
                             horizontal: 'right',
                         }}  
                         >
-                        <Link style={linkStyle} state={{ backgroundLocation: location }}>Удалить шутку</Link>
-                        <Link style={linkStyle} state={{ backgroundLocation: location }}>Отправить жалобу</Link>
+                        <Link style={linkStyle} state={{ backgroundLocation: location }} onClick={handleClickDeleteJoke}>Удалить шутку</Link>
+                        <Link to={`/create_report/${props.joke.id}`} style={linkStyle} state={{ backgroundLocation: location }} onClick={handleClose}>Отправить жалобу</Link>
                     </Popover>
                 </div>
             </div>

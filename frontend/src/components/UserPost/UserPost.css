@@ -1,0 +1,13 @@
+.user-post {
+    width: 56vw;
+    min-height: 10vh;
+    background-color: #eee;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    border: 0.1vh solid #ccc;
+    border-radius: 0.2vw;
+}
+.user-post + .user-post {
+    margin-top: 1vh;
+}

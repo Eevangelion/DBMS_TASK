@@ -1,6 +1,7 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/dist/query';
 import buttonsReducer from './reducers/buttons';
+import pagesReducer from './reducers/page';
 // import authReducer from './reducers/auth';
 // import userReducer from './reducers/user';
 import { jokeService } from '../services/Joke';
@@ -10,6 +11,7 @@ import { settingsService } from '../services/Settings';
 
 const mainReducer = combineReducers({
     buttonsReducer,
+    pagesReducer,
     [jokeService.reducerPath]: jokeService.reducer,
     [reportService.reducerPath]: reportService.reducer,
     [searchService.reducerPath]: searchService.reducer,

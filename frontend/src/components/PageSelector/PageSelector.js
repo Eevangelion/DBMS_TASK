@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import { Link } from 'react-router-dom';
+import { useSelector } from "react-redux";
 import "./PageSelector.css";
 
 const linkStyle = {
@@ -36,11 +37,21 @@ const disabledLinkStyle = {
 
 
 const PageSelector = (props) => {
+    const userPageIsActive = useSelector(state => state.pagesReducer.userPageIsActive);
+    const feedIsActive = useSelector(state => state.pagesReducer.feedIsActive);
+    const searchPageIsActive = useSelector(state => state.pagesReducer.searchPageIsActive);
+    const subscribesIsActive = useSelector(state => state.pagesReducer.subscribesIsActive);
+    const isActive = (
+        userPageIsActive &&
+        feedIsActive &&
+        searchPageIsActive &&
+        subscribesIsActive
+    );
     const [pageState, setPage] = useState(props.pageState);
     
     return (
         <div className="page-selector">
-            {pageState ?
+            {isActive ? (pageState ?
             <Link   
                 to={`/feed/`} 
                 style={disabledLinkStyle}
@@ -49,8 +60,12 @@ const PageSelector = (props) => {
             :   <Link   to={`/feed/`} 
                         style={linkStyle}
                         onClick={() => (setPage(false))}
+            >Все шутки</Link>) :
+            <Link   to={`/feed/`}
+                    style={pageState ? disabledLinkStyle : linkStyle}
+                    onClick={(event)=>event.preventDefault()}
             >Все шутки</Link>}
-            {pageState ? 
+            {isActive ? (pageState ? 
             <Link   
                 to={`/subscribes/`}
                 style={linkStyle}
@@ -59,6 +74,10 @@ const PageSelector = (props) => {
             :   <Link   to={`/subscribes/`}
                         style={disabledLinkStyle}
                         onClick={ (event) => event.preventDefault() }
+            >Подписки</Link>) : 
+            <Link   to={`/subscribes/`}
+                    style={pageState ? linkStyle : disabledLinkStyle}
+                    onClick={(event)=>event.preventDefault()}
             >Подписки</Link>}
         </div>
     );

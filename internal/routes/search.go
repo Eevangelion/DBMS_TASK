@@ -11,13 +11,7 @@ var Search = router.RoutePrefix{
 		{
 			Name:        "GetJokesSearch",
 			Method:      "GET",
-			Pattern:     "/{type}/{query}/",
-			HandlerFunc: handlers.SearchHandler,
-		},
-		{
-			Name:        "SendReport",
-			Method:      "POST",
-			Pattern:     "/send_report/",
+			Pattern:     "/{t}/{q}/",
 			HandlerFunc: handlers.SearchHandler,
 		},
 	},

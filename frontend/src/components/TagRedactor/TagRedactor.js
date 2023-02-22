@@ -1,6 +1,5 @@
 import {useState} from 'react';
-import { FormControl, InputLabel, Select, MenuItem, Checkbox } from '@mui/material';
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import { useCreateTagMutation, useDeleteTagMutation, useGetTagsQuery } from "../../services/Joke";
 import styles from './TagRedactor.module.css';
 

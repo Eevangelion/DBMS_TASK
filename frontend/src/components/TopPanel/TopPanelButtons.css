@@ -61,8 +61,8 @@
 
 .profile {
     width: 10vw;
-    height: 4vh;    
-    margin-left: 20vw;
+    height: 5vh;    
+    margin-left: 15vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -75,7 +75,7 @@
     align-items: center;
     text-align:center;
     width: 10vw;
-    height: 3.5vh;
+    height: 4.5vh;
     border-radius: 45vw;
     background-color: #ddd;
     text-decoration : none;

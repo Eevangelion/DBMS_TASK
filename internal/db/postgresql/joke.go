@@ -79,7 +79,7 @@ func (j JokeRepository) GetUserSubscribedJokes(user_id int, page int, pageSize i
 		log.Println("Error while trying to get user subscribed jokes (amount):", err)
 		return nil, -1, err
 	}
-	rows, err := DB.Query(qry, user_id)
+	rows, err := DB.Query(qry, user_id, pageSize, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while trying to get user subscribed jokes:", err)

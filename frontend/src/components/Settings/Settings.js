@@ -1,6 +1,8 @@
 import { useNavigate, useLocation, Link } from "react-router-dom"
+import { useDispatch } from "react-redux";
 import { useGetUserByIDQuery } from "../../services/Joke";
-import './Settings.css';
+import { selectPage } from '../../store/reducers/page';
+import styles from './Settings.module.css';
 
 const linkStyle = {
     display: "flex",
@@ -20,6 +22,8 @@ const linkStyle = {
 
 
 const Settings = () => {
+    const dispatch = useDispatch();
+    dispatch(selectPage({page: 'userPage', state: false}));
     const location = useLocation();
     const navigate = useNavigate();
     const userID = localStorage.getItem('userID');
@@ -33,35 +37,42 @@ const Settings = () => {
         return <div className="modal-window">Загрузка...</div>;
     }
 
-    const settingsWindow = (
-        <div className="modal-window">
-            <div className="buttons">
-                <button className="back-button" onClick={() => navigate(-1)}>
-                    Назад
-                </button>
-            </div>
-        </div>
-    );
-
-    const developSettingsWindow = (
-        <div className="modal-window">
-            <div className="buttons">
-                <Link to={`/developsettings`} 
-                      style={linkStyle}
-                      state={{ backgroundLocation: location }}>
-                    <strong>Настройки разработчика</strong>
-                </Link>
-                <button className="back-button" onClick={() => navigate(-1)}>
-                    Назад
-                </button>
-            </div>
-        </div>
-    );
-
     if (user.role === "admin") {
-        return developSettingsWindow;
+        return (
+        <div className={styles.modalWindow}>
+            <div className={styles.modalHeader}>
+                Настройки
+            </div>
+            <div className={styles.modalBody}>
+                <Link   to={`/tagredactor`} 
+                        style={linkStyle}
+                        state={{ backgroundLocation: location }}
+                >
+                        <strong>Редактировать список тэгов</strong>
+                </Link>
+            </div>
+            <div className={styles.modalFooter}>
+                <button className={styles.backButton} onClick={() => {navigate(-1);dispatch(selectPage({page: 'userPage', state: true}));}}>
+                    Назад
+                </button>
+            </div>
+        </div>);
     } else {
-        return settingsWindow;
+        return (
+            <div className={styles.modalWindow}>
+                <div className={styles.modalHeader}>
+                    Настройки
+                </div>
+                <div className={styles.modalBody}>
+
+                </div>
+                <div className={styles.modalFooter}>
+                    <button className={styles.backButton} onClick={() => {navigate(-1);dispatch(selectPage({page: 'userPage', state: true}));}}>
+                        Назад
+                    </button>
+                </div>
+            </div>
+        );
     }
 }
 

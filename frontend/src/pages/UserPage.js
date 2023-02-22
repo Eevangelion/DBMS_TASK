@@ -6,7 +6,7 @@ import styles from "../styles/UserPage.module.css";
 import JokePost from "../components/JokePost/JokePost";
 import Profile from "../components/Profile/Profile";
 import TopPanel from "../components/TopPanel/TopPanel";
-import JokeSorter from "../components/JokeSorter/JokeSorter";
+import JokeSorter from "../components/Sorter/Sorter";
 import {useGetJokesByAuthorNameQuery} from "../services/Joke";
 
 
@@ -24,6 +24,7 @@ const UserPage = (props) => {
 
     const [pageState, setPage] = useState(1);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
+    const isActive = useSelector(state => state.pagesReducer.userPageIsActive);
 
     const {username} = useParams();
 
@@ -31,6 +32,7 @@ const UserPage = (props) => {
         data: response,
         isLoading: loadingJokes,
     } = useGetJokesByAuthorNameQuery({name: username, page: pageState, sortBy: activeButton});
+
 
     if (loadingJokes) {
         return <div>Загрузка...</div>;
@@ -48,19 +50,19 @@ const UserPage = (props) => {
                     </div>
                 </div>;
     }
-    console.log(jokes);
     const posts = jokes.map((joke) =>
     {
         return <JokePost joke={joke}/>
     });
+    console.log(isActive);
     return (
         <div className={styles.mainPage}>
             <TopPanel />
-            <div className={styles.userInfo}>
+            <div className={styles.userInfo}  style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                 <div className={styles.feed}>
                     <JokeSorter />
                     <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>
-                    <ul className="joke-post-list">
+                    <ul className={styles.jokePostList}>
                         {posts}
                     </ul>
                     <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>

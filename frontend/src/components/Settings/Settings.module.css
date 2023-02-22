@@ -1,4 +1,4 @@
-.modal-window {
+.modalWindow {
     position: fixed;
     width: 80vw;
     height: 70vh;
@@ -6,14 +6,13 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
     border: 0.1vh solid #ccc;
     border-radius: 0.5vh;
     top: 4vw;
     left: 20vh;
     z-index: 2;
 }
-.back-button {
+.backButton {
     width: 40vw;
     height: 3vh;
     margin-top: 1vh;
@@ -31,4 +30,37 @@
     font-weight: bold;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 0.8vw;
+}
+
+.modalHeader {
+    height: 3vh;
+    margin-left: 1.5vw;
+    font-size: 0.8vw;
+    color: #555;
+    font-weight: bold;
+}
+
+.modalBody {
+    height: 68vh;
+    padding-top: 2vh;
+    padding-left: 4vw;
+    border-top: 0.1vh solid #ccc;
+    align-items: center;
+}
+
+.newHeader {
+    width: 70vw;
+    height: 3vh;
+    border: 0.1vh solid black;
+    padding-left: 0.1vw;
+    padding-top: 0.3vh;
+    font-size: 0.8vw;
+}
+.modalFooter {
+    width: 80vw;
+    height: 12vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

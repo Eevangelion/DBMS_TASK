@@ -4,7 +4,7 @@ import Pagination from '@mui/material/Pagination';
 import PageSelector from "../components/PageSelector/PageSelector";
 import styles from "../styles/Subscribes.module.css";
 import JokePost from "../components/JokePost/JokePost";
-import JokeSorter from "../components/JokeSorter/JokeSorter";
+import JokeSorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
 import { useGetSubscribedByIDQuery } from "../services/Joke";
 
@@ -24,6 +24,7 @@ const Subscribes = (props) => {
 
     const [pageState, setPage] = useState(1);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
+    const isActive = useSelector(state => state.pagesReducer.subscribesIsActive);
     const userID = localStorage.getItem("userID");
 
     const {
@@ -38,7 +39,7 @@ const Subscribes = (props) => {
     if (!jokes) {
         return <div className={styles.mainPage}>
                     <TopPanel />
-                    <div className={styles.info}>
+                    <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                         <div className={styles.feed}>
                             <JokeSorter />
                             <div className={styles.txt}>Пользователи, на которых вы подписаны, пока ничего не опубликовали</div>
@@ -56,7 +57,7 @@ const Subscribes = (props) => {
     return (
         <div className={styles.mainPage}>
             <TopPanel />
-            <div className={styles.info}>
+            <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                 <div className={styles.feed}>
                     <JokeSorter />
                     <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>

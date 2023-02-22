@@ -1,8 +1,8 @@
 .profile-block {
     width: 22vw;
     height: 18vh;
-    background-color: #eee;
-    margin-top: 6vh;
+    background-color: #fff;
+    margin-top: 7.3vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -24,6 +24,14 @@
 .post-joke {
     width: 22vw;
     height: 2vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.subscribe {
+    width: 22vw;
+    height: 3vh;
     display: flex;
     flex-direction: row;
     justify-content: center;
