@@ -70,10 +70,17 @@ func (t TagRepository) Delete(tag_name string) (err error) {
 	return nil
 }
 
-func (t TagRepository) GetAll() (tags []models.Tag, err error) {
+func (t TagRepository) GetAllTags() (tagsOut *models.TagResponse, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
+		return nil, err
+	}
+	var amount int
+	qry2 := `select count(id) from public."Tags"`
+	err = DB.QueryRow(qry2).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get all tags(amount):", err)
 		return nil, err
 	}
 	qry := `select * from public."Tags"`
@@ -95,7 +102,7 @@ func (t TagRepository) GetAll() (tags []models.Tag, err error) {
 			ID:   id,
 			Name: name,
 		}
-		tags = append(tags, NewTag)
+		tagsOut.Tags = append(tagsOut.Tags, NewTag)
 	}
-	return tags, nil
+	return tagsOut, nil
 }

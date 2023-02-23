@@ -13,7 +13,7 @@ import (
 )
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	tArg := params["t"]
 	qArg := params["q"]

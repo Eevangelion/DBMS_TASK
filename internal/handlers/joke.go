@@ -13,7 +13,7 @@ import (
 )
 
 func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var jokeRequest models.JokeRequest
 	err := decoder.Decode(&jokeRequest)
@@ -42,7 +42,7 @@ func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
 	var f map[string]int
@@ -70,7 +70,7 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	username := params["username"]
 	pageURL := r.URL.Query().Get("pageArg")
@@ -123,7 +123,7 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	pageURL := r.URL.Query().Get("pageArg")
 	pageSizeURL := r.URL.Query().Get("pageSize")
 	var page, pageSize int
@@ -165,7 +165,7 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -182,7 +182,7 @@ func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
 	var user_id int
@@ -203,7 +203,7 @@ func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
 	var user_id int
@@ -224,7 +224,7 @@ func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	user_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -272,7 +272,7 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	receiver_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -320,7 +320,7 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -343,7 +343,7 @@ func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTagFromJokeHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -366,7 +366,7 @@ func DeleteTagFromJokeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetJokeByIDHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {

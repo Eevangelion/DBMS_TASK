@@ -95,7 +95,11 @@ CREATE TABLE "GithubUsers"
 (
 	git_id integer NOT NULL,
 	inner_id integer NOT NULL,
-	CONSTRAINT "GithubUsers_pkey" PRIMARY KEY (git_id, inner_id)
+	CONSTRAINT "GithubUsers_pkey" PRIMARY KEY (git_id, inner_id),
+	FOREIGN KEY (inner_id) REFERENCES public."Users" (id) MATCH SIMPLE
+	ON UPDATE NO ACTION
+	ON DELETE CASCADE
+	NOT VALID
 );
 
 CREATE TABLE "UserSubscribes"
