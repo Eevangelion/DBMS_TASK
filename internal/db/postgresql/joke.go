@@ -2,6 +2,7 @@ package psql
 
 import (
 	"log"
+	"strings"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
@@ -218,6 +219,7 @@ func (j JokeRepository) GetJokesByTag(tag_name string, page int, pageSize int, s
 		log.Println("Connection error:", err)
 		return nil, 0, err
 	}
+	tag_name = strings.ToLower(tag_name)
 	qry := ``
 	qry2 := ``
 	if sort_mode == "new" {
@@ -285,28 +287,28 @@ func (j JokeRepository) GetJokesByKeyword(keyword string, page int, pageSize int
 	qry := ``
 	qry2 := ``
 	if sort_mode == "new" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' ORDER BY creation_date DESC LIMIT $1 OFFSET $2`
-		qry2 = `select count(id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%'`
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' ORDER BY creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count(id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%'`
 	}
 	if sort_mode == "alltime" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
-		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%'`
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%'`
 	}
 	if sort_mode == "hour" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
-		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
 	}
 	if sort_mode == "day" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
-		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
 	}
 	if sort_mode == "week" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
-		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
 	}
 	if sort_mode == "month" {
-		qry = `select * from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
-		qry2 = `select count("Jokes".id) from public."Jokes" where header LIKE '%` + keyword + `%' or description LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
 	}
 	err = DB.QueryRow(qry2).Scan(&amount)
 	if err != nil {

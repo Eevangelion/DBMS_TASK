@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/config"
-
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -25,11 +24,11 @@ func GetConnectionToDB() (DB *sql.DB, err error) {
 			log.Fatal("Connection Error:", err)
 			return nil, err
 		}
-		err = CreateTables(Connection)
-		if err != nil {
-			log.Fatal("Connection Error:", err)
-			return nil, err
-		}
+		// err = CreateTables(Connection)
+		// if err != nil {
+		// 	log.Fatal("Connection Error:", err)
+		// 	return nil, err
+		// }
 		err = Connection.Ping()
 		if err != nil {
 			log.Fatal("Connection Error:", err)

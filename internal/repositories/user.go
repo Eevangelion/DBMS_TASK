@@ -17,6 +17,7 @@ type IUser interface {
 	GetUserByGithubID(user_id int) (userOut *models.GitUser, err error)
 	CreateGithubUserWithID(user_id int, inner_id int) (err error)
 	GetSubscribedPeopleCount(user_id int) (amount int, err error)
+	GetWhomUserSubscribedToCount(user_id int) (amount int, err error)
 	GetUserJokesCount(user_id int) (amount int, err error)
 
 	Ban(user_id int) (err error) // for 1 week (update unban date)
