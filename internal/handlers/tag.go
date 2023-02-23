@@ -75,6 +75,7 @@ func GetAllTagsHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	tagsOut := tags.Tags
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tags)
+	json.NewEncoder(w).Encode(tagsOut)
 }
