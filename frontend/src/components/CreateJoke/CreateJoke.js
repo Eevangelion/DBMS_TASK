@@ -2,7 +2,7 @@ import {useState} from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
-import { useCreateJokeMutation, useGetTagsQuery } from "../../services/Joke";
+import { useCreateJokeMutation, useGetTagsQuery } from "../../services/service";
 import styles from './CreateJoke.module.css';
 import { selectPage } from '../../store/reducers/page';
 

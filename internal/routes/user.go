@@ -48,7 +48,7 @@ var User = router.RoutePrefix{
 			Name:        "GetUserPageByName",
 			Method:      "GET",
 			Pattern:     "/{username}/data/",
-			HandlerFunc: handlers.GetUserDataByNameHandler,
+			HandlerFunc: handlers.GetUserDataHandler,
 		},
 		{
 			Name:        "GetUserPageByID",
@@ -65,7 +65,7 @@ var User = router.RoutePrefix{
 		{
 			Name:        "GetGithubUser",
 			Method:      "GET",
-			Pattern:     "/oauth/",
+			Pattern:     "/oauth/{code}",
 			HandlerFunc: handlers.GetGithubUser,
 		},
 		{
@@ -73,6 +73,24 @@ var User = router.RoutePrefix{
 			Method:      "POST",
 			Pattern:     "/subscribe/",
 			HandlerFunc: handlers.SubscribeToUserHandler,
+		},
+		{
+			Name:        "GetSubscribes",
+			Method:      "GET",
+			Pattern:     "/subscribed/",
+			HandlerFunc: handlers.GetUserSubscribedJokesHandler,
+		},
+		{
+			Name:        "ChangeUsername",
+			Method:      "PUT",
+			Pattern:     "/change_name/",
+			HandlerFunc: handlers.ChangeUserNameHandler,
+		},
+		{
+			Name:        "ChangePassword",
+			Method:      "PUT",
+			Pattern:     "/change_password/",
+			HandlerFunc: handlers.ChangeUserPasswordHandler,
 		},
 	},
 }

@@ -9,7 +9,9 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import CreateJoke from "./components/CreateJoke/CreateJoke"
 import CreateReport from './components/CreateReport/CreateReport';
 import Subscribe from './components/Subscribe/Subscribe';
-import { useGetUserByIDQuery } from './services/Joke';
+import { useGetUserByIDQuery } from './services/service';
+import ReportsList from './components/ReportsList/ReportsList';
+import AuthModal from './components/Auth/Auth';
 const App = () => {
 
   let location = useLocation();
@@ -31,6 +33,7 @@ const App = () => {
         <Route path='subscribes/' element={<Subscribes />}/>
         <Route path='user/:username' element={<UserPage />}/>
         <Route path='search/:type/:query?' element={<SearchPage />}/>
+        <Route path='login/' element={<AuthModal />} />
       </Routes>
       {state?.backgroundLocation && (
         <Routes>
@@ -39,6 +42,7 @@ const App = () => {
             <Route path="/tagredactor" element={<TagRedactor />} />
             <Route path="/create_report/:jokeID" element={<CreateReport />} />
             <Route path="/subscribe/:receiverID" element={<Subscribe />}/>
+            <Route path="/reportslist" element={<ReportsList />}/>
         </Routes>
       )}
     </>

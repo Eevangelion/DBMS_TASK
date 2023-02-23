@@ -6,7 +6,7 @@ import "./JokePost.css";
 import rateImage from "../../styles/img/logo.png";
 import darkRateImage from "../../styles/img/logo_dark.png";
 import { useSelector } from "react-redux";
-import { useGetUserByIDQuery, useGetTagsByJokeIDQuery,useAddJokeToFavoritesMutation,useRemoveJokeFromFavoritesMutation, useGetFavoritesByIDQuery, useDeleteJokeMutation } from "../../services/Joke";
+import { useGetUserByIDQuery, useGetTagsByJokeIDQuery,useAddJokeToFavoritesMutation,useRemoveJokeFromFavoritesMutation, useGetFavoritesByIDQuery, useDeleteJokeMutation } from "../../services/service";
 
 
 const linkStyle = {

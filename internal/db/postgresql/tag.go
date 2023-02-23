@@ -71,7 +71,7 @@ func (t TagRepository) Delete(tag_name string) (err error) {
 	return nil
 }
 
-func (t TagRepository) GetAllTags() (tagsOut *models.TagResponse, err error) {
+func (t TagRepository) GetAllTags() (tagsOut []models.Tag, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
@@ -103,7 +103,7 @@ func (t TagRepository) GetAllTags() (tagsOut *models.TagResponse, err error) {
 			ID:   id,
 			Name: name,
 		}
-		tagsOut.Tags = append(tagsOut.Tags, NewTag)
+		tagsOut = append(tagsOut, NewTag)
 	}
 	return tagsOut, nil
 }

@@ -6,7 +6,7 @@ import styles from "../styles/SearchPage.module.css";
 import JokePost from "../components/JokePost/JokePost";
 import Sorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
-import { useGetSearchResultQuery } from "../services/Joke";
+import { useGetSearchResultQuery } from "../services/service";
 import UserPost from "../components/UserPost/UserPost";
 const paginateStyle = {
     textDecoration : "none",
@@ -43,10 +43,12 @@ const SearchPage = (props) => {
         if (!jokes) {
             return <div className={styles.mainPage}>
                         <TopPanel />
-                        <div className={styles.feed}>
-                            <Sorter />
-                            <div className={styles.txt}>По данному запросу ничего не найдено</div>
-                            <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                        <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
+                            <div className={styles.feed}>
+                                <Sorter />
+                                <div className={styles.txt}>По данному запросу ничего не найдено</div>
+                                <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                            </div>
                         </div>
                     </div>;
         }
@@ -58,13 +60,15 @@ const SearchPage = (props) => {
         return (
             <div className={styles.mainPage}>
                 <TopPanel />
-                <div className={styles.feed} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
-                    <Sorter />
-                    <div className={styles.txt}>Результаты поиска по {typeArg === 'keyword' ? `ключевому слову ${queryArg}` : `тэгу ${queryArg}`}</div> <br/>
-                    <ul className={styles.jokePostList}>
-                        {posts}
-                    </ul>
-                    <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
+                    <div className={styles.feed}>
+                        <Sorter />
+                        <div className={styles.txt}>Результаты поиска по {typeArg === 'keyword' ? `ключевому слову ${queryArg}` : `тэгу ${queryArg}`}</div> <br/>
+                        <ul className={styles.jokePostList}>
+                            {posts}
+                        </ul>
+                        <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                    </div>
                 </div>
             </div>
         );
@@ -75,7 +79,7 @@ const SearchPage = (props) => {
         if (!people) {
             return <div className={styles.mainPage}>
                         <TopPanel />
-                        <div className={styles.info}>
+                        <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                             <div className={styles.feed}>
                                 <Sorter />
                                 <div className={styles.txt}>По данному запросу ничего не найдено</div>
@@ -92,7 +96,7 @@ const SearchPage = (props) => {
         return (
             <div className={styles.mainPage}>
                 <TopPanel />
-                <div className={styles.info}>
+                <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                     <div className={styles.feed}>
                         <Sorter />
                         <div className={styles.txt}>Пользователи с именем {queryArg}</div> <br/>

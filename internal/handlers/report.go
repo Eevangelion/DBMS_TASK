@@ -14,7 +14,7 @@ import (
 )
 
 func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var reportRequest models.ReportRequest
 	err := decoder.Decode(&reportRequest)

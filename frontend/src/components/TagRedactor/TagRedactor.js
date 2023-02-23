@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import { useCreateTagMutation, useDeleteTagMutation, useGetTagsQuery } from "../../services/Joke";
+import { useCreateTagMutation, useDeleteTagMutation, useGetTagsQuery } from "../../services/service";
 import styles from './TagRedactor.module.css';
 
 const TagRedactor = () => {

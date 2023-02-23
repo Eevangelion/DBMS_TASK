@@ -5,7 +5,7 @@ import loop from "../../styles/img/loop_test.png";
 import TopPanelButtons from "./TopPanelButtons";
 import "./TopPanel.css";
 
-function TopPanel() {
+function TopPanel(props) {
     const [searchText, setSearchText] = useState('');
     const [searchType, setSearchType] = useState('keyword');
     const handleChange = (event) => {

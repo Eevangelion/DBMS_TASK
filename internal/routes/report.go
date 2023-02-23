@@ -23,8 +23,14 @@ var Report = router.RoutePrefix{
 		{
 			Name:        "GetReportByID",
 			Method:      "GET",
-			Pattern:     "/{id}",
+			Pattern:     "/{id}/",
 			HandlerFunc: handlers.GetReportByIDHandler,
+		},
+		{
+			Name:        "ApplyReport",
+			Method:      "POST",
+			Pattern:     "/apply/",
+			HandlerFunc: handlers.ApplyReportHandler,
 		},
 	},
 }

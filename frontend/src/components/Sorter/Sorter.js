@@ -32,6 +32,7 @@ const Sorter = (props) => {
                 }}
                 className={activeButton === 'new' ? 
                            'button-sort active' : 'button-sort'}
+                style={isActive ? {} : (activeButton === 'new' ? {color: "#118"} : {})}
             >
                 Новые
             </button>
@@ -47,6 +48,7 @@ const Sorter = (props) => {
                 }}
                 className={activeButton === 'hour' ? 
                            'button-sort active' : 'button-sort'}
+                style={isActive ? {} : (activeButton === 'hour' ? {color: "#118"} : {})}
             >
                 1 час
             </button>
@@ -59,6 +61,7 @@ const Sorter = (props) => {
                 }}
                 className={activeButton === 'day' ? 
                            'button-sort active' : 'button-sort'}
+                style={isActive ? {} : (activeButton === 'day' ? {color: "#118"} : {})}
             >
                 1 день
             </button>
@@ -71,6 +74,7 @@ const Sorter = (props) => {
                 }}
                 className={activeButton === 'week' ? 
                            'button-sort active' : 'button-sort'}
+                style={isActive ? {} : (activeButton === 'week' ? {color: "#118"} : {})}
             >
                 1 неделю
             </button>
@@ -83,6 +87,7 @@ const Sorter = (props) => {
                 }}
                 className={activeButton === 'month' ? 
                            'button-sort active' : 'button-sort'}
+                style={isActive ? {} : (activeButton === 'month' ? {color: "#118"} : {})}
             >
                 1 месяц
             </button>
@@ -95,6 +100,7 @@ const Sorter = (props) => {
                 }}
                 className={activeButton === 'alltime' ? 
                            'button-sort active' : 'button-sort'}
+                style={isActive ? {} : (activeButton === 'alltime' ? {color: "#118"} : {})}
             >
                 Всё время
             </button>

@@ -29,8 +29,10 @@
 }
 
 .newDescription {
-    width: 30vw;
-    height: 20vh;
+    min-width: 30vw;
+    max-width: 30vw;
+    min-height: 20vh;
+    max-height: 20vh;
     font-size: 0.8vw;
     border: 0.1vh solid black;
     margin-top: 1vh;

@@ -75,7 +75,7 @@ func GetUserDataHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userData)
 }
 func GetUserDataByIDHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	str_id := params["id"]
 	id, err := strconv.Atoi(str_id)
@@ -197,7 +197,6 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(userResponse)
-		json.NewEncoder(w).Encode(token)
 	} else {
 		user, err = db.UserRepo.GetUserByID(userOut.Inner_ID)
 		if err != nil {
@@ -219,7 +218,6 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(userResponse)
-		json.NewEncoder(w).Encode(token)
 	}
 }
 

@@ -34,8 +34,10 @@
 }
 
 .newHeader {
-    width: 70vw;
-    height: 3vh;
+    min-width: 70vw;
+    max-width: 70vw;
+    min-height: 3vh;
+    max-height: 3vh;
     border: 0.1vh solid black;
     padding-left: 0.1vw;
     padding-top: 0.3vh;
@@ -43,8 +45,10 @@
 }
 
 .newDescription {
-    width: 70vw;
-    height: 45vh;
+    min-width: 70vw;
+    max-width: 70vw;
+    min-height: 45vh;
+    max-height: 45vh;
     font-size: 0.8vw;
     border: 0.1vh solid black;
     padding-left: 0.1vw;

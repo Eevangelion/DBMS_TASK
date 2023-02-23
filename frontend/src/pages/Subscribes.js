@@ -6,7 +6,7 @@ import styles from "../styles/Subscribes.module.css";
 import JokePost from "../components/JokePost/JokePost";
 import JokeSorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
-import { useGetSubscribedByIDQuery } from "../services/Joke";
+import { useGetSubscribedByIDQuery } from "../services/service";
 
 
 

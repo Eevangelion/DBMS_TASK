@@ -2,7 +2,7 @@ import {useState} from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom"
 import { useParams } from 'react-router-dom';
-import { useCreateReportMutation } from "../../services/Joke";
+import { useCreateReportMutation } from "../../services/service";
 import { selectPage } from '../../store/reducers/page';
 import styles from './CreateReport.module.css';
 

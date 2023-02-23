@@ -1,13 +1,14 @@
 import React, {useState} from "react";
 import { useSelector } from "react-redux";
-import Button from "react-bootstrap/esm/Button";
 import Pagination from '@mui/material/Pagination';
 import styles from "../styles/Feed.module.css";
 import JokePost from "../components/JokePost/JokePost";
 import JokeSorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
 import PageSelector from "../components/PageSelector/PageSelector";
-import { useGetJokesQuery } from "../services/Joke";
+import { useGetJokesQuery } from "../services/service";
+import { getCode } from "../store/actions/auth";
+import { useGetGitQuery } from "../services/auth";
 
 
 const paginateStyle = {
@@ -22,6 +23,11 @@ const paginateStyle = {
 
 const Feed = (props) => {
 
+    const code = getCode();
+    const {
+        data: user,
+        isLoading: loadingGavno
+    } = useGetGitQuery(code);
     const [pageState, setPage] = useState(1);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
     const isActive = useSelector(state => state.pagesReducer.feedIsActive);
@@ -32,9 +38,10 @@ const Feed = (props) => {
     } = useGetJokesQuery({page: pageState, sortBy: activeButton});
 
 
-    if (loadingJokes) {
+    if (loadingJokes || loadingGavno) {
         return <div>Загрузка...</div>;
     }
+    console.log(user); 
     const {jokes, amount} = response; 
     if (!jokes) {
         return <div className={styles.mainPage}>

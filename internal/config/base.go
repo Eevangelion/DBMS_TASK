@@ -39,8 +39,11 @@ func GetConfig() *Config {
 				Address: getEnv("SERVER", "localhost"),
 				Port:    getEnvAsInt("PORT", 8000),
 			},
-			Database:  SetupDB(),
-			DebugMode: getEnvAsBool("DEBUG_MODE", true),
+			Database:               SetupDB(),
+			DebugMode:              getEnvAsBool("DEBUG_MODE", true),
+			GitHubClientID:         getEnv("GITHUB_OAUTH_CLIENT_ID", ""),
+			GitHubClientSecret:     getEnv("GITHUB_OAUTH_CLIENT_SECRET", ""),
+			GitHubOAuthRedirectUrl: getEnv("GITHUB_OAUTH_REDIRECT_URL", ""),
 		}
 	}
 	return Conf

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useParams } from 'react-router-dom';
-import { useSubscribeToUserMutation } from "../../services/Joke";
+import { useSubscribeToUserMutation } from "../../services/service";
 import { selectPage } from "../../store/reducers/page";
 import { useDispatch } from "react-redux";
 import styles from './Subscribe.module.css';

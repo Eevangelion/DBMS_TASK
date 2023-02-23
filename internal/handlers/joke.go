@@ -284,8 +284,8 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	params := mux.Vars(r)
-	receiver_id, err := strconv.Atoi(params["id"])
+	receiver_id_URL := r.URL.Query().Get("id")
+	receiver_id, err := strconv.Atoi(receiver_id_URL)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -343,16 +343,12 @@ func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-	var joke_id int
 	var tag_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&tag_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	joke_id = f["joke_id"]
-	tag_id = f["tag_id"]
 	err = db.JokeRepo.AddTagToJoke(joke_id, tag_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -370,16 +366,12 @@ func DeleteTagFromJokeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-	var joke_id int
 	var tag_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&tag_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	joke_id = f["joke_id"]
-	tag_id = f["tag_id"]
 	err = db.JokeRepo.DeleteTagFromJoke(joke_id, tag_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

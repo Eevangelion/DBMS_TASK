@@ -7,7 +7,7 @@ import JokePost from "../components/JokePost/JokePost";
 import Profile from "../components/Profile/Profile";
 import TopPanel from "../components/TopPanel/TopPanel";
 import JokeSorter from "../components/Sorter/Sorter";
-import {useGetJokesByAuthorNameQuery} from "../services/Joke";
+import {useGetJokesByAuthorNameQuery} from "../services/service";
 
 
 const paginateStyle = {

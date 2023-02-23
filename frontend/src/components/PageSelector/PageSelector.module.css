@@ -1,0 +1,42 @@
+.pageSelector {
+    width: 22vw;
+    height: 6vh;
+    margin-top: 6vh;
+}
+.link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 22vw;
+    height: 3vh;
+    background-color: #00d;
+    text-decoration : none;
+    border-color: transparent;
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8vw;
+}
+.link:hover {
+    color: #ccc;
+}
+
+.linkDisabled {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 22vw;
+    height: 3vh;
+    background-color: #777;
+    text-decoration : none;
+    border-color: transparent;
+    color: #aaa;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8vw;
+}
+.linkDisabled:hover {
+    color: #aaa;
+}

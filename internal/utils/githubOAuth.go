@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -45,6 +46,7 @@ func GetGitHubOauthToken(code string) (*GitHubOauthToken, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Println(req, res.StatusCode)
 
 	if res.StatusCode != http.StatusOK {
 		return nil, errors.New("could not retrieve token")
@@ -59,7 +61,6 @@ func GetGitHubOauthToken(code string) (*GitHubOauthToken, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	tokenBody := &GitHubOauthToken{
 		Access_token: parsedQuery["access_token"][0],
 	}

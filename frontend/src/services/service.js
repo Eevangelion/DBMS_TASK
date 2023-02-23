@@ -6,13 +6,15 @@ const apiPort = process.env.REACT_APP_API_PORT;
 export const jokeService = createApi({
     reducerPath: 'jokeAPI',
     baseQuery: fetchBaseQuery({ baseUrl: `http://${apiHost}:${apiPort}`}),
-    tagTypes: ['Jokes'],
+    tagTypes: ['Jokes', 'Users', 'Tags'],
     endpoints: (build) => ({
         getUserByID: build.query({
-            query: (id) => ({url: `/user/${id}/`})
+            query: (id) => ({url: `/user/${id}/`}),
+            providesTags: ['Users']
         }),
         getUserByName: build.query({
             query: (name) => ({url: `/user/${name}/data/`}),
+            providesTags: ['Users']
         }),
         getJokesByAuthorName: build.query({
             query: ({name, ...params}) => {
@@ -196,10 +198,11 @@ export const jokeService = createApi({
                         sender_id: userID,
                     }
                 }
-            }
+            },
+            invalidatesTags: ['Users']
         }),
         removeReport: build.mutation({
-            query: ({id}) => {
+            query: (id) => {
                 const userID = localStorage.getItem("userID");
                 return {
                     url: `/report/delete/`,
@@ -210,6 +213,18 @@ export const jokeService = createApi({
                     }
                 }
             }
+        }),
+        applyReport: build.mutation({
+            query: (reportID) => {
+                return {
+                    url: `/report/apply/`,
+                    method: 'POST',
+                    body: {
+                        report_id: reportID,
+                    }
+                }
+            },
+            invalidatesTags: ['Users']
         }),
         subscribeToUser: build.mutation({
             query: (receiverID) => {
@@ -222,9 +237,36 @@ export const jokeService = createApi({
                         sender_id: Number(userID),
                     }
                 }
-
+            },
+            invalidatesTags: ['Users']
+        }),
+        changeUserName: build.mutation({
+            query: (name) => {
+                const userID = localStorage.getItem("userID");
+                return {
+                    url: `/user/change_name/`,
+                    method: 'PUT',
+                    body: {
+                        name: name,
+                        user_id: userID,
+                    }
+                }
+            },
+            invalidatesTags: ['Users']
+        }),
+        changePassword: build.mutation({
+            query: (password) => {
+                const userID = localStorage.getItem("userID");
+                return {
+                    url: `/user/change_password/`,
+                    method: 'PUT',
+                    body: {
+                        transformed_password: password,
+                        user_id: userID,
+                    }
+                }
             }
-        })
+        }),
     })
 })
 
@@ -248,4 +290,7 @@ export const {
     useCreateReportMutation,
     useRemoveReportMutation,
     useSubscribeToUserMutation,
+    useChangeUserNameMutation,
+    useChangePasswordMutation,
+    useApplyReportMutation,
 } = jokeService;

@@ -1,39 +1,7 @@
 import React, {useState} from "react";
 import { Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
-import "./PageSelector.css";
-
-const linkStyle = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-    width: "22vw",
-    height: "3vh",
-    backgroundColor: "#00d",
-    textDecoration : "none",
-    borderColor: "transparent",
-    color: "white",
-    fontWeight: "bold",
-    fontFamily: "Arial, Helvetica, sans-serif",
-    fontSize: "1.4vh",
-}
-
-const disabledLinkStyle = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-    width: "22vw",
-    height: "3vh",
-    backgroundColor: "#bbb",
-    textDecoration : "none",
-    borderColor: "transparent",
-    color: "white",
-    fontWeight: "bold",
-    fontFamily: "Arial, Helvetica, sans-serif",
-    fontSize: "1.4vh",
-}
+import styles from "./PageSelector.module.css";
 
 
 const PageSelector = (props) => {
@@ -50,33 +18,35 @@ const PageSelector = (props) => {
     const [pageState, setPage] = useState(props.pageState);
     
     return (
-        <div className="page-selector">
+        <div className={styles.pageSelector}>
             {isActive ? (pageState ?
             <Link   
                 to={`/feed/`} 
-                style={disabledLinkStyle}
+                className={styles.linkDisabled}
                 onClick={ (event) => event.preventDefault() }
             >Все шутки</Link>
             :   <Link   to={`/feed/`} 
-                        style={linkStyle}
+                        className={styles.link}
                         onClick={() => (setPage(false))}
             >Все шутки</Link>) :
             <Link   to={`/feed/`}
-                    style={pageState ? disabledLinkStyle : linkStyle}
+                    className={pageState ? styles.linkDisabled : styles.link}
+                    style={pageState ? { backgroundColor: "#444", color: "#555"} : {backgroundColor: "#004", color: "#666"}}
                     onClick={(event)=>event.preventDefault()}
             >Все шутки</Link>}
             {isActive ? (pageState ? 
             <Link   
                 to={`/subscribes/`}
-                style={linkStyle}
+                className={styles.link}
                 onClick={ () => setPage(true) }
             >Подписки</Link>
             :   <Link   to={`/subscribes/`}
-                        style={disabledLinkStyle}
+                        className={styles.linkDisabled}
                         onClick={ (event) => event.preventDefault() }
             >Подписки</Link>) : 
             <Link   to={`/subscribes/`}
-                    style={pageState ? linkStyle : disabledLinkStyle}
+                    className={pageState ? styles.linkDisabled : styles.link}
+                    style={pageState ? { backgroundColor: "#004", color: "#666"} : {backgroundColor: "#444", color: "#555"}}
                     onClick={(event)=>event.preventDefault()}
             >Подписки</Link>}
         </div>
