@@ -2,6 +2,7 @@ package psql
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
@@ -211,7 +212,8 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select * from public."Users" where "Users".name LIKE '%` + keyword + `%' LIMIT $1 OFFSET $2`
+	keyword = strings.ToLower(keyword)
+	qry := `select * from public."Users" where lower("Users".name) LIKE '%` + keyword + `%' LIMIT $1 OFFSET $2`
 	rows, err := DB.Query(qry, pageSize, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {
@@ -351,6 +353,21 @@ func (u UserRepository) GetSubscribedPeopleCount(user_id int) (amount int, err e
 		return 0, err
 	}
 	qry := `select count(receiver_id) from public."UserSubscribes" where receiver_id=$1`
+	err = DB.QueryRow(qry, user_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get subscribed people count:", err)
+		return 0, err
+	}
+	return amount, nil
+}
+
+func (u UserRepository) GetWhomUserSubscribedToCount(user_id int) (amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return 0, err
+	}
+	qry := `select count(receiver_id) from public."UserSubscribes" where sender_id=$1`
 	err = DB.QueryRow(qry, user_id).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get subscribed people count:", err)
