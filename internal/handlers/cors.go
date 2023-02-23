@@ -2,7 +2,7 @@ package handlers
 
 import "net/http"
 
-func setupCors(w *http.ResponseWriter, r *http.Request) {
+func setupCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Content-Type", "application/json")
 	(*w).Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
@@ -10,7 +10,7 @@ func setupCors(w *http.ResponseWriter, r *http.Request) {
 }
 
 func OptionsHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	w.WriteHeader(http.StatusOK)
 	return
 }

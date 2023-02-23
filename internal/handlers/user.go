@@ -49,8 +49,8 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func GetUserDataByNameHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+func GetUserDataHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
 	params := mux.Vars(r)
 	username := params["username"]
 	user, err := db.UserRepo.GetUserByUsername(username)
@@ -106,10 +106,9 @@ func GetUserDataByIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
-	decoder := json.NewDecoder(r.Body)
-	var user_id int
-	err := decoder.Decode(&user_id)
+	setupCors(&w)
+	params := mux.Vars(r)
+	user_id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -137,7 +136,7 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ValidateUser(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	userID, err := strconv.Atoi(params["userID"])
 	if err != nil {
@@ -163,10 +162,9 @@ func ValidateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetGithubUser(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
-	decoder := json.NewDecoder(r.Body)
-	var code string
-	err := decoder.Decode(&code)
+	setupCors(&w)
+	params := mux.Vars(r)
+	code := params["code"]
 	token, err := utils.GetGitHubOauthToken(code)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -201,6 +199,11 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(userResponse)
 		json.NewEncoder(w).Encode(token)
 	} else {
+		user, err = db.UserRepo.GetUserByID(userOut.Inner_ID)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+			return
+		}
 		_, amount, err := db.JokeRepo.GetUserFavoriteJokes(user.ID, 1, 0, "new")
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -221,7 +224,7 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
 	var sender_id int
@@ -242,7 +245,7 @@ func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
 	var sender_id int
@@ -263,7 +266,7 @@ func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ChangeUserNameHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var new_name string
 	var f map[string]string
@@ -287,7 +290,7 @@ func ChangeUserNameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ChangeUserPasswordHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var f map[string]string
 	err := decoder.Decode(&f)

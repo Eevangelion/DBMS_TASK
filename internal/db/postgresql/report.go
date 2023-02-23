@@ -44,12 +44,20 @@ func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report
 	}, nil
 }
 
-func (r ReportRepository) GetAllReports() (reportsOut []models.Report, err error) {
+func (r ReportRepository) GetAllReports() (reportsOut *models.ReportResponse, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+	var amount int
+	qry2 := `select count(id) from public."Reports"`
+	err = DB.QueryRow(qry2).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get all reports(amount):", err)
+		return nil, err
+	}
+	reportsOut.Amount = amount
 	qry := `select * from public."Reports"`
 	rows, err := DB.Query(qry)
 	defer rows.Close()
@@ -72,7 +80,7 @@ func (r ReportRepository) GetAllReports() (reportsOut []models.Report, err error
 			SenderId:       sender_id,
 			ReceiverId:     receiver_id,
 		}
-		reportsOut = append(reportsOut, NewReport)
+		reportsOut.Reports = append(reportsOut.Reports, NewReport)
 	}
 	return reportsOut, nil
 }

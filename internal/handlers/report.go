@@ -57,7 +57,7 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var report_id int
 	var f map[string]int
@@ -85,7 +85,7 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	report_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -102,7 +102,7 @@ func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	reportOut, err := db.ReportRepo.GetAllReports()
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -113,7 +113,7 @@ func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var report_id int
 	var f map[string]int
@@ -147,7 +147,7 @@ func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DenyReportHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var report_id int
 	var f map[string]int

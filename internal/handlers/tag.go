@@ -13,7 +13,7 @@ import (
 )
 
 func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var tagRequest models.TagRequest
 	err := decoder.Decode(&tagRequest)
@@ -36,7 +36,7 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var tagRequest models.TagRequest
 	err := decoder.Decode(&tagRequest)
@@ -54,7 +54,7 @@ func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTagByIDHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
+	setupCors(&w)
 	params := mux.Vars(r)
 	tag_id, err := strconv.Atoi(params["tagID"])
 	if err != nil {
@@ -71,8 +71,8 @@ func GetTagByIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllTagsHandler(w http.ResponseWriter, r *http.Request) {
-	setupCors(&w, r)
-	tags, err := db.TagRepo.GetAll()
+	setupCors(&w)
+	tags, err := db.TagRepo.GetAllTags()
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
