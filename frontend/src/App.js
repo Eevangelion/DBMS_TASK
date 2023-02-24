@@ -16,7 +16,7 @@ const App = () => {
 
   let location = useLocation();
   let state = location.state;
-  const userID = 2;
+  const userID = 6;
   localStorage.setItem("userID", userID);
   const {
     data: user,

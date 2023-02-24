@@ -5,11 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/config"
@@ -20,52 +17,47 @@ type GitHubOauthToken struct {
 	Access_token string
 }
 
-func GetGitHubOauthToken(code string) (*GitHubOauthToken, error) {
+func GetGitHubOauthToken(code string) (token string, err error) {
 	const rootURl = "https://github.com/login/oauth/access_token"
-	config := config.GetConfig()
 
+	conf := config.GetConfig()
 	values := url.Values{}
 	values.Add("code", code)
-	values.Add("client_id", config.GitHubClientID)
-	values.Add("client_secret", config.GitHubClientSecret)
+	values.Add("client_id", conf.GitHubClientID)
+	values.Add("client_secret", conf.GitHubClientSecret)
 
 	query := values.Encode()
 
 	queryString := fmt.Sprintf("%s?%s", rootURl, bytes.NewBufferString(query))
 	req, err := http.NewRequest("POST", queryString, nil)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Accept", "application/json")
 	client := http.Client{
 		Timeout: time.Second * 30,
 	}
 
 	res, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	log.Println(req, res.StatusCode)
 
 	if res.StatusCode != http.StatusOK {
-		return nil, errors.New("could not retrieve token")
+		return "", errors.New("could not retrieve token")
 	}
 
-	resBody, err := ioutil.ReadAll(res.Body)
+	decoder := json.NewDecoder(res.Body)
+	var v map[string]string
+	err = decoder.Decode(&v)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	parsedQuery, err := url.ParseQuery(string(resBody))
-	if err != nil {
-		return nil, err
-	}
-	tokenBody := &GitHubOauthToken{
-		Access_token: parsedQuery["access_token"][0],
-	}
+	token = v["access_token"]
 
-	return tokenBody, nil
+	return token, nil
 }
 
 func GetGitHubUser(access_token string) (*models.User, error) {
@@ -77,6 +69,8 @@ func GetGitHubUser(access_token string) (*models.User, error) {
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", access_token))
+
+	// req.Header.Set("Accept", "application/json")
 
 	client := http.Client{
 		Timeout: time.Second * 30,
@@ -91,23 +85,27 @@ func GetGitHubUser(access_token string) (*models.User, error) {
 		return nil, errors.New("could not retrieve user")
 	}
 
-	resBody, err := ioutil.ReadAll(res.Body)
+	decoder := json.NewDecoder(res.Body)
+	var v map[string]interface{}
+	err = decoder.Decode(&v)
 	if err != nil {
 		return nil, err
 	}
 
-	var GitHubUserRes map[string]interface{}
+	user_id := int(v["id"].(float64))
 
-	if err := json.Unmarshal(resBody, &GitHubUserRes); err != nil {
-		return nil, err
+	mail_interface := v["email"]
+	mail := ""
+	if mail_interface == nil {
+		mail = ""
+	} else {
+		mail = v["email"].(string)
 	}
-
-	user_id, err := strconv.Atoi(GitHubUserRes["id"].(string))
 
 	userBody := &models.User{
 		ID:                  user_id,
-		Name:                GitHubUserRes["login"].(string),
-		Email:               GitHubUserRes["email"].(string),
+		Name:                v["login"].(string),
+		Email:               mail,
 		Reports:             0,
 		RemainingReports:    0,
 		UnbanDate:           "date",

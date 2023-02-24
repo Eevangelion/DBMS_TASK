@@ -337,10 +337,10 @@ func (u UserRepository) CreateGithubUserWithID(user_id int, inner_id int) (err e
 		log.Println("Connection error:", err)
 		return err
 	}
-	qry := `INSERT INTO public."Users" (git_id,inner_id) values ($1, $2)`
+	qry := `INSERT INTO public."GithubUsers" (git_id,inner_id) values ($1, $2)`
 	_, err = DB.Exec(qry, user_id, inner_id)
 	if err != nil {
-		log.Println("Error while trying to create github user(count):", err)
+		log.Println("Error while trying to create github user:", err)
 		return err
 	}
 	return nil

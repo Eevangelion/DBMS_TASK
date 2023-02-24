@@ -170,7 +170,7 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	user, err := utils.GetGitHubUser(token.Access_token)
+	user, err := utils.GetGitHubUser(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
