@@ -5,6 +5,7 @@ const initialState = {
     userPageIsActive: true,
     searchPageIsActive: true,
     subscribesIsActive: true,
+    reportListIsActive: true,
 }
 
 export const pagesSlice = createSlice({
@@ -16,6 +17,7 @@ export const pagesSlice = createSlice({
             case 'feed': state.feedIsActive = action.payload.state;break;
             case 'userPage': state.userPageIsActive = action.payload.state;break;
             case 'searchPage': state.searchPageIsActive = action.payload.state;break;
+            case 'reportList': state.reportListIsActive = action.payload.state;break;
             default: state.subscribesIsActive = action.payload.state;break;
             }
         },  

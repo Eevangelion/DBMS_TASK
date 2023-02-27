@@ -131,7 +131,7 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	pageURL := r.URL.Query().Get("pageArg")
+	pageURL := r.URL.Query().Get("page")
 	pageSizeURL := r.URL.Query().Get("pageSize")
 	var page, pageSize int
 	if pageURL == "" {

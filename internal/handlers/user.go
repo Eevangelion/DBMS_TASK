@@ -180,6 +180,7 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	log.Println(token)
 	if userOut == nil {
 		new_id, err := db.UserRepo.Create(user)
 		if err != nil {
@@ -187,14 +188,12 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		err = db.UserRepo.CreateGithubUserWithID(user.ID, int(new_id))
-		userResponse := models.UserResponse{
-			ID:        int(new_id),
-			Name:      user.Name,
-			Role:      user.Role,
-			Reports:   user.Reports,
-			Favorites: 0,
-			UnbanDate: user.UnbanDate,
-		}
+		userResponse := struct {
+			ID    int    `json:"id"`
+			Name  string `json:"name"`
+			Role  string `json:"role"`
+			Token string `json:"token"`
+		}{int(new_id), user.Name, user.Role, token}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(userResponse)
 	} else {
@@ -203,19 +202,12 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
 		}
-		_, amount, err := db.JokeRepo.GetUserFavoriteJokes(user.ID, 1, 0, "new")
-		if err != nil {
-			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
-			return
-		}
-		userResponse := models.UserResponse{
-			ID:        user.ID,
-			Name:      user.Name,
-			Role:      user.Role,
-			Reports:   user.Reports,
-			Favorites: amount,
-			UnbanDate: user.UnbanDate,
-		}
+		userResponse := struct {
+			ID    int    `json:"id"`
+			Name  string `json:"name"`
+			Role  string `json:"role"`
+			Token string `json:"token"`
+		}{user.ID, user.Name, user.Role, token}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(userResponse)
 	}

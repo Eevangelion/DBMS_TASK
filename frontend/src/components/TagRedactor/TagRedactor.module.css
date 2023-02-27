@@ -24,6 +24,7 @@
 .buttons {
     width: 40vw;
     height: 7vh;
+    margin-top: 10vh;
     display: flex;
     flex-direction: column;
     justify-content: center;

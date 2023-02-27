@@ -57,7 +57,10 @@ func (r ReportRepository) GetAllReports() (reportsOut *models.ReportResponse, er
 		log.Println("Error while trying to get all reports(amount):", err)
 		return nil, err
 	}
-	reportsOut.Amount = amount
+	reportsOut = &models.ReportResponse{
+		Reports: nil,
+		Amount:  amount,
+	}
 	qry := `select * from public."Reports"`
 	rows, err := DB.Query(qry)
 	defer rows.Close()

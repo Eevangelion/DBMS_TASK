@@ -82,7 +82,7 @@ const TagRedactor = () => {
                 {tagsItems}
             </div>
             <input className={styles.newTag} placeholder="Название тэга" onChange={e=>setTagName(e.target.value)} value={newTagName} ></input>
-                <div className={styles.buttons}>
+            <div className={styles.buttons}>
                 <button className={styles.createButton} onClick={handleClickCreateButton}>
                     Создать новый тэг
                 </button>

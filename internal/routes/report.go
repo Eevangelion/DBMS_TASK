@@ -32,5 +32,11 @@ var Report = router.RoutePrefix{
 			Pattern:     "/apply/",
 			HandlerFunc: handlers.ApplyReportHandler,
 		},
+		{
+			Name:        "GetReports",
+			Method:      "GET",
+			Pattern:     "/",
+			HandlerFunc: handlers.GetAllReportsHandler,
+		},
 	},
 }

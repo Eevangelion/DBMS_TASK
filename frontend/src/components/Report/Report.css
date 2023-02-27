@@ -1,0 +1,83 @@
+.report-post {
+    width: 80vw;
+    min-height: 10vh;
+    display: flex;
+    background-color: #fff;
+    flex-direction: column;
+    justify-content: center;
+    border: 0.1vh solid #ccc;
+    border-radius: 0.2vw;
+}
+.report-content {
+    width: 80vw;
+    margin-bottom: 1vh;
+}
+.report-top-panel {
+    width: 80vw;
+    margin-top: 1vh;
+    padding-bottom: 0.5vh;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 0.1vh solid #ccc;
+}
+.report-sender {
+    width: 15vw;
+    margin-left: 2vw;
+    margin-right: 2vw;
+}
+.report-receiver {
+    width: 15vw;
+    margin-right: 35vw;
+    
+}
+.report-description {
+    margin-left: 2vw;
+    margin-top: 1vh;
+}
+.report-post + .report-post {
+    margin-top: 1vh;
+}
+.buttons {
+    height: 4vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+.apply-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 6vw;
+    height: 3.5vh;
+    border-radius: 45vh;
+    background-color: #00d;
+    text-decoration : none;
+    border-color: transparent;
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8vw;
+}
+.deny-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 6vw;
+    height: 3.5vh;
+    border-radius: 45vh;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+    background-color: #aaa;
+    text-decoration : none;
+    border-color: transparent;
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8vw;
+}
+.apply-button:hover, .deny-button:hover {
+    color: #ccc;
+}

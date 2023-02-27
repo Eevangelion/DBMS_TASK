@@ -7,8 +7,6 @@ import JokeSorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
 import PageSelector from "../components/PageSelector/PageSelector";
 import { useGetJokesQuery } from "../services/service";
-import { getCode } from "../store/actions/auth";
-import { useGetGitQuery } from "../services/auth";
 
 
 const paginateStyle = {
@@ -22,12 +20,6 @@ const paginateStyle = {
 }
 
 const Feed = (props) => {
-
-    const code = getCode();
-    const {
-        data: user,
-        isLoading: loadingGavno
-    } = useGetGitQuery(code);
     const [pageState, setPage] = useState(1);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
     const isActive = useSelector(state => state.pagesReducer.feedIsActive);
@@ -37,11 +29,11 @@ const Feed = (props) => {
         isLoading: loadingJokes,
     } = useGetJokesQuery({page: pageState, sortBy: activeButton});
 
+    console.log(pageState);
 
-    if (loadingJokes || loadingGavno) {
+    if (loadingJokes) {
         return <div>Загрузка...</div>;
     }
-    console.log(user); 
     const {jokes, amount} = response; 
     if (!jokes) {
         return <div className={styles.mainPage}>
@@ -58,7 +50,7 @@ const Feed = (props) => {
 
     const posts = jokes.map((joke) =>
     {
-        return <JokePost joke={joke}/>
+        return <JokePost key={joke.id} joke={joke}/>
     });
 
     return (

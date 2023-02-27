@@ -3,16 +3,7 @@ import {useGetUserByIDQuery} from "../../services/service";
 import "./TopPanelButtons.css";
 
 const TopPanelButtons = (props) => {
-    const userID = localStorage.getItem("userID");
-    const {
-        data: user,
-        isLoading: loadingUser
-    } = useGetUserByIDQuery(userID);
-
-    if (loadingUser) {
-        return (<div>Загрузка...</div>);
-    }
-
+    const username = localStorage.getItem("userName");
     if (props.isAuth === false) {
         return (<div className="auth">
                     <div className="login">
@@ -24,8 +15,8 @@ const TopPanelButtons = (props) => {
                 </div>)
     } else {
         return (<div className="profile">
-                    <a className="profile-button" href={"/user/" + user.name}>
-                        <strong>Мой профиль</strong><span style={{color: '#999'}}>{"(" + user.name + ")"}</span>
+                    <a className="profile-button" href={"/user/" + username}>
+                        <strong style={{marginLeft: "1vw"}}>Мой профиль</strong><span style={{color: '#999', marginRight: "1vw"}}>{" (" + username + ")"}</span>
                     </a> 
                 </div>);
     }

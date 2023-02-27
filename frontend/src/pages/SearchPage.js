@@ -55,7 +55,7 @@ const SearchPage = (props) => {
 
         const posts = jokes.map((joke) =>
         {
-            return <JokePost joke={joke}/>
+            return <JokePost key={joke.id} joke={joke}/>
         });
         return (
             <div className={styles.mainPage}>
@@ -81,25 +81,22 @@ const SearchPage = (props) => {
                         <TopPanel />
                         <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                             <div className={styles.feed}>
-                                <Sorter />
                                 <div className={styles.txt}>По данному запросу ничего не найдено</div>
                                 <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
                             </div>
                         </div>
                     </div>;
         }
-
         const posts = people.map((user) =>
         {
-            return <UserPost user={user}/>
+            return <UserPost key={user.id} user={user}/>
         });
         return (
             <div className={styles.mainPage}>
                 <TopPanel />
                 <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                     <div className={styles.feed}>
-                        <Sorter />
-                        <div className={styles.txt}>Пользователи с именем {queryArg}</div> <br/>
+                        <div className={styles.txt}>Результаты поиска пользователей по имени</div> <br/>
                         <ul className={styles.peoplePostList}>
                             {posts}
                         </ul>

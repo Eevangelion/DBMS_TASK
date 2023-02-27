@@ -1,4 +1,3 @@
-import { getAuthorizeCodeHref } from "../../store/actions/auth";
 import styles from "./Auth.module.css";
 
 const clientID = process.env.REACT_APP_CLIENT_ID;

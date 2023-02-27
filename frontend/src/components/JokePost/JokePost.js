@@ -169,7 +169,7 @@ const JokePost = (props) => {
     }
 
     return (
-        <li className="joke-post" style={isActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
+        <li className="joke-post" key={props.key} style={isActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
             <div className="rating-field" style={isActive ? {} : {backgroundColor: "#737474"}}>
                 <div className="rating">{rating}</div>
                     <Link

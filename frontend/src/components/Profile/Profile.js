@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Button from "react-bootstrap/esm/Button";
 import { useGetUserByNameQuery } from "../../services/service";
 import "./Profile.css";
 

@@ -52,9 +52,8 @@ const UserPage = (props) => {
     }
     const posts = jokes.map((joke) =>
     {
-        return <JokePost joke={joke}/>
+        return <JokePost key={joke.id} joke={joke}/>
     });
-    console.log(isActive);
     return (
         <div className={styles.mainPage}>
             <TopPanel />

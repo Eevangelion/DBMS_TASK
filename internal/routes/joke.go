@@ -21,6 +21,12 @@ var Joke = router.RoutePrefix{
 			HandlerFunc: handlers.DeleteJokeHandler,
 		},
 		{
+			Name:        "GetJokeByID",
+			Method:      "GET",
+			Pattern:     "/{id}/",
+			HandlerFunc: handlers.GetJokeByIDHandler,
+		},
+		{
 			Name:        "Get",
 			Method:      "GET",
 			Pattern:     "/tags/{id}/",

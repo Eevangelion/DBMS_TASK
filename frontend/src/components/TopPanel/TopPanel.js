@@ -14,7 +14,6 @@ function TopPanel(props) {
     const handleChangeType = (value) => {
         setSearchType(value);
     }
-    console.log(searchText, searchType);
 
     return (
     <div className="top-panel">
@@ -32,6 +31,7 @@ function TopPanel(props) {
                             handleChangeType(event.target.value)
                         }
                     }
+                    defaultValue={`keyword`}
                 >
                     <MenuItem value={`keyword`}>Ключевому слову</MenuItem>
                     <MenuItem value={`tag`}>Тэгу</MenuItem>

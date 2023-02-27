@@ -1,7 +1,7 @@
 import { useNavigate, useLocation, Link } from "react-router-dom"
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useGetUserByIDQuery, useChangePasswordMutation, useChangeUserNameMutation } from "../../services/service";
+import { useChangePasswordMutation, useChangeUserNameMutation } from "../../services/service";
 import { selectPage } from '../../store/reducers/page';
 import styles from './Settings.module.css';
 
@@ -26,16 +26,11 @@ const linkStyle = {
 const Settings = () => {
     const dispatch = useDispatch();
     dispatch(selectPage({page: 'userPage', state: false}));
-    const location = useLocation();
     const navigate = useNavigate();
-    const userID = localStorage.getItem('userID');
+    const userRole = localStorage.getItem('userRole');
     const [usernameText, setUsernameText] = useState('');
     const [passwordText, setPasswordText] = useState('');
 
-    const {
-        data: user,
-        isLoading: loadingUser, 
-    }= useGetUserByIDQuery(userID);
     const [changeName] = useChangeUserNameMutation();
     const [changePassword] = useChangePasswordMutation();
 
@@ -47,26 +42,8 @@ const Settings = () => {
     const handleChangePassword = (password) => {
         changePassword(password);
     };
-    console.log(usernameText);
 
-    if (loadingUser) {
-        return (
-        <div className={styles.modalWindow}>
-            <div className={styles.modalHeader}>
-                Настройки
-            </div>
-            <div className={styles.modalBody}>
-                Загрузка...
-            </div>
-            <div className={styles.modalFooter}>
-                <button className={styles.backButton} onClick={() => {navigate(-1);dispatch(selectPage({page: 'userPage', state: true}));}}>
-                    Назад
-                </button>
-            </div>
-        </div>);
-    }
-
-    if (user.role === "admin") {
+    if (userRole === "admin") {
         return (
         <div className={styles.modalWindow}>
             <div className={styles.modalHeader}>
@@ -105,15 +82,13 @@ const Settings = () => {
                         </button>
                     </div>
                 </div>
-                <Link   to={`/tagredactor`} 
+                <Link   to={`/tagredactor/`} 
                         style={linkStyle}
-                        state={{ backgroundLocation: location }}
                 >
                         <strong>Редактировать список тэгов</strong>
                 </Link>
-                <Link   to={`/reportslist`} 
+                <Link   to={`/reportslist/`} 
                         style={linkStyle}
-                        state={{ backgroundLocation: location }}
                 >
                         <strong>Список жалоб</strong>
                 </Link>

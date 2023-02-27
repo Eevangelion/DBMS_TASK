@@ -9,22 +9,14 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import CreateJoke from "./components/CreateJoke/CreateJoke"
 import CreateReport from './components/CreateReport/CreateReport';
 import Subscribe from './components/Subscribe/Subscribe';
-import { useGetUserByIDQuery } from './services/service';
 import ReportsList from './components/ReportsList/ReportsList';
 import AuthModal from './components/Auth/Auth';
+import OAuthRedirect from './components/OAuthRedirect/OAuthRedirect';
+import JokeModal from './components/JokeModal/JokeModal';
 const App = () => {
-
   let location = useLocation();
   let state = location.state;
-  const userID = 6;
-  localStorage.setItem("userID", userID);
-  const {
-    data: user,
-    isLoading: loadingUser,
-  } = useGetUserByIDQuery(userID);
-  if (!loadingUser) {
-    localStorage.setItem("userName", user.name);
-  }
+  localStorage.setItem("userRole", "admin");
   return (
     <>
       <Routes location={state?.backgroundLocation || location}>
@@ -34,15 +26,17 @@ const App = () => {
         <Route path='user/:username' element={<UserPage />}/>
         <Route path='search/:type/:query?' element={<SearchPage />}/>
         <Route path='login/' element={<AuthModal />} />
+        <Route path='oauth/' element={<OAuthRedirect /> } />
+        <Route path="tagredactor/" element={<TagRedactor />} />
+        <Route path="reportslist/" element={<ReportsList />}/>
       </Routes>
       {state?.backgroundLocation && (
         <Routes>
             <Route path="/create_joke" element={<CreateJoke />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/tagredactor" element={<TagRedactor />} />
             <Route path="/create_report/:jokeID" element={<CreateReport />} />
             <Route path="/subscribe/:receiverID" element={<Subscribe />}/>
-            <Route path="/reportslist" element={<ReportsList />}/>
+            <Route path="/joke/:jokeID" element={<JokeModal />} />
         </Routes>
       )}
     </>
