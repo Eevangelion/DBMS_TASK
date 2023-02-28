@@ -103,6 +103,10 @@ func GetGitHubUser(access_token string) (*models.User, error) {
 
 	user_id, err := strconv.Atoi(GitHubUserRes["id"].(string))
 
+	if err != nil {
+		return nil, err
+	}
+
 	userBody := &models.User{
 		ID:                  user_id,
 		Name:                GitHubUserRes["login"].(string),
