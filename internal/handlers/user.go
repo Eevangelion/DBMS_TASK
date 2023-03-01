@@ -180,7 +180,6 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	log.Println(token)
 	if userOut == nil {
 		new_id, err := db.UserRepo.Create(user)
 		if err != nil {
@@ -188,28 +187,26 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		err = db.UserRepo.CreateGithubUserWithID(user.ID, int(new_id))
-		userResponse := struct {
-			ID    int    `json:"id"`
-			Name  string `json:"name"`
-			Role  string `json:"role"`
-			Token string `json:"token"`
-		}{int(new_id), user.Name, user.Role, token}
+		jwt_token, err := utils.CreateToken(user)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error while creating token")
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(userResponse)
+		json.NewEncoder(w).Encode(jwt_token)
 	} else {
 		user, err = db.UserRepo.GetUserByID(userOut.Inner_ID)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
 		}
-		userResponse := struct {
-			ID    int    `json:"id"`
-			Name  string `json:"name"`
-			Role  string `json:"role"`
-			Token string `json:"token"`
-		}{user.ID, user.Name, user.Role, token}
+		jwt_token, err := utils.CreateToken(user)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error while creating token")
+			return
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(userResponse)
+		json.NewEncoder(w).Encode(jwt_token)
 	}
 }
 

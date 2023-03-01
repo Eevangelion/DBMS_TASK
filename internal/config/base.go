@@ -21,6 +21,9 @@ type Config struct {
 	GitHubClientID         string `mapstructure:"GITHUB_OAUTH_CLIENT_ID"`
 	GitHubClientSecret     string `mapstructure:"GITHUB_OAUTH_CLIENT_SECRET"`
 	GitHubOAuthRedirectUrl string `mapstructure:"GITHUB_OAUTH_REDIRECT_URL"`
+
+	TokenLifeTime int
+	PrivateKey    string
 }
 
 var Conf *Config = nil
@@ -44,6 +47,8 @@ func GetConfig() *Config {
 			GitHubClientID:         getEnv("GITHUB_OAUTH_CLIENT_ID", ""),
 			GitHubClientSecret:     getEnv("GITHUB_OAUTH_CLIENT_SECRET", ""),
 			GitHubOAuthRedirectUrl: getEnv("GITHUB_OAUTH_REDIRECT_URL", ""),
+			TokenLifeTime:          getEnvAsInt("TokenLifeTime", 15),
+			PrivateKey:             getEnv("PrivateKey", "YouMissSomething"),
 		}
 	}
 	return Conf

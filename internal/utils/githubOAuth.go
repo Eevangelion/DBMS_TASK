@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/config"
@@ -104,7 +105,7 @@ func GetGitHubUser(access_token string) (*models.User, error) {
 
 	userBody := &models.User{
 		ID:                  user_id,
-		Name:                v["login"].(string),
+		Name:                "user" + strconv.Itoa(user_id),
 		Email:               mail,
 		Reports:             0,
 		RemainingReports:    0,
