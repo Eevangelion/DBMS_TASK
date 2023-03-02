@@ -2,7 +2,6 @@ package psql
 
 import (
 	"log"
-	"strings"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
@@ -219,7 +218,6 @@ func (j JokeRepository) GetJokesByTag(tag_name string, page int, pageSize int, s
 		log.Println("Connection error:", err)
 		return nil, 0, err
 	}
-	tag_name = strings.ToLower(tag_name)
 	qry := ``
 	qry2 := ``
 	if sort_mode == "new" {

@@ -61,7 +61,6 @@ func (t TagRepository) Delete(tag_name string) (err error) {
 		log.Println("Connection error:", err)
 		return err
 	}
-	log.Println(tag_name)
 	qry := `DELETE FROM public."Tags" where name=$1`
 	_, err = DB.Exec(qry, tag_name)
 	if err != nil {

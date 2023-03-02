@@ -11,13 +11,13 @@ const UserPost = (props) => {
     return (
         <div className="user-post" style={isActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
             <div className="user-info">
-                <div className="user-name">{userInfo.name}</div>
+                <Link className="user-name" to={`/user/${userInfo.name}`}>{userInfo.name}</Link>
                 <div className="user-subs-count">{userInfo.subscribers_count} подписчиков</div>
                 <div className="user-posts-count"> {userInfo.posts_count} шуток опубликовано</div>
             </div>
             <Link   to={`/subscribe/${userInfo.id}`} 
                     className="sub-button"
-                    style={isActive ? {} : {backgroundColor: "#118", color: "#aaa"}}
+                    style={isActive ? {} : {backgroundColor: "#043653", color: "#aaa"}}
                     state={{ backgroundLocation: location}}
                     onClick={(event) => {if (!isActive) event.preventDefault()}}
             >Подписаться</Link>

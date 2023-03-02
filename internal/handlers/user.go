@@ -15,6 +15,7 @@ import (
 )
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var user models.User
 	err := decoder.Decode(&user)
@@ -34,6 +35,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
 	var user_id int
 	err := decoder.Decode(&user_id)
@@ -51,6 +53,12 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserDataHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	username := params["username"]
 	user, err := db.UserRepo.GetUserByUsername(username)
@@ -76,6 +84,12 @@ func GetUserDataHandler(w http.ResponseWriter, r *http.Request) {
 }
 func GetUserDataByIDHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	str_id := params["id"]
 	id, err := strconv.Atoi(str_id)
@@ -107,8 +121,13 @@ func GetUserDataByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	params := mux.Vars(r)
-	user_id, err := strconv.Atoi(params["id"])
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	user_id := claims.User_ID
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -220,37 +239,38 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 
 func RefreshUser(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	token := r.Header.Get("Authorization")
-	claims, err := utils.ValidateAccessToken(token)
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
-		return
-	}
 	decoder := json.NewDecoder(r.Body)
-	var refreshToken string
-	err = decoder.Decode(&refreshToken)
+	var refresh_token string
+	var f map[string]string
+	err := decoder.Decode(&f)
+	refresh_token = f["refresh_token"]
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	err = utils.ValidateRefreshToken(refreshToken)
+	err = utils.ValidateRefreshToken(refresh_token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
 	}
-	user := models.User{
-		ID:   claims.User_ID,
-		Name: claims.UserName,
-		Role: claims.Role,
+	user_id, err := strconv.Atoi(f["id"])
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
 	}
-	jwt_token, refresh_token, err := utils.CreateTokens(&user)
+	user := models.User{
+		ID:   user_id,
+		Name: f["name"],
+		Role: f["role"],
+	}
+	jwt_token, new_refresh_token, err := utils.CreateTokens(&user)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
 	tokens := models.TokensResponse{
 		JWTToken:     jwt_token,
-		RefreshToken: refresh_token,
+		RefreshToken: new_refresh_token,
 	}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(tokens)
@@ -258,17 +278,20 @@ func RefreshUser(w http.ResponseWriter, r *http.Request) {
 
 func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	sender_id := claims.User_ID
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
-	var sender_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&receiver_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	receiver_id = f["receiver_id"]
-	sender_id = f["sender_id"]
 	err = db.JokeRepo.SubscribeToUser(receiver_id, sender_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -279,17 +302,20 @@ func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	sender_id := claims.User_ID
 	decoder := json.NewDecoder(r.Body)
 	var receiver_id int
-	var sender_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&receiver_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	receiver_id = f["receiver_id"]
-	sender_id = f["sender_id"]
 	err = db.JokeRepo.UnSubscribeFromUser(receiver_id, sender_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -300,20 +326,24 @@ func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func ChangeUserNameHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var new_name string
-	var f map[string]string
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&new_name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	user_id, err := strconv.Atoi(f["user_id"])
+	user_id := claims.User_ID
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	new_name = f["name"]
 	err = db.UserRepo.ChangeUserName(user_id, new_name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -324,19 +354,20 @@ func ChangeUserNameHandler(w http.ResponseWriter, r *http.Request) {
 
 func ChangeUserPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	user_id := claims.User_ID
 	decoder := json.NewDecoder(r.Body)
-	var f map[string]string
-	err := decoder.Decode(&f)
+	var new_transformed_password string
+	err = decoder.Decode(&new_transformed_password)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	user_id, err := strconv.Atoi(f["user_id"])
-	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
-		return
-	}
-	new_transformed_password := f["transformed_password"]
 	err = db.UserRepo.ChangeUserPassword(user_id, new_transformed_password)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

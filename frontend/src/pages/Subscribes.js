@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useSelector } from "react-redux";
 import Pagination from '@mui/material/Pagination';
 import PageSelector from "../components/PageSelector/PageSelector";
@@ -7,52 +7,93 @@ import JokePost from "../components/JokePost/JokePost";
 import JokeSorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
 import { useGetSubscribedByIDQuery } from "../services/service";
+import { useGetTokenMutation } from "../services/auth";
+import LoadingModal from "../components/LoadingModal/LoadingModal";
 
-
-
-const paginateStyle = {
-    textDecoration : "none",
-    color: "white",
-    fontWeight: "bold",
-    fontFamily: "Arial, Helvetica, sans-serif",
-    fontSize: "1.4vh",
-    marginLeft: "2.5vw",
-    marginTop: "1vw",
-}
 
 const Subscribes = (props) => {
 
     const [pageState, setPage] = useState(1);
+    const [pageContent, setContent] = useState(<></>);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
     const isActive = useSelector(state => state.pagesReducer.subscribesIsActive);
     const userID = localStorage.getItem("userID");
+    const expTime = localStorage.getItem("token_exp_time");
 
     const {
         data: response,
         isLoading: loadingJokes,
+        error,
     } = useGetSubscribedByIDQuery({id: userID, page: pageState, sortBy: activeButton});
 
-    if (loadingJokes) {
-        return <div>Загрузка...</div>;
-    }
-    const {jokes, amount} = response; 
-    if (!jokes) {
-        return <div className={styles.mainPage}>
-                    <TopPanel />
-                    <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
-                        <div className={styles.feed}>
-                            <JokeSorter />
-                            <div className={styles.txt}>Пользователи, на которых вы подписаны, пока ничего не опубликовали</div>
-                        </div>
-                        <PageSelector pageState={false}/>
-                    </div>
-                </div>;
-    }
+    const [refreshTokens] = useGetTokenMutation();
+    
+    useEffect(() => {
+        if (expTime - Date.now()/1000 < 0) {
+            refreshTokens().then((response) => {
+                const tokens = response.data;
+                const accessToken = tokens.jwt_token;
+                const refreshToken = tokens.refresh_token;
+                const base64Url = accessToken.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const user = JSON.parse(jsonPayload);
+                localStorage.setItem("userID", user.user_id);
+                localStorage.setItem("userName", user.username);
+                localStorage.setItem("userRole", user.role);
+                localStorage.setItem("access_token", accessToken);
+                localStorage.setItem("token_exp_time", user.exp);
+                localStorage.setItem("refresh_token", refreshToken);
+            })
+        }
+    }, [expTime, refreshTokens]);
 
-    const posts = jokes.map((joke) =>
-    {
-        return <JokePost key={joke.id} joke={joke}/>
-    });
+    useEffect(() => {
+        if (!loadingJokes) {
+            const {jokes, amount} = response;
+            if (!jokes) {
+                setContent(
+                    <>
+                        <div className={styles.txt}>Пользователи, на которых вы подписаны, пока ничего не опубликовали</div>
+                    </>
+                );
+            }
+            else {
+                const posts = jokes.map((joke) =>
+                {
+                    return <JokePost key={joke.id} joke={joke}/>
+                });
+                setContent(
+                    <>
+                        <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>
+                        <ul className={styles.jokePostList}>
+                            {posts}
+                        </ul>
+                    </>
+                );
+            }
+        }   
+    }, [response, loadingJokes]);
+    if (loadingJokes) {
+        return <LoadingModal />;
+    }
+    if (error) {
+        if (error && 'status' in error) {
+            const errMsg = 'error' in error ? error.error : JSON.stringify(error.data);
+
+            return (
+                <div>
+                    <div>An error has occurred:</div>
+                    <div>{errMsg}</div>
+                </div>
+            );
+        } else {
+            return <div>{error?.message}</div>;
+        }
+    }
+    const amount = response.amount; 
 
     return (
         <div className={styles.mainPage}>
@@ -60,11 +101,8 @@ const Subscribes = (props) => {
             <div className={styles.info} style={isActive ? {} : {backgroundColor: "#676a6c"}}>
                 <div className={styles.feed}>
                     <JokeSorter />
-                    <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>
-                    <ul className={styles.jokePostList}>
-                        {posts}
-                    </ul>
-                    <Pagination count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} style={paginateStyle} shape="rounded"/>
+                    {pageContent}
+                    <Pagination className={styles.pagination} count={Math.ceil(amount/5)} onChange={(e, value) => setPage(value)} shape="rounded"/>
                 </div>
                 <PageSelector pageState={false} />
             </div>

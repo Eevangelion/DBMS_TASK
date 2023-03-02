@@ -1,10 +1,12 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import { useCreateTagMutation, useDeleteTagMutation, useGetTagsQuery } from "../../services/service";
 import styles from './TagRedactor.module.css';
+import LoadingModal from '../LoadingModal/LoadingModal';
 
 const TagRedactor = () => {
     const navigate = useNavigate();
+    const [pageContent, setContent] = useState(<></>);
     const userID = localStorage.getItem("userID");
 
     const [createTag] = useCreateTagMutation();
@@ -17,19 +19,6 @@ const TagRedactor = () => {
         data: tags,
         isLoading: loadingTags
     } = useGetTagsQuery();
-    if (loadingTags) {
-        return <div className={styles.modalWindow}>Загрузка...</div>;
-    }
-    if (currentTags.length === 0) {
-        setTags(tags);
-        for (let i = 0; i < addedTags.length; i++) {
-            setTags(arr => [...arr, addedTags[i]]);
-        }
-        for (let i = 0; i < removedTags.length; i++) {
-            setTags(currentTags.filter(tag => tag.name !== removedTags[i].name));
-        }
-    }
-    console.log(currentTags);
     const handleClickCreateButton = (event) => {
         for (let i = 0; i < currentTags.length; i++) {
             if (currentTags[i].name === newTagName) {
@@ -59,28 +48,53 @@ const TagRedactor = () => {
         setRemovedTags([]);
     }
 
-    const handleClickTag = (event) => {
-        const tagName = event.target.innerText;
-        for (let i = 0; i < currentTags.length; i++) {
-            if (currentTags[i].name === tagName) {
-                if (currentTags[i].id === -1) {
-                    setAddedTags(addedTags.filter(tag => tag.name !== tagName));
-                } else {
-                    setRemovedTags(arr => [...arr, currentTags[i]]);
-                }
-                setTags(currentTags.filter(tag => tag.name !== tagName));
-                break;
+    useEffect(() => {
+        if (currentTags.length === 0 && tags && tags.length !== 0) {
+            setTags(tags);
+            for (let i = 0; i < addedTags.length; i++) {
+                setTags(arr => [...arr, addedTags[i]]);
+            }
+            for (let i = 0; i < removedTags.length; i++) {
+                setTags(currentTags.filter(tag => tag.name !== removedTags[i].name));
             }
         }
+        if (!currentTags) {
+            setContent(
+                <>
+                </>
+            );
+        } else {
+            const handleClickTag = (event) => {
+                const tagName = event.target.innerText;
+                for (let i = 0; i < currentTags.length; i++) {
+                    if (currentTags[i].name === tagName) {
+                        if (currentTags[i].id === -1) {
+                            setAddedTags(addedTags.filter(tag => tag.name !== tagName));
+                        } else {
+                            setRemovedTags(arr => [...arr, currentTags[i]]);
+                        }
+                        setTags(currentTags.filter(tag => tag.name !== tagName));
+                        break;
+                    }
+                }
+            }
+            const tagsItems = currentTags.map((tag) => { return <div className={styles.tagItem} onMouseEnter={(event)=>{event.target.style.cursor = 'pointer';}}>{tag.name}</div>;});
+            setContent(
+                <>
+                    <div className={styles.tags} onClick={handleClickTag}>
+                        {tagsItems}
+                    </div>
+                </>
+            );
+        }
+    }, [currentTags, addedTags, tags, removedTags]);
+
+    if (loadingTags) {
+        return <LoadingModal />;
     }
-
-    const tagsItems = currentTags.map((tag) => { return <div className={styles.tagItem} onMouseEnter={(event)=>{event.target.style.cursor = 'pointer';}}>{tag.name}</div>;});
-
     return (
         <div className={styles.modalWindow}>
-            <div className={styles.tags} onClick={handleClickTag}>
-                {tagsItems}
-            </div>
+            {pageContent}
             <input className={styles.newTag} placeholder="Название тэга" onChange={e=>setTagName(e.target.value)} value={newTagName} ></input>
             <div className={styles.buttons}>
                 <button className={styles.createButton} onClick={handleClickCreateButton}>

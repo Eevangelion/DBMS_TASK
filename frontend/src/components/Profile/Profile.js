@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetUserByNameQuery } from "../../services/service";
+import LoadingModal from "../LoadingModal/LoadingModal";
 import "./Profile.css";
 
 const Profile = (props) => {
@@ -11,13 +12,11 @@ const Profile = (props) => {
         data: user,
         isLoading: loadingUser,
     } = useGetUserByNameQuery(props.username);
-    const loadingFrame = <div className="profile-block">Загрузка...</div>;
-    const noUserFrame = <div className="profile-block">Пользователя с таким именем не существует</div>;
     if (loadingUser) {
-        return loadingFrame;
+        return <LoadingModal />;
     }
     if (!user) {
-        return noUserFrame;
+        return <div className="profile-block">Пользователя с таким именем не существует</div>;
     }
     let userAccount = true;
     if (props.username !== localStorage.getItem("userName")) {

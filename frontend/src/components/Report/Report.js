@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {useGetUserByIDQuery, useGetJokeByIDQuery, useApplyReportMutation, useRemoveReportMutation } from "../../services/service";
 import "./Report.css";
+import LoadingModal from "../LoadingModal/LoadingModal";
 
 const Report = (props) => {
     const reportsListIsActive = useSelector(state => state.pagesReducer.reportListIsActive);
@@ -20,27 +21,24 @@ const Report = (props) => {
     } = useGetJokeByIDQuery(props.report.receiver_joke_id);
     const [applyReport] = useApplyReportMutation();
     const [denyReport] = useRemoveReportMutation();
-    if (loadingReceiver || loadingSender || loadingJoke) {
-        return (
-            <div classname="report-post">
-                Загрузка...
-            </div>
-        )
+    const loading = loadingReceiver || loadingSender || loadingJoke;
+    if (loading) {
+        return <LoadingModal />;
     }
 
     return (
         <div className="report-post" style={reportsListIsActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
             <div className="report-top-panel" style={reportsListIsActive ? {} : {borderBottom: "0.1vh solid #555"}}>
                 <div className="report-sender">
-                    От кого: <Link to={`/user/${sender.name}`} style={reportsListIsActive ? {} : {color: "#050585"}}>{sender.name}</Link>
+                    От кого: <Link to={`/user/${sender.name}`} style={reportsListIsActive ? {textDecoration: "none"} : {color: "#043653", textDecoration: "none"}}>{sender.name}</Link>
                 </div>
                 <div className="report-receiver"> 
-                    Кому: <Link to={`/user/${receiver.name}`} style={reportsListIsActive ? {} : {color: "#050585"}}>{receiver.name}</Link>
+                    Кому: <Link to={`/user/${receiver.name}`} style={reportsListIsActive ? {textDecoration: "none"} : {color: "#043653", textDecoration: "none"}}>{receiver.name}</Link>
                 </div>
                 <Link   to={`/joke/${joke.id}`}
                         state={{ backgroundLocation: location }}
                         className="joke-link"
-                        style={reportsListIsActive ? {} : {color: "#050585"}}
+                        style={reportsListIsActive ? {} : {color: "#043653"}}
                         onClick={(event) => {if (!reportsListIsActive) event.preventDefault()}}
                 >
                     Просмотреть шутку
@@ -52,7 +50,7 @@ const Report = (props) => {
             <div className="buttons">
                 <Link 
                         className="apply-button"
-                        style={reportsListIsActive ? {} : {backgroundColor: "#118", color: "#aaa"}}
+                        style={reportsListIsActive ? {} : {backgroundColor: "#043653", color: "#aaa"}}
                         onClick={(event)=>{
                             if (reportsListIsActive) applyReport(props.report.id)
                             else event.preventDefault();

@@ -7,6 +7,7 @@ import (
 
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
+	"github.com/Sakagam1/DBMS_TASK/internal/utils"
 	"github.com/gorilla/mux"
 
 	customHTTP "github.com/Sakagam1/DBMS_TASK/internal/http"
@@ -14,6 +15,11 @@ import (
 
 func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	if _, err := utils.ValidateAccessToken(token); err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var jokeRequest models.JokeRequest
 	err := decoder.Decode(&jokeRequest)
@@ -52,6 +58,11 @@ func CreateJokeHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	if _, err := utils.ValidateAccessToken(token); err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
 	err := decoder.Decode(&joke_id)
@@ -74,6 +85,11 @@ func DeleteJokeHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	if _, err := utils.ValidateAccessToken(token); err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	username := params["username"]
 	pageURL := r.URL.Query().Get("page")
@@ -131,6 +147,11 @@ func GetUserJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	if _, err := utils.ValidateAccessToken(token); err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	pageURL := r.URL.Query().Get("page")
 	pageSizeURL := r.URL.Query().Get("pageSize")
 	var page, pageSize int
@@ -177,6 +198,11 @@ func GetPageOfJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	if _, err := utils.ValidateAccessToken(token); err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -194,17 +220,20 @@ func GetJokeTagsHandler(w http.ResponseWriter, r *http.Request) {
 
 func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
-	var user_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
+	user_id := claims.User_ID
+	err = decoder.Decode(&joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	joke_id = f["joke_id"]
-	user_id = f["user_id"]
 	err = db.JokeRepo.AddToFavorite(user_id, joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -215,17 +244,20 @@ func AddToFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	user_id := claims.User_ID
 	decoder := json.NewDecoder(r.Body)
 	var joke_id int
-	var user_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	joke_id = f["joke_id"]
-	user_id = f["user_id"]
 	err = db.JokeRepo.DeleteFromFavorite(user_id, joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -236,12 +268,13 @@ func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	params := mux.Vars(r)
-	user_id, err := strconv.Atoi(params["id"])
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
 	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
 	}
+	user_id := claims.User_ID
 	pageURL := r.URL.Query().Get("pageArg")
 	pageSizeURL := r.URL.Query().Get("pageSize")
 	var page, pageSize int
@@ -284,12 +317,13 @@ func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	receiver_id_URL := r.URL.Query().Get("id")
-	receiver_id, err := strconv.Atoi(receiver_id_URL)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
 	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
 	}
+	user_id := claims.User_ID
 	pageURL := r.URL.Query().Get("page")
 	pageSizeURL := r.URL.Query().Get("page_size")
 	var page, pageSize int
@@ -322,7 +356,7 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	jokes, amount, err := db.JokeRepo.GetUserSubscribedJokes(receiver_id, page, pageSize, sortMode)
+	jokes, amount, err := db.JokeRepo.GetUserSubscribedJokes(user_id, page, pageSize, sortMode)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -336,6 +370,12 @@ func GetUserSubscribedJokesHandler(w http.ResponseWriter, r *http.Request) {
 
 func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -359,6 +399,12 @@ func AddTagToJokeHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTagFromJokeHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -382,6 +428,12 @@ func DeleteTagFromJokeHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetJokeByIDHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	joke_id, err := strconv.Atoi(params["id"])
 	if err != nil {

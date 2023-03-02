@@ -1,26 +1,9 @@
-import { useNavigate, useLocation, Link } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useChangePasswordMutation, useChangeUserNameMutation } from "../../services/service";
 import { selectPage } from '../../store/reducers/page';
 import styles from './Settings.module.css';
-
-const linkStyle = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    textAlign: "center",
-    width: "380px",
-    height: "30px",
-    marginTop: "2vh",
-    borderRadius: "45px",
-    backgroundColor: "#00d",
-    textDecoration : "none",
-    borderColor: "transparent",
-    color: "white",
-    fontWeight: "bold",
-    fontFamily: "Arial, Helvetica, sans-serif",
-}
 
 
 const Settings = () => {
@@ -42,6 +25,11 @@ const Settings = () => {
     const handleChangePassword = (password) => {
         changePassword(password);
     };
+    const signOut = () => {
+        localStorage.clear();
+        navigate("/login");
+        window.scrollTo(0,0);
+    }
 
     if (userRole === "admin") {
         return (
@@ -83,15 +71,18 @@ const Settings = () => {
                     </div>
                 </div>
                 <Link   to={`/tagredactor/`} 
-                        style={linkStyle}
+                        className={styles.tagRedactorButton}
                 >
                         <strong>Редактировать список тэгов</strong>
                 </Link>
                 <Link   to={`/reportslist/`} 
-                        style={linkStyle}
+                        className={styles.reportListButton}
                 >
                         <strong>Список жалоб</strong>
                 </Link>
+                <button className={styles.signOutButton} onClick={signOut}>
+                    Выйти из аккаунта
+                </button>
             </div>
             <div className={styles.modalFooter}>
                 <button className={styles.backButton} onClick={() => {navigate(-1);dispatch(selectPage({page: 'userPage', state: true}));}}>
@@ -138,6 +129,9 @@ const Settings = () => {
                             </button>
                         </div>
                     </div>
+                    <button className={styles.signOutButton} onClick={signOut}>
+                        Выйти из аккаунта
+                    </button>
                 </div>
                 <div className={styles.modalFooter}>
                     <button className={styles.backButton} onClick={() => {navigate(-1);dispatch(selectPage({page: 'userPage', state: true}));}}>

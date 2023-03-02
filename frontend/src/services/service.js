@@ -13,7 +13,7 @@ export const jokeService = createApi({
                 const token = localStorage.getItem('access_token');
                 return {
                     url: `/user/${id}/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                 }
             },
             providesTags: ['Users']
@@ -23,7 +23,7 @@ export const jokeService = createApi({
                 const token = localStorage.getItem('access_token');
                 return {
                     url: `/user/${name}/data/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                 }
             },
             providesTags: ['Users']
@@ -36,14 +36,20 @@ export const jokeService = createApi({
                 const args = (pageArg && sortArg) ? {sort: sortArg, page:pageArg} : (sortArg ? {sort: sortArg} : (pageArg ? {page: pageArg} : null));
                 return {
                     url: `/user/${name}/jokes/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     params: args,
                 }
             },
             providesTags: ['Jokes', 'Tags']
         }),
         getFavoritesByID: build.query({
-            query: (id) => ({url: `/user/favorites/${id}/`}),
+            query: (id) => {
+                const token = localStorage.getItem('access_token');
+                return {
+                    url: `/user/favorites/${id}/`,
+                    headers: {authorization: token}
+                }
+            },
             providesTags: ['Jokes', 'Tags']
         }),
         getSubscribedByID: build.query({
@@ -54,7 +60,7 @@ export const jokeService = createApi({
                 const args = (pageArg && sortArg) ? {id: id, sort: sortArg, page:pageArg} : (sortArg ? {id: id, sort: sortArg} : (pageArg ? {id: id, page: pageArg} : {id: id}));
                 return {
                     url: `/user/subscribed/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     params: args,
                 }
             },
@@ -69,7 +75,7 @@ export const jokeService = createApi({
                 const args = (pageArg && sortArg) ? {sort: sortArg, page:pageArg} : (sortArg ? {sort: sortArg} : (pageArg ? {page: pageArg} : null));
                 return {
                     url: `/feed/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     params: args,
                 }
             },
@@ -80,7 +86,7 @@ export const jokeService = createApi({
                 const token = localStorage.getItem("access_token");
                 return {
                     url: `/joke/${id}/`,
-                    header: {authorization: `${token}`},
+                    headers: {authorization: token},
                 }
             }
         }),
@@ -94,7 +100,7 @@ export const jokeService = createApi({
                 const args = (pageArg && sortArg) ? {sort: sortArg, page:pageArg} : (sortArg ? {sort: sortArg} : (pageArg ? {page: pageArg} : null));
                 return {
                     url: `/search/${type}/${query}/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     params: args,
                 }
             },
@@ -118,7 +124,7 @@ export const jokeService = createApi({
                 return {
                     url: `/joke/delete/`,
                     method: 'DELETE',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: joke_id
                 }
             },
@@ -131,7 +137,7 @@ export const jokeService = createApi({
                 return {
                     url: `/joke/addToFavorites/`,
                     method: 'POST',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {user_id: userID, joke_id: joke_id},
                 }
             },
@@ -144,7 +150,7 @@ export const jokeService = createApi({
                 return {
                     url: `/joke/removeFromFavorites/`,
                     method: 'DELETE',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {user_id: userID, joke_id: joke_id},
                 }
             },
@@ -155,7 +161,7 @@ export const jokeService = createApi({
                 const token = localStorage.getItem('access_token');
                 return {
                     url: `/joke/tags/${joke_id}/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                 }
             },
             invalidatesTags: ['Tags']
@@ -165,7 +171,7 @@ export const jokeService = createApi({
                 const token = localStorage.getItem('access_token');
                 return {
                     url: `/tag/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                 }
             },
             invalidatesTags: ['Tags']
@@ -175,7 +181,7 @@ export const jokeService = createApi({
                 const token = localStorage.getItem('access_token');
                 return {
                     url: `/tag/create/`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     method: 'POST',
                     body: {
                         name: name, 
@@ -191,7 +197,7 @@ export const jokeService = createApi({
                 return {
                     url: `/tag/delete/`,
                     method: 'DELETE',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         name: name, 
                         user_id: Number(id),
@@ -206,7 +212,7 @@ export const jokeService = createApi({
                 return {
                     url: `/joke/addTag/`,
                     method: `POST`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         tag_id: tagID,
                         joke_id: jokeID,
@@ -221,7 +227,7 @@ export const jokeService = createApi({
                 return {
                     url: `/joke/removeTag/`,
                     method: `POST`,
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         tag_id: tagID,
                         joke_id: jokeID,
@@ -237,7 +243,7 @@ export const jokeService = createApi({
                 return {
                     url: `/report/create/`,
                     method: 'POST',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         description: description,
                         receiver_joke_id: jokeID,
@@ -253,7 +259,7 @@ export const jokeService = createApi({
                 return {
                     url: `/report/delete/`,
                     method: 'DELETE',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         report_id: id,
                     }
@@ -267,7 +273,7 @@ export const jokeService = createApi({
                 return {
                     url: `/report/`,
                     method: 'GET',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                 }
             },
             providesTags: ['Reports']
@@ -278,7 +284,7 @@ export const jokeService = createApi({
                 return {
                     url: `/report/apply/`,
                     method: 'POST',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         report_id: reportID,
                     }
@@ -293,7 +299,7 @@ export const jokeService = createApi({
                 return {
                     url: `/user/subscribe/`,
                     method: 'POST',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         receiver_id: Number(receiverID),
                         sender_id: Number(userID),
@@ -309,7 +315,7 @@ export const jokeService = createApi({
                 return {
                     url: `/user/change_name/`,
                     method: 'PUT',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         name: name,
                         user_id: userID,
@@ -325,7 +331,7 @@ export const jokeService = createApi({
                 return {
                     url: `/user/change_password/`,
                     method: 'PUT',
-                    headers: {authorization: `${token}`},
+                    headers: {authorization: token},
                     body: {
                         transformed_password: password,
                         user_id: userID,

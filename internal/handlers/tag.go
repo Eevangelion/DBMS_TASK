@@ -9,21 +9,27 @@ import (
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
 	customHTTP "github.com/Sakagam1/DBMS_TASK/internal/http"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
+	"github.com/Sakagam1/DBMS_TASK/internal/utils"
 	"github.com/gorilla/mux"
 )
 
 func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	decoder := json.NewDecoder(r.Body)
-	var tagRequest models.TagRequest
-	err := decoder.Decode(&tagRequest)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
 	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
 	}
-	user, err := db.UserRepo.GetUserByID(tagRequest.UserID)
-	if user.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no permission")
+	if claims.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
+	decoder := json.NewDecoder(r.Body)
+	var tagRequest models.TagRequest
+	err = decoder.Decode(&tagRequest)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
 	id, err := db.TagRepo.Create(tagRequest.Name)
@@ -37,9 +43,19 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	if claims.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var tagRequest models.TagRequest
-	err := decoder.Decode(&tagRequest)
+	err = decoder.Decode(&tagRequest)
 	log.Println(tagRequest)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
@@ -55,6 +71,12 @@ func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetTagByIDHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	tag_id, err := strconv.Atoi(params["tagID"])
 	if err != nil {
@@ -72,6 +94,12 @@ func GetTagByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetAllTagsHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	tags, err := db.TagRepo.GetAllTags()
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

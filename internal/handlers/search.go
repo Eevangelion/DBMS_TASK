@@ -7,6 +7,7 @@ import (
 
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
+	"github.com/Sakagam1/DBMS_TASK/internal/utils"
 	"github.com/gorilla/mux"
 
 	customHTTP "github.com/Sakagam1/DBMS_TASK/internal/http"
@@ -14,6 +15,12 @@ import (
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	tArg := params["t"]
 	qArg := params["q"]

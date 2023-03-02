@@ -16,6 +16,10 @@ type tokenClaims struct {
 	Role     string `json:"role"`
 }
 
+type refreshTokenClaims struct {
+	jwt.StandardClaims
+}
+
 func CreateTokens(user *models.User) (string, string, error) {
 	conf := config.GetConfig()
 	tokenTLT := time.Duration(conf.TokenLifeTime) * time.Minute
@@ -32,11 +36,12 @@ func CreateTokens(user *models.User) (string, string, error) {
 		user.Role,
 	})
 
-	refresh_token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+	refresh_token := jwt.NewWithClaims(jwt.SigningMethodHS256, &refreshTokenClaims{
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(refreshTLT).Unix(),
 			IssuedAt:  time.Now().Unix(),
-		})
+		},
+	})
 
 	tokenResponse, err := token.SignedString([]byte(privateKey))
 
@@ -60,7 +65,6 @@ func ValidateAccessToken(accessToken string) (*tokenClaims, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	claims, ok := token.Claims.(*tokenClaims)
 	if !ok {
 		return nil, errors.New("token claims are not of type *tokenClaims")
@@ -73,7 +77,7 @@ func ValidateRefreshToken(refreshToken string) error {
 	conf := config.GetConfig()
 	privateKey := conf.PrivateKey
 
-	_, err := jwt.ParseWithClaims(refreshToken, jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+	_, err := jwt.ParseWithClaims(refreshToken, &refreshTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}

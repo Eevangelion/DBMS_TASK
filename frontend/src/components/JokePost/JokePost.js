@@ -7,6 +7,7 @@ import rateImage from "../../styles/img/logo.png";
 import darkRateImage from "../../styles/img/logo_dark.png";
 import { useSelector } from "react-redux";
 import { useGetUserByIDQuery, useGetTagsByJokeIDQuery,useAddJokeToFavoritesMutation,useRemoveJokeFromFavoritesMutation, useGetFavoritesByIDQuery, useDeleteJokeMutation } from "../../services/service";
+import LoadingModal from "../LoadingModal/LoadingModal";
 
 
 const linkStyle = {
@@ -85,9 +86,10 @@ const JokePost = (props) => {
     };
 
     const open = Boolean(anchorEl);
+    const loading = loadingUser || loadingTags || loadingFavorites;
 
-    if (loadingUser || loadingTags || loadingFavorites) {
-        return <li>Загрузка...</li>;
+    if (loading) {
+        return <LoadingModal />;
     }
 
     const rating = props.joke.rating,
@@ -135,7 +137,7 @@ const JokePost = (props) => {
                                     {header}
                                 </div>
                                 <div className="author">
-                                    Posted by
+                                    Опубликовано 
                                     <a className="author-profile" href={'/user/' + author}>
                                         {author}
                                     </a>
@@ -151,7 +153,7 @@ const JokePost = (props) => {
                                         {header}
                                     </div>
                                     <div className="author">
-                                        Posted by
+                                        Опубликовано 
                                         <a className="author-profile" href={'/user/' + author}>
                                             {author}
                                         </a>
@@ -162,14 +164,14 @@ const JokePost = (props) => {
                                 </div>
                                 <div className="tags">
                                     {tags.map(tag => {
-                                        return <div className="tag-item" style={isActive ? {} : {backgroundColor: "#070"}}>{tag.name}</div>
+                                        return <div key={tag.id} className="tag-item" style={isActive ? {} : {backgroundColor: "#070"}}>{tag.name}</div>
                                     })}
                                 </div>
                             </>);
     }
 
     return (
-        <li className="joke-post" key={props.key} style={isActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
+        <li className="joke-post" key={props.joke.id} style={isActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
             <div className="rating-field" style={isActive ? {} : {backgroundColor: "#737474"}}>
                 <div className="rating">{rating}</div>
                     <Link

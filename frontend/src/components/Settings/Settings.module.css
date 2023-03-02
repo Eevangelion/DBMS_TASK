@@ -79,7 +79,7 @@
     align-items: center;
     text-align: center;
     border-radius: 1vh;
-    background-color: #00d;
+    background-color: #0079d3;
     text-decoration : none;
     border: none;
     cursor: pointer;
@@ -120,6 +120,44 @@
     justify-content: center;
     align-items: center;
 }
+
+.tagRedactorButton, .reportListButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 380px;
+    height: 30px;
+    margin-top: 2vh;
+    border-radius: 45px;
+    background-color: #0079d3;
+    text-decoration : none;
+    border-color: transparent;
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.signOutButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 380px;
+    height: 30px;
+    margin-top: 2vh;
+    border-radius: 45px;
+    background-color: #D81E5B;
+    text-decoration : none;
+    border-color: transparent;
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.signOutButton:hover, .tagRedactorButton:hover, .reportListButton:hover, .submitButton:hover {
+    color: #ccc;
+}
+
 text {
     padding-left: 0.5vw;
     margin-bottom: 3vh;

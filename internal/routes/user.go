@@ -92,5 +92,11 @@ var User = router.RoutePrefix{
 			Pattern:     "/change_password/",
 			HandlerFunc: handlers.ChangeUserPasswordHandler,
 		},
+		{
+			Name:        "RefreshUser",
+			Method:      "POST",
+			Pattern:     "/refresh/",
+			HandlerFunc: handlers.RefreshUser,
+		},
 	},
 }

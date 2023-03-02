@@ -16,7 +16,6 @@ import JokeModal from './components/JokeModal/JokeModal';
 const App = () => {
   let location = useLocation();
   let state = location.state;
-  localStorage.setItem("userRole", "admin");
   return (
     <>
       <Routes location={state?.backgroundLocation || location}>

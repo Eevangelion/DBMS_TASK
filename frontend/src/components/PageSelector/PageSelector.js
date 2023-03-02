@@ -31,7 +31,7 @@ const PageSelector = (props) => {
             >Все шутки</Link>) :
             <Link   to={`/feed/`}
                     className={pageState ? styles.linkDisabled : styles.link}
-                    style={pageState ? { backgroundColor: "#444", color: "#555"} : {backgroundColor: "#004", color: "#666"}}
+                    style={pageState ? { backgroundColor: "#444", color: "#555"} : {backgroundColor: "#043653", color: "#666"}}
                     onClick={(event)=>event.preventDefault()}
             >Все шутки</Link>}
             {isActive ? (pageState ? 
@@ -46,7 +46,7 @@ const PageSelector = (props) => {
             >Подписки</Link>) : 
             <Link   to={`/subscribes/`}
                     className={pageState ? styles.linkDisabled : styles.link}
-                    style={pageState ? { backgroundColor: "#004", color: "#666"} : {backgroundColor: "#444", color: "#555"}}
+                    style={pageState ? { backgroundColor: "#043653", color: "#666"} : {backgroundColor: "#444", color: "#555"}}
                     onClick={(event)=>event.preventDefault()}
             >Подписки</Link>}
         </div>

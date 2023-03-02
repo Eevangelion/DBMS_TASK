@@ -9,15 +9,22 @@ import (
 
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
+	"github.com/Sakagam1/DBMS_TASK/internal/utils"
 
 	customHTTP "github.com/Sakagam1/DBMS_TASK/internal/http"
 )
 
 func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	_, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var reportRequest models.ReportRequest
-	err := decoder.Decode(&reportRequest)
+	err = decoder.Decode(&reportRequest)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -58,10 +65,20 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 
 func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	if claims.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var report_id int
 	var f map[string]int
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
@@ -86,6 +103,16 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	if claims.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
 	params := mux.Vars(r)
 	report_id, err := strconv.Atoi(params["id"])
 	if err != nil {
@@ -103,6 +130,16 @@ func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	if claims.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
 	reportOut, err := db.ReportRepo.GetAllReports()
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -114,15 +151,23 @@ func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
 
 func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	if claims.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var report_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&report_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	report_id = f["report_id"]
 	report, err := db.ReportRepo.GetReportByID(report_id)
 	if report == nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no report_found")
@@ -148,15 +193,23 @@ func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 
 func DenyReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	if claims.Role != "admin" {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	var report_id int
-	var f map[string]int
-	err := decoder.Decode(&f)
+	err = decoder.Decode(&report_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	report_id = f["report_id"]
 	report, err := db.ReportRepo.GetReportByID(report_id)
 	if report == nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: no report_found")

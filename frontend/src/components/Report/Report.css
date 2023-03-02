@@ -37,6 +37,9 @@
 .report-post + .report-post {
     margin-top: 1vh;
 }
+.joke-link {
+    text-decoration: none;
+}
 .buttons {
     height: 4vh;
     display: flex;
@@ -52,7 +55,7 @@
     width: 6vw;
     height: 3.5vh;
     border-radius: 45vh;
-    background-color: #00d;
+    background-color: #0079d3;
     text-decoration : none;
     border-color: transparent;
     color: white;

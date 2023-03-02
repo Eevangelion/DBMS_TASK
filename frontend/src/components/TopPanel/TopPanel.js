@@ -4,8 +4,10 @@ import logo from "../../styles/img/logo_test.png";
 import loop from "../../styles/img/loop_test.png";
 import TopPanelButtons from "./TopPanelButtons";
 import "./TopPanel.css";
+import { useNavigate } from "react-router-dom";
 
 function TopPanel(props) {
+    const navigate = useNavigate();
     const [searchText, setSearchText] = useState('');
     const [searchType, setSearchType] = useState('keyword');
     const handleChange = (event) => {
@@ -44,6 +46,7 @@ function TopPanel(props) {
                 placeholder="Поиск" 
                 value={searchText}
                 onChange={handleChange}
+                onKeyDown={(e) => {if (e.key === 'Enter') navigate(`/search/${searchType}/?query=${searchText}`)}}
             />                    
             <a  className="search-submit"
                 href={`/search/${searchType}/?query=${searchText}`} 
