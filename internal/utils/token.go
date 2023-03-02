@@ -16,9 +16,10 @@ type tokenClaims struct {
 	Role     string `json:"role"`
 }
 
-func CreateToken(user *models.User) (string, error) {
+func CreateTokens(user *models.User) (string, string, error) {
 	conf := config.GetConfig()
 	tokenTLT := time.Duration(conf.TokenLifeTime) * time.Minute
+	refreshTLT := time.Duration(conf.RefreshTokenLifeTime) * time.Hour
 	privateKey := conf.PrivateKey
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &tokenClaims{
@@ -31,12 +32,20 @@ func CreateToken(user *models.User) (string, error) {
 		user.Role,
 	})
 
+	refresh_token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(refreshTLT).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		})
+
 	tokenResponse, err := token.SignedString([]byte(privateKey))
 
-	return tokenResponse, err
+	refreshTokenResponse, err := refresh_token.SignedString([]byte(privateKey))
+
+	return tokenResponse, refreshTokenResponse, err
 }
 
-func ValidateToken(accessToken string) (*tokenClaims, error) {
+func ValidateAccessToken(accessToken string) (*tokenClaims, error) {
 	conf := config.GetConfig()
 	privateKey := conf.PrivateKey
 
@@ -47,6 +56,7 @@ func ValidateToken(accessToken string) (*tokenClaims, error) {
 
 		return []byte(privateKey), nil
 	})
+
 	if err != nil {
 		return nil, err
 	}
@@ -57,4 +67,22 @@ func ValidateToken(accessToken string) (*tokenClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func ValidateRefreshToken(refreshToken string) error {
+	conf := config.GetConfig()
+	privateKey := conf.PrivateKey
+
+	_, err := jwt.ParseWithClaims(refreshToken, jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid signing method")
+		}
+		return []byte(privateKey), nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -187,27 +187,73 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		err = db.UserRepo.CreateGithubUserWithID(user.ID, int(new_id))
-		jwt_token, err := utils.CreateToken(user)
+		jwt_token, refresh_token, err := utils.CreateTokens(user)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error while creating token")
 			return
 		}
+		tokens := models.TokensResponse{
+			JWTToken:     jwt_token,
+			RefreshToken: refresh_token,
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(jwt_token)
+		json.NewEncoder(w).Encode(tokens)
 	} else {
 		user, err = db.UserRepo.GetUserByID(userOut.Inner_ID)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
 		}
-		jwt_token, err := utils.CreateToken(user)
+		jwt_token, refresh_token, err := utils.CreateTokens(user)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error while creating token")
 			return
 		}
+		tokens := models.TokensResponse{
+			JWTToken:     jwt_token,
+			RefreshToken: refresh_token,
+		}
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(jwt_token)
+		json.NewEncoder(w).Encode(tokens)
 	}
+}
+
+func RefreshUser(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
+	token := r.Header.Get("Authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	decoder := json.NewDecoder(r.Body)
+	var refreshToken string
+	err = decoder.Decode(&refreshToken)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
+	err = utils.ValidateRefreshToken(refreshToken)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	user := models.User{
+		ID:   claims.User_ID,
+		Name: claims.UserName,
+		Role: claims.Role,
+	}
+	jwt_token, refresh_token, err := utils.CreateTokens(&user)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	tokens := models.TokensResponse{
+		JWTToken:     jwt_token,
+		RefreshToken: refresh_token,
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(tokens)
 }
 
 func SubscribeToUserHandler(w http.ResponseWriter, r *http.Request) {
