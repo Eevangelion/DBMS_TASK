@@ -122,7 +122,7 @@ func (u UserRepository) GetUserByEmail(Email string) (userOut *models.User, err 
 	}, nil
 }
 
-func (u UserRepository) Create(user *models.User) (id int64, err error) {
+func (u UserRepository) CreateUser(user *models.UserRequestRegister) (id int64, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
