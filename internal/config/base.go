@@ -25,6 +25,7 @@ type Config struct {
 	TokenLifeTime        int
 	RefreshTokenLifeTime int
 	PrivateKey           string
+	Salt                 string
 }
 
 var Conf *Config = nil
@@ -51,6 +52,7 @@ func GetConfig() *Config {
 			TokenLifeTime:          getEnvAsInt("TokenLifeTime", 15),
 			RefreshTokenLifeTime:   getEnvAsInt("RefreshTokenLifeTime", 24),
 			PrivateKey:             getEnv("PrivateKey", "YouMissSomething"),
+			Salt:                   getEnv("Salt", "245tvqJAbJXw6N9DrXoa1NdT6grhq5yi"),
 		}
 	}
 	return Conf

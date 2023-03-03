@@ -107,7 +107,7 @@ func GetGitHubUser(access_token string) (*models.UserRequestRegisterGithub, erro
 		ID:                  user_id,
 		Name:                "user" + strconv.Itoa(user_id),
 		Email:               mail,
-		TransformedPassword: access_token,
+		TransformedPassword: GeneratePasswordHash(access_token),
 	}
 
 	return userBody, nil

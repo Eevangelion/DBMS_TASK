@@ -22,6 +22,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	user.Password = utils.GeneratePasswordHash(user.Password)
 	id, err := db.GetUserRepository().CreateUser(&user)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -161,6 +162,25 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userResponse)
 }
 
+func GetUserUnbanDate(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
+	decoder := json.NewDecoder(r.Body)
+	var f map[string]int
+	err := decoder.Decode(&f)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
+	user_id := f["user_id"]
+	unban_date, err := db.UserRepo.GetUserUnbanDate(user_id)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(unban_date)
+}
+
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
@@ -170,12 +190,13 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	userRequestLogin.Password = utils.GeneratePasswordHash(userRequestLogin.Password)
 	user, err := db.UserRepo.GetUserByUsername(userRequestLogin.Name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	if user.TransformedPassword != userRequestLogin.TransformedPassword {
+	if user.TransformedPassword != userRequestLogin.Password {
 		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
 		return
 	}
@@ -212,9 +233,9 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userReg := &models.UserRequestRegister{
-		Name:                user.Name,
-		Email:               user.Email,
-		TransformedPassword: user.TransformedPassword,
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.TransformedPassword,
 	}
 	if userOut == nil {
 		new_id, err := db.UserRepo.CreateUser(userReg)
@@ -394,6 +415,7 @@ func ChangeUserPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	new_transformed_password = utils.GeneratePasswordHash(new_transformed_password)
 	err = db.UserRepo.ChangeUserPassword(user_id, new_transformed_password)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

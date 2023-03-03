@@ -50,6 +50,22 @@ func (u UserRepository) GetUserByID(user_id int) (userOut *models.User, err erro
 	}, nil
 }
 
+func (u UserRepository) GetUserUnbanDate(user_id int) (string, error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return "", err
+	}
+	var unban_date string
+	qry := `select unban_date from public."Users" where id=$1`
+	err = DB.QueryRow(qry, user_id).Scan(&unban_date)
+	if err != nil {
+		log.Println("Error while trying to get user by id:", err)
+		return "", err
+	}
+	return unban_date, err
+}
+
 func (u UserRepository) GetUserByUsername(username string) (userOut *models.User, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
@@ -129,7 +145,7 @@ func (u UserRepository) CreateUser(user *models.UserRequestRegister) (id int64, 
 		return -1, err
 	}
 	qry := `INSERT INTO public."Users" (name, email, role, transformed_password) values ($1, $2, $3, $4) RETURNING id`
-	err = DB.QueryRow(qry, user.Name, user.Email, "guest", user.TransformedPassword).Scan(&id)
+	err = DB.QueryRow(qry, user.Name, user.Email, "guest", user.Password).Scan(&id)
 	if err != nil {
 		log.Println("Error while trying to create user:", err)
 		return -1, err
