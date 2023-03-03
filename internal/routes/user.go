@@ -98,5 +98,17 @@ var User = router.RoutePrefix{
 			Pattern:     "/refresh/",
 			HandlerFunc: handlers.RefreshUser,
 		},
+		{
+			Name:        "LoginUser",
+			Method:      "POST",
+			Pattern:     "/login/",
+			HandlerFunc: handlers.LoginUser,
+		},
+		{
+			Name:        "RegisterUser",
+			Method:      "POST",
+			Pattern:     "/register/",
+			HandlerFunc: handlers.CreateUserHandler,
+		},
 	},
 }

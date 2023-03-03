@@ -40,7 +40,7 @@ func GetConfig() *Config {
 	if Conf == nil {
 		Conf = &Config{
 			Server: ServerConfig{
-				Address: getEnv("SERVER", "localhost"),
+				Address: getEnv("SERVER", "0.0.0.0"),
 				Port:    getEnvAsInt("PORT", 8000),
 			},
 			Database:               SetupDB(),

@@ -1,5 +1,4 @@
 import React from "react";
-import {useGetUserByIDQuery} from "../../services/service";
 import "./TopPanelButtons.css";
 
 const TopPanelButtons = (props) => {

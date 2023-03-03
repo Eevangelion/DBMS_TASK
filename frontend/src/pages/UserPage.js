@@ -10,6 +10,7 @@ import JokeSorter from "../components/Sorter/Sorter";
 import {useGetJokesByAuthorNameQuery} from "../services/service";
 import LoadingModal from "../components/LoadingModal/LoadingModal";
 import { useGetTokenMutation } from "../services/auth";
+import ErrorPage from "./ErrorPage";
 
 const UserPage = (props) => {
 
@@ -48,10 +49,10 @@ const UserPage = (props) => {
                 localStorage.setItem("refresh_token", refreshToken);
             })
         }
-    }, [expTime, refreshTokens]);
+    }, [expTime, loadingJokes, refreshTokens]);
 
     useEffect(()=>{
-        if (!loadingJokes) {
+        if (response && !loadingJokes) {
             const {jokes, amount} = response; 
             if (!jokes) {
                 setContent(
@@ -79,18 +80,28 @@ const UserPage = (props) => {
     if (loadingJokes) {
         return <LoadingModal />;
     }
+
+    if ((error && error.status === 400) && response === undefined) {
+        return <ErrorPage />;
+    }
     if (error) {
         if (error && 'status' in error) {
             const errMsg = 'error' in error ? error.error : JSON.stringify(error.data);
 
             return (
-                <div>
-                    <div>An error has occurred:</div>
-                    <div>{errMsg}</div>
+                <div className="error-page">
+                    <div className="error-text">
+                        <div>An error has occurred:</div>
+                        <div>{errMsg}</div>
+                    </div>
                 </div>
             );
         } else {
-            return <div>{error?.message}</div>;
+            return <div className="error-page">
+                <div className="error-text">
+                    <div>{error?.message}</div>
+                </div>
+            </div>;
         }
     }
     const amount = response ? response.amount : 0;

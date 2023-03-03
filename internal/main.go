@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Print("Error while connecting", err)
 	}
-	log.Println(conf.Server.Port)
+	log.Println(conf.Server.Address, conf.Server.Port)
 	defer connection.Connection.Close()
 
 	log.Fatal(

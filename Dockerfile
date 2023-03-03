@@ -15,4 +15,4 @@ EXPOSE 8000
 
 ENV TZ EUROPE/MOSCOW
 
-CMD ["./app"]
+CMD ["./app"]   

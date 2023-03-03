@@ -43,16 +43,16 @@ const SearchPage = (props) => {
                 const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
                     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
                 }).join(''));
-                const user = JSON.parse(jsonPayload);
-                localStorage.setItem("userID", user.user_id);
-                localStorage.setItem("userName", user.username);
-                localStorage.setItem("userRole", user.role);
+                const data = JSON.parse(jsonPayload);
+                localStorage.setItem("userID", data.user_id);
+                localStorage.setItem("userName", data.username);
+                localStorage.setItem("userRole", data.role);
                 localStorage.setItem("access_token", accessToken);
-                localStorage.setItem("token_exp_time", user.exp);
+                localStorage.setItem("token_exp_time", data.exp);
                 localStorage.setItem("refresh_token", refreshToken);
             })
         }
-    }, [expTime, refreshTokens]);
+    }, [expTime, loadingSearch, refreshTokens]);
 
     useEffect(() => {
         if (!loadingSearch) {
@@ -116,13 +116,19 @@ const SearchPage = (props) => {
             const errMsg = 'error' in error ? error.error : JSON.stringify(error.data);
 
             return (
-                <div>
-                    <div>An error has occurred:</div>
-                    <div>{errMsg}</div>
+                <div className="error-page">
+                    <div className="error-text">
+                        <div>An error has occurred:</div>
+                        <div>{errMsg}</div>
+                    </div>
                 </div>
             );
         } else {
-            return <div>{error?.message}</div>;
+            return <div className="error-page">
+                <div className="error-text">
+                    <div>{error?.message}</div>
+                </div>
+            </div>;
         }
     }
     let amount;

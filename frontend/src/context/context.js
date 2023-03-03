@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
     const dispatch = useAppDispatch(); 
     const navigate = useNavigate();
     const user = useAppSelector(state => state.VkAuth.user);
-    const token = localStorage.getItem('userToken');    
+    const token = localStorage.getItem('access_token');    
 
     const signin = () => { 
         return dispatch(getAccessToken())

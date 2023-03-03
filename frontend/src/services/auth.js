@@ -1,5 +1,6 @@
 import {createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query/react'
 
+
 const apiHost = process.env.REACT_APP_API_HOST;
 const apiPort = process.env.REACT_APP_API_PORT;
 
@@ -31,20 +32,27 @@ export const authService = createApi({
             }
         }),
         loginUser: build.mutation({
-            query: (data) => {
+            query: ({username, password}) => {
                 return {
-                    url: `/user/login`,
+                    url: `/user/login/`,
                     method: 'POST',
-                    body: data,
+                    body: {
+                        name: username,
+                        transformed_password: password,
+                    },
                 }
             }
         }),
         registerUser: build.mutation({
-            query: (data) => {
+            query: ({email, username, password}) => {
                 return {
-                    url: `/user/register`,
+                    url: `/user/register/`,
                     method: 'POST',
-                    body: data,
+                    body: {
+                        email: email,
+                        name: username,
+                        transformed_password: password,
+                    },
                 }
             }
         })
@@ -55,4 +63,6 @@ export const authService = createApi({
 export const {
     useGetGitQuery,
     useGetTokenMutation,
+    useLoginUserMutation,
+    useRegisterUserMutation,
 } = authService;

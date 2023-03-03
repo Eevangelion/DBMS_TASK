@@ -239,15 +239,13 @@ export const jokeService = createApi({
         createReport: build.mutation({
             query: ({description, jokeID}) => {
                 const token = localStorage.getItem('access_token');
-                const userID = Number(localStorage.getItem("userID"));
                 return {
                     url: `/report/create/`,
                     method: 'POST',
                     headers: {authorization: token},
                     body: {
                         description: description,
-                        receiver_joke_id: jokeID,
-                        sender_id: userID,
+                        receiver_joke_id: jokeID
                     }
                 }
             },
@@ -295,14 +293,12 @@ export const jokeService = createApi({
         subscribeToUser: build.mutation({
             query: (receiverID) => {
                 const token = localStorage.getItem('access_token');
-                const userID = localStorage.getItem("userID");
                 return {
                     url: `/user/subscribe/`,
                     method: 'POST',
                     headers: {authorization: token},
                     body: {
-                        receiver_id: Number(receiverID),
-                        sender_id: Number(userID),
+                        receiver_id: Number(receiverID)
                     }
                 }
             },
@@ -317,8 +313,7 @@ export const jokeService = createApi({
                     method: 'PUT',
                     headers: {authorization: token},
                     body: {
-                        name: name,
-                        user_id: userID,
+                        new_name: name
                     }
                 }
             },
@@ -333,8 +328,7 @@ export const jokeService = createApi({
                     method: 'PUT',
                     headers: {authorization: token},
                     body: {
-                        transformed_password: password,
-                        user_id: userID,
+                        new_transformed_password: password
                     }
                 }
             }

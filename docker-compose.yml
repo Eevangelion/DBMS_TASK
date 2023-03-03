@@ -6,13 +6,15 @@ services:
     environment:
       POSTGRES_DB: FunnyJokesDB
       POSTGRES_USER: postgres # Переписать на нужные логин и пароль
-      POSTGRES_PASSWORD: root
+      POSTGRES_PASSWORD: 1111
       PGDATA: /data/postgres
     volumes: # Эта штука нужна, чтобы сохранять инфу, если бд дропнется
        - postgres-db:/data/postgres
     ports:
       - "5432:5432"
-    restart: always # Прописал везде постоянный перезапуск, т.е. если упадёт какой-то компонент, то он опять запустится, но может также насрать в логах
+    networks:
+      - network1
+    restart: always 
 
   adminer: # GUI для базы данных
     container_name: adminer
@@ -23,7 +25,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - default
+      - network1
 
   backend:
     container_name: backend
@@ -32,8 +34,25 @@ services:
       - database
     ports:
       - "8000:8000"
+    networks:
+      - network1
+    restart: always
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    networks:
+      - network1
     restart: always
        
 volumes:
   postgres-db:
     driver: local
+
+networks:
+  network1:
+    name: network1

@@ -8,11 +8,13 @@ import TagRedactor from './components/TagRedactor/TagRedactor';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import CreateJoke from "./components/CreateJoke/CreateJoke"
 import CreateReport from './components/CreateReport/CreateReport';
+import ErrorPage from './pages/ErrorPage';
 import Subscribe from './components/Subscribe/Subscribe';
 import ReportsList from './components/ReportsList/ReportsList';
-import AuthModal from './components/Auth/Auth';
+import AuthPage from './pages/Auth';
 import OAuthRedirect from './components/OAuthRedirect/OAuthRedirect';
 import JokeModal from './components/JokeModal/JokeModal';
+import RegisterPage from './pages/Register';
 const App = () => {
   let location = useLocation();
   let state = location.state;
@@ -24,10 +26,12 @@ const App = () => {
         <Route path='subscribes/' element={<Subscribes />}/>
         <Route path='user/:username' element={<UserPage />}/>
         <Route path='search/:type/:query?' element={<SearchPage />}/>
-        <Route path='login/' element={<AuthModal />} />
+        <Route path='login/' element={<AuthPage />} />
+        <Route path='register/' element={<RegisterPage />} />
         <Route path='oauth/' element={<OAuthRedirect /> } />
         <Route path="tagredactor/" element={<TagRedactor />} />
         <Route path="reportslist/" element={<ReportsList />}/>
+        <Route path="*" element={<ErrorPage />}/>
       </Routes>
       {state?.backgroundLocation && (
         <Routes>

@@ -44,7 +44,7 @@ const Feed = (props) => {
                 localStorage.setItem("refresh_token", refreshToken);
             })
         }
-    }, [expTime, refreshTokens]);
+    }, [expTime, loadingJokes, refreshTokens]);
     useEffect(() => {
         if (!loadingJokes) {
             const {jokes, amount} = response; 
@@ -78,13 +78,19 @@ const Feed = (props) => {
             const errMsg = 'error' in error ? error.error : JSON.stringify(error.data);
 
             return (
-                <div>
-                    <div>An error has occurred:</div>
-                    <div>{errMsg}</div>
+                <div className="error-page">
+                    <div className="error-text">
+                        <div>An error has occurred:</div>
+                        <div>{errMsg}</div>
+                    </div>
                 </div>
             );
         } else {
-            return <div>{error?.message}</div>;
+            return <div className="error-page">
+                <div className="error-text">
+                    <div>{error?.message}</div>
+                </div>
+            </div>;
         }
     }
     const amount = response.amount;
