@@ -21,6 +21,6 @@ type IUser interface {
 	GetUserJokesCount(user_id int) (amount int, err error)
 
 	Ban(user_id int) (err error) // for 1 week (update unban date)
-	Create(user *models.User) (id int64, err error)
+	CreateUser(user *models.UserRequestRegister) (id int64, err error)
 	Delete(user_id int) (err error)
 }

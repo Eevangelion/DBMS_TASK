@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"strconv"
@@ -17,21 +16,29 @@ import (
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	decoder := json.NewDecoder(r.Body)
-	var user models.User
+	var user models.UserRequestRegister
 	err := decoder.Decode(&user)
-	log.Println(user)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	id, err := db.GetUserRepository().Create(&user)
+	id, err := db.GetUserRepository().CreateUser(&user)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
+	userOut, err := db.GetUserRepository().GetUserByID(int(id))
+	jwt_token, refresh_token, err := utils.CreateTokens(userOut)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error while creating token")
+		return
+	}
+	tokens := models.TokensResponse{
+		JWTToken:     jwt_token,
+		RefreshToken: refresh_token,
+	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(id)
+	json.NewEncoder(w).Encode(tokens)
 }
 
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -154,30 +161,35 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userResponse)
 }
 
-func ValidateUser(w http.ResponseWriter, r *http.Request) {
+func LoginUser(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	params := mux.Vars(r)
-	userID, err := strconv.Atoi(params["userID"])
+	decoder := json.NewDecoder(r.Body)
+	var userRequestLogin models.UserRequestLogin
+	err := decoder.Decode(&userRequestLogin)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	decoder := json.NewDecoder(r.Body)
-	var password string
-	err = decoder.Decode(&password)
-	user, err := db.UserRepo.GetUserByID(userID)
-	verification := true
-	if user.TransformedPassword == password {
-		verification = true
-	} else {
-		verification = false
-	}
+	user, err := db.UserRepo.GetUserByUsername(userRequestLogin.Name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	if user.TransformedPassword != userRequestLogin.TransformedPassword {
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		return
+	}
+	jwt_token, refresh_token, err := utils.CreateTokens(user)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error while creating token")
+		return
+	}
+	tokens := models.TokensResponse{
+		JWTToken:     jwt_token,
+		RefreshToken: refresh_token,
+	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(verification)
+	json.NewEncoder(w).Encode(tokens)
 }
 
 func GetGithubUser(w http.ResponseWriter, r *http.Request) {
@@ -199,14 +211,28 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
 	}
+	userReg := &models.UserRequestRegister{
+		Name:                user.Name,
+		Email:               user.Email,
+		TransformedPassword: user.TransformedPassword,
+	}
 	if userOut == nil {
-		new_id, err := db.UserRepo.Create(user)
+		new_id, err := db.UserRepo.CreateUser(userReg)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
 		}
 		err = db.UserRepo.CreateGithubUserWithID(user.ID, int(new_id))
-		jwt_token, refresh_token, err := utils.CreateTokens(user)
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+			return
+		}
+		userForOut, err := db.UserRepo.GetUserByID(int(new_id))
+		if err != nil {
+			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+			return
+		}
+		jwt_token, refresh_token, err := utils.CreateTokens(userForOut)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error while creating token")
 			return
@@ -218,12 +244,12 @@ func GetGithubUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(tokens)
 	} else {
-		user, err = db.UserRepo.GetUserByID(userOut.Inner_ID)
+		userForOut, err := db.UserRepo.GetUserByID(userOut.Inner_ID)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
 		}
-		jwt_token, refresh_token, err := utils.CreateTokens(user)
+		jwt_token, refresh_token, err := utils.CreateTokens(userForOut)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error while creating token")
 			return

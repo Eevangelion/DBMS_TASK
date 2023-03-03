@@ -61,7 +61,7 @@ func GetGitHubOauthToken(code string) (token string, err error) {
 	return token, nil
 }
 
-func GetGitHubUser(access_token string) (*models.User, error) {
+func GetGitHubUser(access_token string) (*models.UserRequestRegisterGithub, error) {
 	rootUrl := "https://api.github.com/user"
 
 	req, err := http.NewRequest("GET", rootUrl, nil)
@@ -103,13 +103,10 @@ func GetGitHubUser(access_token string) (*models.User, error) {
 		mail = v["email"].(string)
 	}
 
-	userBody := &models.User{
+	userBody := &models.UserRequestRegisterGithub{
 		ID:                  user_id,
 		Name:                "user" + strconv.Itoa(user_id),
 		Email:               mail,
-		Reports:             0,
-		RemainingReports:    0,
-		UnbanDate:           "date",
 		TransformedPassword: access_token,
 	}
 
