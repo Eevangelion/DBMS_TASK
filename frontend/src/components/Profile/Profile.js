@@ -1,19 +1,30 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useGetUserByNameQuery } from "../../services/service";
-import LoadingModal from "../LoadingModal/LoadingModal";
+import { useGetUserByNameQuery, useCheckIfUserSubscribedToQuery } from "../../services/service";
 import "./Profile.css";
 
 const Profile = (props) => {
+    const [userID, setUserID] = useState(0);
     const userPageIsActive = useSelector(state => state.pagesReducer.userPageIsActive);
     const location = useLocation();
     const {
         data: user,
         isLoading: loadingUser,
     } = useGetUserByNameQuery(props.username);
-    if (loadingUser) {
-        return <LoadingModal />;
+
+    useEffect(()=> {
+        if (user)
+            setUserID(user.id);
+    }, [user]);
+
+    const {
+        data: subscribed,
+        isLoading: loadingSubscribed,
+    } = useCheckIfUserSubscribedToQuery(userID);
+
+    if (loadingUser || loadingSubscribed) {
+        return <></>;
     }
     if (!user) {
         return <div className="profile-block">Пользователя с таким именем не существует</div>;
@@ -29,7 +40,7 @@ const Profile = (props) => {
     return (
         <div className="profile-block" style={userPageIsActive ? {} : {backgroundColor: "#767676", border: "0.1vh solid #555"}}>
             <strong>{props.username}</strong>
-            <strong style={{color: "#999"}}>user/{props.username}</strong>
+            <strong style={userPageIsActive ? {color: "#999"} : {color: "#666"}}>user/{props.username}</strong>
             {
                 userAccount ?
                 <div className={"settings-link"}>
@@ -60,12 +71,12 @@ const Profile = (props) => {
                     </Link>
                 </div> : 
                 <div className="subscribe">
-                    <Link   to={`/subscribe/${user.id}`}
+                    <Link   to={subscribed ? `/unsubscribe/${user.id}` : `/subscribe/${user.id}`} 
                             className={userPageIsActive ? "link" : "link-disabled"}
                             state={{ backgroundLocation: location}}
                             onClick={(event) => {if (!userPageIsActive) event.preventDefault()}}
                     >
-                        <strong>Подписаться</strong>
+                        <strong>{subscribed ? 'Отписаться' : 'Подписаться'}</strong>
                     </Link> 
                 </div>
             }

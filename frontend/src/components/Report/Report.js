@@ -2,8 +2,6 @@ import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {useGetUserByIDQuery, useGetJokeByIDQuery, useApplyReportMutation, useRemoveReportMutation } from "../../services/service";
 import "./Report.css";
-import LoadingModal from "../LoadingModal/LoadingModal";
-
 const Report = (props) => {
     const reportsListIsActive = useSelector(state => state.pagesReducer.reportListIsActive);
     const location = useLocation();
@@ -23,7 +21,7 @@ const Report = (props) => {
     const [denyReport] = useRemoveReportMutation();
     const loading = loadingReceiver || loadingSender || loadingJoke;
     if (loading) {
-        return <LoadingModal />;
+        return <></>;
     }
 
     return (

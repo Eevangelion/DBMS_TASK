@@ -26,6 +26,7 @@ func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report
 	err = DB.QueryRow(qry2, report_id).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get report by ID (amount):", err)
+		return nil, err
 	}
 	if amount == 0 {
 		return reportOut, nil

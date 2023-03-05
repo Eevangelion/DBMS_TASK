@@ -401,7 +401,6 @@ func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_m
 		}
 		jokes = append(jokes, NewJoke)
 	}
-	log.Println(rows)
 	return jokes, amount, nil
 }
 

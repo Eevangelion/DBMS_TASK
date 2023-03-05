@@ -7,7 +7,6 @@ import rateImage from "../../styles/img/logo.png";
 import darkRateImage from "../../styles/img/logo_dark.png";
 import { useSelector } from "react-redux";
 import { useGetUserByIDQuery, useGetTagsByJokeIDQuery,useAddJokeToFavoritesMutation,useRemoveJokeFromFavoritesMutation, useGetFavoritesByIDQuery, useDeleteJokeMutation } from "../../services/service";
-import LoadingModal from "../LoadingModal/LoadingModal";
 
 
 const linkStyle = {
@@ -89,7 +88,7 @@ const JokePost = (props) => {
     const loading = loadingUser || loadingTags || loadingFavorites;
 
     if (loading) {
-        return <LoadingModal />;
+        return <></>;
     }
 
     const rating = props.joke.rating,
@@ -138,7 +137,7 @@ const JokePost = (props) => {
                                 </div>
                                 <div className="author">
                                     Опубликовано 
-                                    <a className="author-profile" href={'/user/' + author}>
+                                    <a className="author-profile" href={'/user/' + author} onClick={(event) => {if (!isActive) event.preventDefault();}}>
                                         {author}
                                     </a>
                                 </div>
@@ -154,7 +153,7 @@ const JokePost = (props) => {
                                     </div>
                                     <div className="author">
                                         Опубликовано 
-                                        <a className="author-profile" href={'/user/' + author}>
+                                        <a className="author-profile" href={'/user/' + author} onClick={(event) => {if (!isActive) event.preventDefault();}}>
                                             {author}
                                         </a>
                                     </div>

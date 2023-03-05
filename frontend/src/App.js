@@ -15,34 +15,39 @@ import AuthPage from './pages/Auth';
 import OAuthRedirect from './components/OAuthRedirect/OAuthRedirect';
 import JokeModal from './components/JokeModal/JokeModal';
 import RegisterPage from './pages/Register';
+import Unsubscribe from './components/Unsubscribe/Unsubscribe';
+import {AuthProvider, RequireAuth, RequireAdmin} from './context/context';
+import DevelopSettings from './components/DevelopSettings/DevelopSettings';
 const App = () => {
   let location = useLocation();
   let state = location.state;
   return (
-    <>
+    <AuthProvider>
       <Routes location={state?.backgroundLocation || location}>
-        <Route index element={<Feed />}/>
-        <Route path='feed/' element={<Feed />}/>
-        <Route path='subscribes/' element={<Subscribes />}/>
-        <Route path='user/:username' element={<UserPage />}/>
-        <Route path='search/:type/:query?' element={<SearchPage />}/>
+        <Route index element={<RequireAuth><Feed /></RequireAuth>}/>
+        <Route path='feed/' element={<RequireAuth><Feed /></RequireAuth>}/>
+        <Route path='subscribes/' element={<RequireAuth><Subscribes /></RequireAuth>}/>
+        <Route path='user/:username' element={<RequireAuth><UserPage /></RequireAuth>}/>
+        <Route path='search/:type/:query?' element={<RequireAuth><SearchPage /></RequireAuth>}/>
         <Route path='login/' element={<AuthPage />} />
         <Route path='register/' element={<RegisterPage />} />
         <Route path='oauth/' element={<OAuthRedirect /> } />
-        <Route path="tagredactor/" element={<TagRedactor />} />
-        <Route path="reportslist/" element={<ReportsList />}/>
+        <Route path="tagredactor/" element={<RequireAdmin><TagRedactor /></RequireAdmin>} />
+        <Route path="reportslist/" element={<RequireAdmin><ReportsList /></RequireAdmin>}/>
         <Route path="*" element={<ErrorPage />}/>
       </Routes>
       {state?.backgroundLocation && (
         <Routes>
-            <Route path="/create_joke" element={<CreateJoke />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/create_report/:jokeID" element={<CreateReport />} />
-            <Route path="/subscribe/:receiverID" element={<Subscribe />}/>
-            <Route path="/joke/:jokeID" element={<JokeModal />} />
+            <Route path="/create_joke" element={<RequireAuth><CreateJoke /></RequireAuth>} />
+            <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
+            <Route path="/develop_settings" element={<RequireAdmin><DevelopSettings/></RequireAdmin>} />
+            <Route path="/create_report/:jokeID" element={<RequireAuth><CreateReport /></RequireAuth>} />
+            <Route path="/subscribe/:receiverID" element={<RequireAuth><Subscribe /></RequireAuth>}/>
+            <Route path="/unsubscribe/:receiverID" element={<RequireAuth><Unsubscribe /></RequireAuth>} />
+            <Route path="/joke/:jokeID" element={<RequireAuth><JokeModal /></RequireAuth>} />
         </Routes>
       )}
-    </>
+    </AuthProvider>
   )
 }
 

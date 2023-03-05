@@ -1,41 +1,86 @@
-import React, { createContext } from 'react';
+import React, { createContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../hooks/redux';
-import { getAccessToken, getJWToken, getUserInfo } from '../store/actions/authActions';
-import { logout } from '../store/reducers/AuthSlice';
-import { clean } from '../store/reducers/UserSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { useGetTokenMutation } from '../services/auth';
+import { selectUser } from '../store/reducers/user';
 
 export const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
 
-    const dispatch = useAppDispatch(); 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const user = useAppSelector(state => state.VkAuth.user);
-    const token = localStorage.getItem('access_token');    
+    const [refreshTokens] = useGetTokenMutation();
+    const expTime = localStorage.getItem("token_exp_time");
+    const token = localStorage.getItem("access_token");
+    const user = useSelector(state => state.userReducer);
 
-    const signin = () => { 
-        return dispatch(getAccessToken())
-            .then(() => 
-                dispatch(getJWToken())
-                    .then(() => 
-                        dispatch(getUserInfo())
-                    )
-            );                 
-    };
 
-    if (token && !user) {
-        dispatch(getUserInfo()).catch(() => signin());
-    };
-
-    const signout = () => {
-        dispatch(clean());
-        navigate('../');
+    const signOut = () => {
+        localStorage.clear();
+        dispatch(selectUser({data: 'userID', state: undefined}));
+        dispatch(selectUser({data: 'username', state: undefined}));
+        dispatch(selectUser({data: 'userRole', state: undefined}));
+        navigate("/login");
         window.scrollTo(0,0);
-        return dispatch(logout());
-    };
+    }
 
-    const value = { user, signin, signout };
+    if (token && expTime - Date.now()/1000 < 0) {
+        refreshTokens().then((response) => {
+            if (response.error) {
+                signOut();
+                return;
+            }
+            const tokens = response.data;
+            const accessToken = tokens.jwt_token;
+            const refreshToken = tokens.refresh_token;
+            const base64Url = accessToken.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            const data = JSON.parse(jsonPayload);
+            localStorage.setItem("access_token", accessToken);
+            localStorage.setItem("token_exp_time", data.exp);
+            localStorage.setItem("refresh_token", refreshToken);
+            dispatch(selectUser({data: 'userID', state: data.user_id}));
+            dispatch(selectUser({data: 'userName', state: data.username}));
+            dispatch(selectUser({data: 'userRole', state: data.role}));
+            return;
+        })
+    }
+
+    const value = { user, signOut };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+
+export const RequireAuth = ({children}) => {
+    const token = localStorage.getItem("access_token");
+    const navigate = useNavigate();
+    useEffect(()=> {
+        if (!token)
+            navigate("/login");
+    }, [token, navigate]);
+    return children;
+}
+
+export const RequireAdmin = ({children}) => {
+    const token = localStorage.getItem("access_token");
+    const navigate = useNavigate();
+
+    if (!token) {
+        navigate("/login");
+    }
+
+    const user = useSelector(state => state.userReducer);
+
+    useEffect(() => {
+        if (user && user.userRole !== 'admin') {
+            navigate('../');
+            window.scrollTo(0,0);
+        }
+    }, [user, navigate])
+
+    return children;
+}

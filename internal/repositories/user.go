@@ -18,6 +18,8 @@ type IUser interface {
 	CreateGithubUserWithID(user_id int, inner_id int) (err error)
 	GetSubscribedPeopleCount(user_id int) (amount int, err error)
 	GetWhomUserSubscribedToCount(user_id int) (amount int, err error)
+	GetWhomUserSubscribedTo(user_id int) (users []int, err error)
+	GetCheckIfUserSubscribed(sender_id int, receiver_id int) (check bool, err error)
 	GetUserJokesCount(user_id int) (amount int, err error)
 	GetUserUnbanDate(user_id int) (string, error)
 

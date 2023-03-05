@@ -2,7 +2,6 @@ import {useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import { useCreateTagMutation, useDeleteTagMutation, useGetTagsQuery } from "../../services/service";
 import styles from './TagRedactor.module.css';
-import LoadingModal from '../LoadingModal/LoadingModal';
 
 const TagRedactor = () => {
     const navigate = useNavigate();
@@ -90,7 +89,7 @@ const TagRedactor = () => {
     }, [currentTags, addedTags, tags, removedTags]);
 
     if (loadingTags) {
-        return <LoadingModal />;
+        return <></>;
     }
     return (
         <div className={styles.modalWindow}>

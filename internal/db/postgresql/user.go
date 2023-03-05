@@ -2,7 +2,6 @@ package psql
 
 import (
 	"log"
-	"strings"
 	"time"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
@@ -228,7 +227,6 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	keyword = strings.ToLower(keyword)
 	qry := `select * from public."Users" where lower("Users".name) LIKE '%` + keyword + `%' LIMIT $1 OFFSET $2`
 	rows, err := DB.Query(qry, pageSize, (page-1)*pageSize)
 	defer rows.Close()
@@ -390,6 +388,47 @@ func (u UserRepository) GetWhomUserSubscribedToCount(user_id int) (amount int, e
 		return 0, err
 	}
 	return amount, nil
+}
+
+func (u UserRepository) GetWhomUserSubscribedTo(user_id int) (users []int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, err
+	}
+	qry := `select receiver_id from public."UserSubscribes" where sender_id=$1`
+	rows, err := DB.Query(qry, user_id)
+	defer rows.Close()
+	if err != nil {
+		log.Println("Error while trying to get subscribed people:", err)
+		return nil, err
+	}
+	for rows.Next() {
+		var id int
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Println("Error while scanning rows:", err)
+			return nil, err
+		}
+		users = append(users, id)
+	}
+	return users, nil
+}
+
+func (u UserRepository) GetCheckIfUserSubscribed(sender_id int, receiver_id int) (check bool, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return false, err
+	}
+	var amount int
+	qry := `select count(*) from public."UserSubscribes" where sender_id=$1 and receiver_id=$2`
+	err = DB.QueryRow(qry, sender_id, receiver_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get check if user subscribed to another:", err)
+		return false, err
+	}
+	return amount != 0, nil
 }
 
 func (u UserRepository) GetUserJokesCount(user_id int) (amount int, err error) {

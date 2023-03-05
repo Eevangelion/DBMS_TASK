@@ -133,12 +133,11 @@ export const jokeService = createApi({
         addJokeToFavorites: build.mutation({
             query: (joke_id) => {
                 const token = localStorage.getItem('access_token');
-                const userID = Number(localStorage.getItem('userID'));
                 return {
                     url: `/joke/addToFavorites/`,
                     method: 'POST',
                     headers: {authorization: token},
-                    body: {user_id: userID, joke_id: joke_id},
+                    body: joke_id,
                 }
             },
             invalidatesTags: ['Jokes']
@@ -146,12 +145,11 @@ export const jokeService = createApi({
         removeJokeFromFavorites: build.mutation({
             query: (joke_id) => {
                 const token = localStorage.getItem('access_token');
-                const userID = Number(localStorage.getItem('userID'));
                 return {
                     url: `/joke/removeFromFavorites/`,
                     method: 'DELETE',
                     headers: {authorization: token},
-                    body: {user_id: userID, joke_id: joke_id},
+                    body: joke_id,
                 }
             },
             invalidatesTags: ['Jokes']
@@ -183,10 +181,7 @@ export const jokeService = createApi({
                     url: `/tag/create/`,
                     headers: {authorization: token},
                     method: 'POST',
-                    body: {
-                        name: name, 
-                        user_id: Number(id),
-                    },
+                    body: name, 
                 }
             },
             providesTags: ['Tags'],
@@ -198,10 +193,7 @@ export const jokeService = createApi({
                     url: `/tag/delete/`,
                     method: 'DELETE',
                     headers: {authorization: token},
-                    body: {
-                        name: name, 
-                        user_id: Number(id),
-                    },
+                    body: name, 
                 }
             },
             providesTags: ['Tags'],
@@ -258,9 +250,7 @@ export const jokeService = createApi({
                     url: `/report/delete/`,
                     method: 'DELETE',
                     headers: {authorization: token},
-                    body: {
-                        report_id: id,
-                    }
+                    body: id,
                 }
             },
             invalidatesTags: ['Reports']
@@ -283,9 +273,7 @@ export const jokeService = createApi({
                     url: `/report/apply/`,
                     method: 'POST',
                     headers: {authorization: token},
-                    body: {
-                        report_id: reportID,
-                    }
+                    body: reportID,
                 }
             },
             invalidatesTags: ['Users', 'Reports']
@@ -297,24 +285,41 @@ export const jokeService = createApi({
                     url: `/user/subscribe/`,
                     method: 'POST',
                     headers: {authorization: token},
-                    body: {
-                        receiver_id: Number(receiverID)
-                    }
+                    body: Number(receiverID)
                 }
             },
             invalidatesTags: ['Users']
         }),
+        unsubscribeToUser: build.mutation({
+            query: (receiverID) => {
+                const token = localStorage.getItem('access_token');
+                return {
+                    url: `/user/unsubscribe/`,
+                    method: 'POST',
+                    headers: {authorization: token},
+                    body: Number(receiverID)
+                }
+            },
+            invalidatesTags: ['Users']
+        }),
+        checkIfUserSubscribedTo: build.query({
+            query: (receiverID) => {
+                const token = localStorage.getItem('access_token');
+                return {
+                    url: `/user/is_subscribed/${receiverID}`,
+                    headers: {authorization: token},
+                }
+            },
+            providesTags: ['Users']
+        }),
         changeUserName: build.mutation({
             query: (name) => {
                 const token = localStorage.getItem('access_token');
-                const userID = localStorage.getItem("userID");
                 return {
                     url: `/user/change_name/`,
                     method: 'PUT',
                     headers: {authorization: token},
-                    body: {
-                        new_name: name
-                    }
+                    body: name
                 }
             },
             invalidatesTags: ['Users']
@@ -322,14 +327,11 @@ export const jokeService = createApi({
         changePassword: build.mutation({
             query: (password) => {
                 const token = localStorage.getItem('access_token');
-                const userID = localStorage.getItem("userID");
                 return {
                     url: `/user/change_password/`,
                     method: 'PUT',
                     headers: {authorization: token},
-                    body: {
-                        new_transformed_password: password
-                    }
+                    body: password
                 }
             }
         }),
@@ -358,6 +360,8 @@ export const {
     useCreateReportMutation,
     useRemoveReportMutation,
     useSubscribeToUserMutation,
+    useUnsubscribeToUserMutation,
+    useCheckIfUserSubscribedToQuery,
     useChangeUserNameMutation,
     useChangePasswordMutation,
     useApplyReportMutation,

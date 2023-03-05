@@ -2,13 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/db"
 	customHTTP "github.com/Sakagam1/DBMS_TASK/internal/http"
-	"github.com/Sakagam1/DBMS_TASK/internal/models"
 	"github.com/Sakagam1/DBMS_TASK/internal/utils"
 	"github.com/gorilla/mux"
 )
@@ -26,13 +24,13 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-	var tagRequest models.TagRequest
-	err = decoder.Decode(&tagRequest)
+	var tag_name string
+	err = decoder.Decode(&tag_name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	id, err := db.TagRepo.Create(tagRequest.Name)
+	id, err := db.TagRepo.Create(tag_name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return
@@ -54,14 +52,13 @@ func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-	var tagRequest models.TagRequest
-	err = decoder.Decode(&tagRequest)
-	log.Println(tagRequest)
+	var tag_name string
+	err = decoder.Decode(&tag_name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	err = db.TagRepo.Delete(tagRequest.Name)
+	err = db.TagRepo.Delete(tag_name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return

@@ -371,6 +371,62 @@ func UnSubscribeFromUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func GetWhomUserSubscribedTo(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	sender_id := claims.User_ID
+	users_id, err := db.UserRepo.GetWhomUserSubscribedTo(sender_id)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(users_id)
+}
+
+func GetWhomUserSubscribedToCount(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	sender_id := claims.User_ID
+	amount, err := db.UserRepo.GetWhomUserSubscribedToCount(sender_id)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(amount)
+}
+
+func GetCheckIfUserSubscribed(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	params := mux.Vars(r)
+	receiver_id, err := strconv.Atoi(params["receiver_id"])
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
+	sender_id := claims.User_ID
+	check, err := db.UserRepo.GetCheckIfUserSubscribed(sender_id, receiver_id)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(check)
+}
+
 func ChangeUserNameHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")

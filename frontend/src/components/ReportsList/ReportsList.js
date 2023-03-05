@@ -4,7 +4,6 @@ import { useGetReportsQuery } from "../../services/service";
 import TopPanel from "../TopPanel/TopPanel";
 import Report from "../Report/Report";
 import styles from "./ReportList.module.css";
-import LoadingModal from "../LoadingModal/LoadingModal";
 
 
 const ReportsList = () => {
@@ -41,7 +40,7 @@ const ReportsList = () => {
     }, [response, loadingReports]);
 
     if (loadingReports) {
-        return <LoadingModal />;
+        return <></>;
     }
     
     return (

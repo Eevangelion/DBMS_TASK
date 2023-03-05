@@ -20,7 +20,7 @@ const JokeModal = (props) => {
         isLoading: loadingJoke,
     } = useGetJokeByIDQuery(jokeID);
     if (loadingTags || loadingJoke) {
-        return <li>Загрузка...</li>;
+        return <></>;
     }
 
     const rating = joke.rating,

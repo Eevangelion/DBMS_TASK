@@ -1,44 +1,28 @@
-// import { createSlice } from '@reduxjs/toolkit';
-// import { getUserInfo } from '../actions/auth';
-// import { useAddJokeToFavoritesMutation,
-//     useRemoveJokeFromFavoritesMutation
-// } from '../../services/joke';
-// import {
-//     useGetUserByNameQuery
-// } from '../../services/user';
+import { createSlice } from "@reduxjs/toolkit";
 
-// const initialState = {
-//     loading: false
-// };
+const initialState = {
+    userID: undefined,
+    userName: undefined,
+    userRole: undefined,
+}
 
-// export const userSlice = createSlice({
-//     name: 'user',
-//     initialState,
-//     reducers: {
-//         clean: () => initialState,
-//     },
-//     extraReducers: (builder) => {
-//         builder
-//             .addCase(getUserInfo.fulfilled, (state, action) => {
-//                 const payload = action.payload;
-//                 state.favoriteJokes = payload.favoriteJokes;
-//                 state.username = payload.username;
-//                 state.loading = false;
-//             })
-//             .addCase(useAddJokeToFavoritesMutation.rejected, (state, action) => {
-//                 state.error = action.payload;
-//                 state.loading = false;
-//             })     
-//             .addCase(useRemoveJokeFromFavoritesMutation.rejected, (state, action) => {
-//                 state.error = action.payload;
-//                 state.loading = false;
-//             })   
-//             .addCase(useGetUserByNameQuery.rejected, (state, action) => {
-//                 state.loading = false;
-//                 state.error = action.payload;
-//             });
-//     }
-// });
+export const userSlice = createSlice({
+    name: 'user',
+    initialState,
+    reducers: {
+        selectUser: (state, action) => {
+            switch (action.payload.data) {
+            case 'userID': state.userID = action.payload.state;break;
+            case 'userName': state.userName = action.payload.state;break;
+            case 'userRole': state.userRole = action.payload.state;break;
+            default:break;
+            }
+        },  
+    }
+})
 
-// export const { clean } = userSlice.actions;
-// export default userSlice.reducer;
+
+export const {
+    selectUser
+} = userSlice.actions;
+export default userSlice.reducer;

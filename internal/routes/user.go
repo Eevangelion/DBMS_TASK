@@ -75,6 +75,30 @@ var User = router.RoutePrefix{
 			HandlerFunc: handlers.SubscribeToUserHandler,
 		},
 		{
+			Name:        "UnsubscribeToUser",
+			Method:      "POST",
+			Pattern:     "/unsubscribe/",
+			HandlerFunc: handlers.UnSubscribeFromUserHandler,
+		},
+		{
+			Name:        "GetWhomUserSubscribedTo",
+			Method:      "POST",
+			Pattern:     "/subscribed_users/",
+			HandlerFunc: handlers.GetWhomUserSubscribedTo,
+		},
+		{
+			Name:        "GetWhomUserSubscribedToCount",
+			Method:      "POST",
+			Pattern:     "/subscribed_users_count/",
+			HandlerFunc: handlers.GetWhomUserSubscribedToCount,
+		},
+		{
+			Name:        "CheckIfUserSubscribedToAnother",
+			Method:      "GET",
+			Pattern:     "/is_subscribed/{receiver_id}",
+			HandlerFunc: handlers.GetCheckIfUserSubscribed,
+		},
+		{
 			Name:        "GetSubscribes",
 			Method:      "GET",
 			Pattern:     "/subscribed/",
