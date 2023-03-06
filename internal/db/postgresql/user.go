@@ -391,6 +391,7 @@ func (u UserRepository) GetWhomUserSubscribedToCount(user_id int) (amount int, e
 }
 
 func (u UserRepository) GetWhomUserSubscribedTo(user_id int) (users []int, err error) {
+
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
@@ -444,4 +445,5 @@ func (u UserRepository) GetUserJokesCount(user_id int) (amount int, err error) {
 		return 0, err
 	}
 	return amount, nil
+
 }

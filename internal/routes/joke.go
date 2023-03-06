@@ -9,6 +9,7 @@ var Joke = router.RoutePrefix{
 	Prefix: "/joke",
 	SubRoutes: []router.Route{
 		{
+
 			Name:        "CreateJoke",
 			Method:      "POST",
 			Pattern:     "/create/",
@@ -58,3 +59,4 @@ var Joke = router.RoutePrefix{
 		},
 	},
 }
+
