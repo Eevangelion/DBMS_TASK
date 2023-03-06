@@ -1,0 +1,41 @@
+.mainPage {
+    width: 100vw;
+    min-height:100vh;
+    margin-left:-8px;
+}
+
+.feed {
+    width: 68vw;
+    min-height: 100vh;
+    margin-top: 5.5vh;
+}
+.info {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    background-color: #DAE0E6;
+}
+
+.txt {
+    margin-left: 7vw;
+    margin-top: 1vw;
+    font-size: 1vw;
+}
+.jokePostList {
+    margin-left: 7vw;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    padding: 0;
+}
+.pagination {
+    text-decoration : none;
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.4vh;
+    margin-left: 7vw;
+    margin-top: 1vw;
+}

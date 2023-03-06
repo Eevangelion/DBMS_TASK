@@ -1,0 +1,191 @@
+.ratingField {
+    width: 2.5vw;
+    min-height: 15vh;
+    background-color: #fafafa;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    border-end-start-radius: 0.5vh;
+}
+
+.rating {
+    margin-top: 1vh;
+    font-size: 0.8vw;
+}
+
+.rating + .addToFavorite {
+    margin-top: 0.5vh;
+}
+
+.rateImage {
+    width: 1.6vw;
+    height: 1.6vw;
+}
+
+.info {
+    width: 47.5vw;
+    min-height: 20vh;
+    background-color: transparent;
+    margin-left: 0.5vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+
+.headerPanel {
+    width: 47.5vw;
+    height: 1.8vh;
+    background-color: transparent;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+
+.header {
+    width: 40vw;
+    height: 1.8vh;
+    margin-top: 0.8vh;
+    background-color: transparent;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.8vh;
+}
+
+.author {
+    width: 10.5vw;
+    height: 1.5vh;
+    margin-top: 1vh;
+    text-align: right;
+    color: #555;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.65vw;
+}
+
+.authorProfile {
+    margin-left: 0.2vw;
+    color: #555;
+    text-decoration: none;
+    font-size: 0.65vw;
+}
+
+.createDate {
+    width: 10vw;
+    height: 1.5vh;
+    margin-top: 1vh;
+    margin-right: 0.5vw;
+    text-align: right;
+    color: #555;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.65vw;
+}
+
+.tags {
+    width:47.5vw;
+    height:3vh;
+    margin-top: 2vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    font-size: 0.8vw;
+}
+
+.tagItem {
+    min-width: 2vw;
+    height: 2.5vh;
+    background-color: #0f0;
+    padding-left: 0.5vw;
+    padding-right: 0.5vw;
+    border-radius: 45px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8vw;
+}
+
+.tagItem + .tagItem {
+    margin-left: 0.5vh;
+}
+
+.description {
+    width: 32wv;
+    min-height: 10vh;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 0.5vh;
+    margin-bottom: 0.5vh;
+    font-size: 0.8vw;
+}
+
+.headerPanel + .description {
+    margin-top: 1.5vh;
+}
+
+.modalWindow {
+    position: fixed;
+    width: 50vw;
+    min-height: 22.5vh;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 0.1vh solid #ccc;
+    border-radius: 0.5vh;
+    top: 20vh;
+    left: 25vw;
+    z-index: 2;
+}
+
+.modalFooter {
+    padding: 1vw;
+}
+
+.modalHeader {
+    height: 2.5vh;
+    margin-left: 1.5vw;
+    font-size: 0.8vw;
+    color: #555;
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+}
+
+.modalBody {
+    min-height: 20vh;
+    padding-top: 0vh;
+    display: flex;
+    background-color: #fff;
+    flex-direction: row;
+    justify-content: left;
+    border-top: 0.1vh solid #ccc;
+    border-end-end-radius: 0.5vh;
+    border-end-start-radius: 0.5vh;
+}
+
+#mdiv {
+    width: 5vw;
+    height: 2.5vh;
+    margin-left: 45vw;
+    border-start-end-radius: 0.5vh;
+    background-color: white;
+}
+  
+.mdiv {
+    height: 2.5vh;
+    width: 0.1vw;
+    background-color: #777;
+    transform: rotate(45deg);
+    Z-index: 1;
+}
+
+.md {
+    height: 2.5vh;
+    width: 0.1vw;
+    background-color: #777;
+    transform: rotate(90deg);
+    Z-index: 2;
+}

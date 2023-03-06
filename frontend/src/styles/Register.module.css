@@ -1,0 +1,102 @@
+.modalWindow {
+    position: fixed;
+    width: 40vw;
+    height: 56vh;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 0.1vh solid #ccc;
+    border-radius: 0.5vh;
+    top: 20vh;
+    left: 30vw;
+    z-index: 2;
+}
+
+.modalFooter {
+    padding: 1vw;
+}
+
+.modalHeader {
+    height: 3vh;
+    margin-left: 1.5vw;
+    font-size: 0.8vw;
+    color: #555;
+    font-weight: bold;
+}
+
+.modalBody {
+    width: 40vw;
+    height: 40vh;
+    padding-top: 2vh;
+    border-top: 0.1vh solid #ccc;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalFooter {
+    width: 40vw;
+    height: 6vh;
+    margin-top: 5vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.registerButton {
+    width: 30vw;
+    height: 3vh;
+    margin-top: 2vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 1vh;
+    background-color: #0079d3;
+    text-decoration : none;
+    border: none;
+    cursor: pointer;
+    
+    color: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8vw;
+}
+
+.passwordForm, .usernameForm, .emailForm {
+    width: 28vw;
+    height: 6vw;    
+    margin-top: 2vh;
+    margin-left: 6vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 0.1vw solid #ccc;
+}
+.passwordField, .usernameField, .emailField {
+    margin-bottom: 2vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.signinUsername, .signinPassword, .signinEmail {
+    min-width: 23vw;
+    max-width: 23vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    border: 0.1vh solid black;
+    padding-left: 0.1vw;
+    padding-top: 0.3vh;
+    font-size: 0.8vw;
+}
+text {
+    padding-left: 0.5vw;
+    margin-bottom: 3vh;
+    font-weight: bold;
+    font-size: 0.8vw;
+    color: "#555";
+    border-bottom: 0.1vw solid #ccc;
+}

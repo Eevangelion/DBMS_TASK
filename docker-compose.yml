@@ -1,0 +1,58 @@
+version: '3.9'
+services:
+  database:
+    container_name: FunnyJokesDB
+    image: postgres:15.2
+    environment:
+      POSTGRES_DB: FunnyJokesDB
+      POSTGRES_USER: postgres # Переписать на нужные логин и пароль
+      POSTGRES_PASSWORD: 1111
+      PGDATA: /data/postgres
+    volumes: # Эта штука нужна, чтобы сохранять инфу, если бд дропнется
+       - postgres-db:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - network1
+    restart: always 
+
+  adminer: # GUI для базы данных
+    container_name: adminer
+    image: adminer
+    restart: always
+    depends_on:
+      - database
+    ports:
+      - "8080:8080"
+    networks:
+      - network1
+
+  backend:
+    container_name: backend
+    build: ./
+    depends_on:
+      - database
+    ports:
+      - "8000:8000"
+    networks:
+      - network1
+    restart: always
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    networks:
+      - network1
+    restart: always
+       
+volumes:
+  postgres-db:
+    driver: local
+
+networks:
+  network1:
+    name: network1

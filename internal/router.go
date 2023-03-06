@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/Sakagam1/DBMS_TASK/internal/handlers"
 	customRouter "github.com/Sakagam1/DBMS_TASK/internal/router"
 	"github.com/Sakagam1/DBMS_TASK/internal/routes"
 	"github.com/gorilla/mux"
@@ -15,9 +16,12 @@ func NewRouter() *mux.Router {
 	customRouter.AppRoutes = append(
 		customRouter.AppRoutes,
 		routes.User,
+		routes.Pages,
 		routes.Joke,
-		// routes.Report,
-		// routes.Tag,
+		routes.Report,
+		routes.Tag,
+		routes.Search,
+		routes.Settings,
 	)
 
 	for _, route := range customRouter.AppRoutes {
@@ -32,6 +36,12 @@ func NewRouter() *mux.Router {
 				Path(r.Pattern).
 				Handler(handler).
 				Methods(r.Method).
+				Name(r.Name)
+
+			routePrefix.
+				Path(r.Pattern).
+				Handler(http.HandlerFunc(handlers.OptionsHandler)).
+				Methods("OPTIONS").
 				Name(r.Name)
 
 		}

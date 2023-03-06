@@ -1,0 +1,157 @@
+.joke-post {
+    width: 56vw;
+    min-height: 20vh;
+    display: flex;
+    background-color: #fff;
+    flex-direction: row;
+    justify-content: left;
+    border: 0.1vh solid #ccc;
+    border-radius: 0.2vw;
+}
+
+.joke-post + .joke-post {
+    margin-top: 1vh;
+}
+
+.rating-field {
+    width: 2.5vw;
+    min-height: 20vh;
+    background-color: #fafafa;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+
+.rating {
+    margin-top: 1vh;
+    font-size: 0.8vw;
+}
+
+.rating + .add-to-favorite {
+    margin-top: 0.5vh;
+}
+
+.rate-image {
+    width: 1.6vw;
+    height: 1.6vw;
+}
+
+.info {
+    width: 53.5vw;
+    min-height: 20vh;
+    background-color: transparent;
+    margin-left: 0.5vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+
+.header-panel {
+    width: 53.5vw;
+    height: 1.8vh;
+    background-color: transparent;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+}
+
+.header {
+    width: 40vw;
+    height: 1.8vh;
+    margin-top: 0.8vh;
+    background-color: transparent;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.8vh;
+}
+
+.author {
+    width: 10.5vw;
+    height: 1.5vh;
+    margin-top: 1vh;
+    text-align: right;
+    color: #555;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.65vw;
+}
+
+.author-profile {
+    margin-left: 0.2vw;
+    color: #555;
+    text-decoration: none;
+    font-size: 0.65vw;
+}
+
+.create-date {
+    width: 10vw;
+    height: 1.5vh;
+    margin-top: 1vh;
+    margin-right: 0.5vw;
+    text-align: right;
+    color: #555;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.65vw;
+}
+
+.tags {
+    width:40vw;
+    height:3vh;
+    margin-top: 2vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    font-size: 0.8vw;
+}
+
+.tag-item {
+    min-width: 2vw;
+    height: 2.5vh;
+    background-color: #0f0;
+    padding-left: 0.5vw;
+    padding-right: 0.5vw;
+    border-radius: 45px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8vw;
+}
+
+.tag-item + .tag-item {
+    margin-left: 0.5vh;
+}
+
+.description {
+    width: 32wv;
+    min-height: 15vh;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 0.5vh;
+    margin-bottom: 0.5vh;
+    font-size: 0.8vw;
+}
+
+.header-panel + .description {
+    margin-top: 1.5vh;
+}
+
+.button-popover {
+    width: 53.55vw;
+    height: 3.75vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+button {
+    width: 2vw;
+    height: 2vw;
+    background-color: #fff;
+    border-radius: 0.5vh;
+    border: 0.1vh solid #ccc;
+    font-size: 0.8vw;
+}

@@ -1,7 +1,6 @@
 package psql
 
 import (
-	"errors"
 	"log"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
@@ -13,83 +12,397 @@ type JokeRepository struct {
 	joke repositories.IJoke
 }
 
+
+func (j JokeRepository) SubscribeToUser(receiver_id int, sender_id int) (err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return err
+	}
+	qry := `INSERT INTO public."UserSubscribes" (receiver_id, sender_id) values ($1, $2)`
+	_, err = DB.Exec(qry, receiver_id, sender_id)
+	if err != nil {
+		log.Println("Error while trying to subscribe to user:", err)
+		return err
+	}
+	return nil
+}
+
+func (j JokeRepository) UnSubscribeFromUser(receiver_id int, sender_id int) (err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return err
+	}
+	qry := `DELETE FROM public."UserSubscribes" where receiver_id=$1 and sender_id=$2`
+	_, err = DB.Exec(qry, receiver_id, sender_id)
+	if err != nil {
+		log.Println("Error while trying to UnSubscribe from user:", err)
+		return err
+	}
+	return nil
+}
+
+func (j JokeRepository) GetUserSubscribedJokes(user_id int, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, -1, err
+	}
+	qry := ``
+	qry2 := ``
+	if sort_mode == "new" {
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1`
+	}
+	if sort_mode == "alltime" {
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1`
+	}
+	if sort_mode == "hour" {
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
+	}
+	if sort_mode == "day" {
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
+	}
+	if sort_mode == "week" {
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
+	}
+	if sort_mode == "month" {
+		qry = `SELECT "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `SELECT count("Jokes".id) FROM public."Users", public."UserSubscribes", public."Jokes" where "Users".id="UserSubscribes".receiver_id and "Users".id="Jokes".author_id and "UserSubscribes".sender_id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
+	}
+	err = DB.QueryRow(qry2, user_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get user subscribed jokes (amount):", err)
+		return nil, -1, err
+	}
+	rows, err := DB.Query(qry, user_id, pageSize, (page-1)*pageSize)
+	defer rows.Close()
+	if err != nil {
+		log.Println("Error while trying to get user subscribed jokes:", err)
+		return nil, -1, err
+	}
+	for rows.Next() {
+		var id, rating, author_id int
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &creation_date, &author_id)
+		if err != nil {
+			log.Println("Error while scanning rows:", err)
+			return nil, -1, err
+		}
+		NewJoke := models.Joke{
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     author_id,
+			CreationDate: creation_date,
+		}
+		jokes = append(jokes, NewJoke)
+	}
+	return jokes, amount, nil
+}
+
 func (j JokeRepository) AddToFavorite(user_id int, joke_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return err
 	}
-	qry := `INSERT INTO public."Favorite jokes" (joke_id, user_id) values ($1, $2)`
+	qry := `INSERT INTO public."Favorite jokes" (user_id, joke_id) values ($1, $2)`
+	qry2 := `UPDATE public."Jokes" SET rating=rating + 1 WHERE id=$1`
 	_, err = DB.Exec(qry, user_id, joke_id)
 	if err != nil {
-		log.Println("Adding to favorite error:", err)
+		log.Println("Error while trying to add to favorite:", err)
+		return err
+	}
+	_, err = DB.Exec(qry2, joke_id)
+	if err != nil {
+		log.Println("Error while trying to add to favorite:", err)
 		return err
 	}
 	return nil
 }
 
-func (j JokeRepository) GetUserFavoriteJokes(user_id int) (jokes []models.Joke, err error) {
+func (j JokeRepository) DeleteFromFavorite(user_id int, joke_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return err
 	}
-	qry := `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1`
-	rows, err := DB.Query(qry, user_id)
+	qry := `DELETE FROM public."Favorite jokes" where user_id=$1 and joke_id=$2`
+	qry2 := `UPDATE public."Jokes" SET rating=rating - 1 WHERE id=$1`
+	_, err = DB.Exec(qry, user_id, joke_id)
 	if err != nil {
-		log.Println("Connection Error:", err)
-		return nil, err
+		log.Println("Error while trying to delete from favorite:", err)
+		return err
 	}
-	for rows.Next() {
-		var id, rating int
-		var header, description string
-		err := rows.Scan(&id, &header, &description, &rating)
-		if err != nil {
-			log.Println("Err while scanning rows", err)
-		}
-		NewJoke := models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    user_id,
-		}
-		jokes = append(jokes, NewJoke)
+	_, err = DB.Exec(qry2, joke_id)
+	if err != nil {
+		log.Println("Error while trying to delete from favorite:", err)
+		return err
 	}
-	defer rows.Close()
-	return jokes, nil
+	return nil
 }
 
-func (j JokeRepository) GetUserJokes(user_id int) (jokes []models.Joke, err error) {
+func (j JokeRepository) GetUserFavoriteJokes(user_id int, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return nil, -1, err
 	}
-	qry := `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1`
-	rows, err := DB.Query(qry, user_id)
+	qry := ``
+	qry2 := ``
+	if sort_mode == "new" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1`
+	}
+	if sort_mode == "alltime" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1`
+	}
+	if sort_mode == "hour" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
+	}
+	if sort_mode == "day" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
+	}
+	if sort_mode == "week" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
+	}
+	if sort_mode == "month" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date, "Jokes".author_id from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users", public."Favorite jokes" where "Users".id="Favorite jokes".user_id and "Favorite jokes".joke_id="Jokes".id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
+	}
+	err = DB.QueryRow(qry2, user_id).Scan(&amount)
 	if err != nil {
-		log.Println("Connection Error:", err)
-		return nil, err
+		log.Println("Error while trying to get user favorite jokes (amount):", err)
+		return nil, -1, err
+	}
+	rows, err := DB.Query(qry, user_id, pageSize, (page-1)*pageSize)
+	defer rows.Close()
+	if err != nil {
+		log.Println("Error while trying to get user favorite jokes:", err)
+		return nil, -1, err
 	}
 	for rows.Next() {
-		var id, rating int
-		var header, description string
-		err := rows.Scan(&id, &header, &description, &rating)
+		var id, rating, author_id int
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &creation_date, &author_id)
 		if err != nil {
-			log.Println("Err while scanning rows", err)
+			log.Println("Error while scanning rows:", err)
+			return nil, 1, err
 		}
 		NewJoke := models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    user_id,
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     author_id,
+			CreationDate: creation_date,
 		}
 		jokes = append(jokes, NewJoke)
 	}
+	return jokes, amount, nil
+}
+
+func (j JokeRepository) GetJokesByTag(tag_name string, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, 0, err
+	}
+	qry := ``
+	qry2 := ``
+	if sort_mode == "new" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1`
+	}
+	if sort_mode == "alltime" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1`
+	}
+	if sort_mode == "hour" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
+	}
+	if sort_mode == "day" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
+	}
+	if sort_mode == "week" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
+	}
+	if sort_mode == "month" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Tags".name=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
+	}
+	err = DB.QueryRow(qry2, tag_name).Scan(&amount)
+	if err != nil {
+		log.Println("Error while getting jokes by tag (amount):", err)
+		return nil, 0, err
+	}
+	rows, err := DB.Query(qry, tag_name, pageSize, (page-1)*pageSize)
 	defer rows.Close()
-	return jokes, nil
+	if err != nil {
+		log.Println("Error while getting jokes by tag:", err)
+		return nil, 0, err
+	}
+	for rows.Next() {
+		var id, rating, user_id int
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &user_id, &creation_date)
+		if err != nil {
+			log.Println("Error while scanning rows:", err)
+			return nil, 0, err
+		}
+		NewJoke := models.Joke{
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     user_id,
+			CreationDate: creation_date,
+		}
+		jokes = append(jokes, NewJoke)
+	}
+	return jokes, amount, nil
+}
+
+func (j JokeRepository) GetJokesByKeyword(keyword string, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, 0, err
+	}
+	qry := ``
+	qry2 := ``
+	if sort_mode == "new" {
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' ORDER BY creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count(id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%'`
+	}
+	if sort_mode == "alltime" {
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%'`
+	}
+	if sort_mode == "hour" {
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
+	}
+	if sort_mode == "day" {
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
+	}
+	if sort_mode == "week" {
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
+	}
+	if sort_mode == "month" {
+		qry = `select * from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where lower(header) LIKE '%` + keyword + `%' or lower(description) LIKE '%` + keyword + `%' and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
+	}
+	err = DB.QueryRow(qry2).Scan(&amount)
+	if err != nil {
+		log.Println("Error while getting jokes by keyword (amount):", err)
+		return nil, 0, err
+	}
+	rows, err := DB.Query(qry, pageSize, (page-1)*pageSize)
+	defer rows.Close()
+	if err != nil {
+		log.Println("Error while getting jokes by keyword:", err)
+		return nil, 0, err
+	}
+	for rows.Next() {
+		var id, rating, user_id int
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &user_id, &creation_date)
+		if err != nil {
+			log.Println("Error while scanning rows:", err)
+			return nil, 0, err
+		}
+		NewJoke := models.Joke{
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     user_id,
+			CreationDate: creation_date,
+		}
+		jokes = append(jokes, NewJoke)
+	}
+	return jokes, amount, nil
+}
+
+func (j JokeRepository) GetUserJokes(user_id int, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, -1, err
+	}
+	qry := ``
+	qry2 := ``
+	if sort_mode == "new" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1`
+	}
+	if sort_mode == "alltime" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1`
+	}
+	if sort_mode == "hour" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(HOUR from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) < 1`
+	}
+	if sort_mode == "day" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 1`
+	}
+	if sort_mode == "week" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 7`
+	}
+	if sort_mode == "month" {
+		qry = `select "Jokes".id, "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".creation_date from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $2 OFFSET $3`
+		qry2 = `select count("Jokes".id) from public."Jokes", public."Users" where "Users".id="Jokes".author_id and "Users".id=$1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - "Jokes".creation_date)) <= 31`
+	}
+	err = DB.QueryRow(qry2, user_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while getting user jokes (amount):", err)
+		return nil, -1, err
+	}
+	rows, err := DB.Query(qry, user_id, pageSize, (page-1)*pageSize)
+	defer rows.Close()
+	if err != nil {
+		log.Println("Error while getting user jokes:", err)
+		return nil, -1, err
+	}
+	for rows.Next() {
+		var id, rating int
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &creation_date)
+		if err != nil {
+			log.Println("Error while scanning rows:", err)
+			return nil, -1, err
+		}
+		NewJoke := models.Joke{
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     user_id,
+			CreationDate: creation_date,
+		}
+		jokes = append(jokes, NewJoke)
+	}
+	return jokes, amount, nil
 }
 
 func (j JokeRepository) GetJokeTags(joke_id int) (tags []models.Tag, err error) {
@@ -100,8 +413,9 @@ func (j JokeRepository) GetJokeTags(joke_id int) (tags []models.Tag, err error) 
 	}
 	qry := `select "Tags".id, "Tags".name from public."Jokes", public."TagsJokes", public."Tags" where "Jokes".id="TagsJokes".joke_id and "TagsJokes".tag_id="Tags".id and "Jokes".id=$1`
 	rows, err := DB.Query(qry, joke_id)
+	defer rows.Close()
 	if err != nil {
-		log.Println("Connection Error:", err)
+		log.Println("Error while getting joke tags:", err)
 		return nil, err
 	}
 	for rows.Next() {
@@ -109,7 +423,7 @@ func (j JokeRepository) GetJokeTags(joke_id int) (tags []models.Tag, err error) 
 		var name string
 		err := rows.Scan(&id, &name)
 		if err != nil {
-			log.Println("Err while scanning rows", err)
+			log.Println("Error while scanning rows:", err)
 			return nil, err
 		}
 		NewTag := models.Tag{
@@ -118,7 +432,6 @@ func (j JokeRepository) GetJokeTags(joke_id int) (tags []models.Tag, err error) 
 		}
 		tags = append(tags, NewTag)
 	}
-	defer rows.Close()
 	return tags, nil
 }
 
@@ -137,87 +450,132 @@ func (j JokeRepository) AddTagToJoke(joke_id int, tag_id int) (err error) {
 	return nil
 }
 
-func (j JokeRepository) GetJokeByID(JokeId int) (userOut *models.Joke, err error) {
+func (j JokeRepository) DeleteTagFromJoke(joke_id int, tag_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return err
 	}
-	qry := `select * from public."Jokes" where id=$1`
-	rows, err := DB.Query(qry, JokeId)
+	qry := `DELETE FROM public."TagsJokes" where tag_id=$1 and joke_id=$2`
+	_, err = DB.Exec(qry, tag_id, joke_id)
 	if err != nil {
-		log.Println("Searching joke by id error:", err)
+		log.Println("Error while trying to delete tag from joke:", err)
+		return err
 	}
-	var id, rating, author_id int
-	var header, description string
-	id = -1
-	for rows.Next() {
-		err := rows.Scan(&id, &header, &description, &rating, &author_id)
-		if err != nil {
-			log.Println("Err while scanning rows:", err)
-		}
-	}
-	defer rows.Close()
-	if id != -1 {
-		return &models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    author_id,
-		}, nil
-	}
-	return &models.Joke{}, errors.New("Joke with this id does not exist!")
+	return nil
 }
 
-func (j JokeRepository) GetAll() (jokes []models.Joke, err error) {
+func (j JokeRepository) GetJokeByID(joke_id int) (jokeOut *models.Joke, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select * from public."Jokes"`
-	rows, err := DB.Query(qry)
+
+	var amount int
+	var rating, author_id int
+	var header, description, creation_date string
+	qry := `select "Jokes".header, "Jokes".description, "Jokes".rating, "Jokes".author_id, "Jokes".creation_date from public."Jokes" where id=$1`
+	qry2 := `select count("Jokes".header) from public."Jokes" where id=$1`
+	err = DB.QueryRow(qry2, joke_id).Scan(&amount)
 	if err != nil {
-		log.Println("Connection Error:", err)
+		log.Println("Error while searching joke by id (amount):", err)
+	}
+	if amount == 0 {
+		return jokeOut, nil
+	}
+	err = DB.QueryRow(qry, joke_id).Scan(&header, &description, &rating, &author_id, &creation_date)
+	if err != nil {
+		log.Println("Error while searching joke by id:", err)
+	}
+	NewJoke := models.Joke{
+		ID:           joke_id,
+		Header:       header,
+		Description:  description,
+		Rating:       rating,
+		AuthorId:     author_id,
+		CreationDate: creation_date,
+	}
+	return &NewJoke, nil
+}
+
+func (j JokeRepository) GetPageOfJokes(page int, per_page int, sort_mode string) (jokes []models.Joke, amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, -1, err
+	}
+	qry := ``
+	qry2 := ``
+	if sort_mode == "new" {
+		qry = `select * from public."Jokes" ORDER BY creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select COUNT ("Jokes".id) from public."Jokes"`
+	}
+	if sort_mode == "alltime" {
+		qry = `select * from public."Jokes" ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select COUNT ("Jokes".id) from public."Jokes"`
+	}
+	if sort_mode == "hour" {
+		qry = `select * from public."Jokes" where EXTRACT(HOUR from (CURRENT_TIMESTAMP - creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) < 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where EXTRACT(HOUR from (CURRENT_TIMESTAMP - creation_date)) <= 1 and EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) < 1`
+	}
+	if sort_mode == "day" {
+		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 1 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 1`
+	}
+	if sort_mode == "week" {
+		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 7 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 7`
+	}
+	if sort_mode == "month" {
+		qry = `select * from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 31 ORDER BY rating DESC, creation_date DESC LIMIT $1 OFFSET $2`
+		qry2 = `select count("Jokes".id) from public."Jokes" where EXTRACT(DAY from (CURRENT_TIMESTAMP - creation_date)) <= 31`
+	}
+	err = DB.QueryRow(qry2).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get page of jokes (amount):", err)
+		return nil, -1, err
+	}
+	rows, err := DB.Query(qry, per_page, per_page*(page-1))
+	defer rows.Close()
+	if err != nil {
+		log.Println("Error while trying to get page of jokes:", err)
+		return nil, -1, err
 	}
 	for rows.Next() {
 		var id, rating, author_id int
-		var header, description string
-		err := rows.Scan(&id, &header, &description, &rating, &author_id)
+		var header, description, creation_date string
+		err := rows.Scan(&id, &header, &description, &rating, &author_id, &creation_date)
 		if err != nil {
-			log.Println("Err while scanning rows", err)
+			log.Println("Error while scanning rows:", err)
+			return nil, -1, err
 		}
 		NewJoke := models.Joke{
-			ID:          id,
-			Header:      header,
-			Description: description,
-			Rating:      rating,
-			AuthorId:    author_id,
+			ID:           id,
+			Header:       header,
+			Description:  description,
+			Rating:       rating,
+			AuthorId:     author_id,
+			CreationDate: creation_date,
 		}
 		jokes = append(jokes, NewJoke)
 	}
-	defer rows.Close()
-	return jokes, nil
+	return jokes, amount, nil
 }
 
-func (j JokeRepository) Create(joke *models.Joke) (jokeOut *models.Joke, err error) {
+func (j JokeRepository) Create(joke *models.Joke) (id int64, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return -1, err
 	}
-	qry := `INSERT INTO public."Jokes" (id, header, description, rating, author_id) values ($1, $2, $3, $4, $5)`
-	result, err := DB.Exec(qry, joke.ID, joke.Header, joke.Description, joke.Rating, joke.AuthorId)
+	qry := `INSERT INTO public."Jokes" (header, description, author_id) values ($1, $2, $3) RETURNING id`
+	err = DB.QueryRow(qry, joke.Header, joke.Description, joke.AuthorId).Scan(&id)
 	if err != nil {
-		log.Println("Joke creation error:", err)
+		log.Println("Error while trying to create joke:", err)
+		return -1, err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Println("Joke searching while adding joke error:", err)
-	}
-	jokeOut, err = j.GetJokeByID(int(id))
-	return jokeOut, err
+	return id, nil
 }
 
 func (j JokeRepository) Delete(joke_id int) (err error) {
@@ -229,7 +587,7 @@ func (j JokeRepository) Delete(joke_id int) (err error) {
 	qry := `DELETE FROM public."Jokes" where id=$1`
 	_, err = DB.Exec(qry, joke_id)
 	if err != nil {
-		log.Println("Joke deletion error:", err)
+		log.Println("Error while trying to delete joke:", err)
 		return err
 	}
 	return nil

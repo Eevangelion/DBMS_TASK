@@ -1,0 +1,64 @@
+.top-panel {
+    width: 100vw;
+    height: 5vh;
+
+    position: fixed;
+    top: 0;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    background-color: #fff;
+    border-bottom: 0.1vh solid #eee;
+}
+
+.main-page-redirect {
+    width: 15vw;
+    height: 5vh;
+}
+.main-page-redirect-link {
+    width: 15vw;
+    height: 5vh;
+    margin-left: -3.5vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.main-page-redirect-image {
+    width: 14vw;
+    background-color: transparent;
+    border-color: transparent;
+}
+.search-panel {
+    width: 40vw;
+    height: 5vh;
+    margin-left: 10vw;
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.search {
+    width: 22vw;
+    height: 4.5vh;
+    display:flex;
+    border-radius: 45vw;
+    padding-left: 0.8vw;
+    margin-top: 0.25vh;
+    border-color: transparent;
+    background-color: #efefef;
+    font-size: 0.8vw;
+}
+.search-submit {
+    width: 2vw;
+    height: 4.5vh;
+    margin-top: 0.25vh; 
+}
+.search-loop-image {
+    width: 2.5vw;
+    height: 4.5vh;
+    background-color: transparent;
+    border-color: transparent;
+}

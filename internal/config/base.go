@@ -17,6 +17,15 @@ type Config struct {
 	Server    ServerConfig
 	Database  *Database
 	DebugMode bool
+
+	GitHubClientID         string `mapstructure:"GITHUB_OAUTH_CLIENT_ID"`
+	GitHubClientSecret     string `mapstructure:"GITHUB_OAUTH_CLIENT_SECRET"`
+	GitHubOAuthRedirectUrl string `mapstructure:"GITHUB_OAUTH_REDIRECT_URL"`
+
+	TokenLifeTime        int
+	RefreshTokenLifeTime int
+	PrivateKey           string
+	Salt                 string
 }
 
 var Conf *Config = nil
@@ -32,11 +41,18 @@ func GetConfig() *Config {
 	if Conf == nil {
 		Conf = &Config{
 			Server: ServerConfig{
-				Address: getEnv("SERVER", "localhost"),
-				Port:    getEnvAsInt("PORT", 6969),
+				Address: getEnv("SERVER", "0.0.0.0"),
+				Port:    getEnvAsInt("PORT", 8000),
 			},
-			Database:  SetupDB(),
-			DebugMode: getEnvAsBool("DEBUG_MODE", true),
+			Database:               SetupDB(),
+			DebugMode:              getEnvAsBool("DEBUG_MODE", true),
+			GitHubClientID:         getEnv("GITHUB_OAUTH_CLIENT_ID", ""),
+			GitHubClientSecret:     getEnv("GITHUB_OAUTH_CLIENT_SECRET", ""),
+			GitHubOAuthRedirectUrl: getEnv("GITHUB_OAUTH_REDIRECT_URL", ""),
+			TokenLifeTime:          getEnvAsInt("TokenLifeTime", 15),
+			RefreshTokenLifeTime:   getEnvAsInt("RefreshTokenLifeTime", 24),
+			PrivateKey:             getEnv("PrivateKey", "YouMissSomething"),
+			Salt:                   getEnv("Salt", "245tvqJAbJXw6N9DrXoa1NdT6grhq5yi"),
 		}
 	}
 	return Conf

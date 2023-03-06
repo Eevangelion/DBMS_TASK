@@ -1,0 +1,41 @@
+.sorter {
+    width: 56vw;
+    height: 5vh;
+
+    margin-top: 2vh;
+    margin-left: 7vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-size: 0.7vw;
+
+    background-color: #fff;
+    border: 0.1vh solid #ccc;
+}
+
+
+.button-sort {
+    min-width: 5vw;
+    margin-top: 0.6vh;
+    margin-left: 1.5vw;
+    margin-right: 1.5vw;
+    text-decoration: none;
+    font-size: 0.7vw;
+    color: black;
+    cursor: pointer; 
+    background-color: transparent;
+    border: 0px;
+}
+
+.active {
+    min-width: 5vw;
+    margin-top: 0.6vh;
+    margin-left: 1.5vw;
+    margin-right: 1.5vw;
+    text-decoration: none;
+    font-size: 0.7vw;
+    color: #22d;
+    cursor: pointer; 
+    background-color: transparent;
+    border: 0px;
+} 

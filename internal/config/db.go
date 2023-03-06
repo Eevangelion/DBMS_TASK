@@ -10,10 +10,10 @@ type Database struct {
 
 func SetupDB() *Database {
 	return &Database{
-		DbDBName:   getEnv("DB_DBNAME", "sample_db"),
+		DbDBName:   getEnv("DB_DBNAME", "FunnyJokesDB"),
 		DbHost:     getEnv("DB_HOST", "localhost"),
 		DbPort:     getEnv("DB_PORT", "5432"),
-		DbUserName: getEnv("DB_USERNAME", "sample_usr"),
-		DbPassword: getEnv("DB_PASSWORD", "sample_pwd"),
+		DbUserName: getEnv("DB_USERNAME", "postgres"),
+		DbPassword: getEnv("DB_PASSWORD", "root"),
 	}
 }

@@ -9,22 +9,54 @@ var Joke = router.RoutePrefix{
 	Prefix: "/joke",
 	SubRoutes: []router.Route{
 		{
-			Name:        "Create",
+
+			Name:        "CreateJoke",
 			Method:      "POST",
-			Pattern:     "/create",
+			Pattern:     "/create/",
 			HandlerFunc: handlers.CreateJokeHandler,
 		},
 		{
 			Name:        "Delete",
 			Method:      "DELETE",
-			Pattern:     "/delete",
+			Pattern:     "/delete/",
 			HandlerFunc: handlers.DeleteJokeHandler,
 		},
 		{
-			Name:        "GetAll",
+			Name:        "GetJokeByID",
 			Method:      "GET",
-			Pattern:     "/",
-			HandlerFunc: handlers.GetJokes,
+			Pattern:     "/{id}/",
+			HandlerFunc: handlers.GetJokeByIDHandler,
+		},
+		{
+			Name:        "Get",
+			Method:      "GET",
+			Pattern:     "/tags/{id}/",
+			HandlerFunc: handlers.GetJokeTagsHandler,
+		},
+		{
+			Name:        "AddToFavorite",
+			Method:      "POST",
+			Pattern:     "/addToFavorites/",
+			HandlerFunc: handlers.AddToFavoriteHandler,
+		},
+		{
+			Name:        "DeleteFromFavorite",
+			Method:      "DELETE",
+			Pattern:     "/removeFromFavorites/",
+			HandlerFunc: handlers.DeleteFromFavoriteHandler,
+		},
+		{
+			Name:        "AddTagToJoke",
+			Method:      "POST",
+			Pattern:     "/addTag/",
+			HandlerFunc: handlers.AddTagToJokeHandler,
+		},
+		{
+			Name:        "RemoveTagFromJoke",
+			Method:      "POST",
+			Pattern:     "/removeTag/",
+			HandlerFunc: handlers.DeleteTagFromJokeHandler,
 		},
 	},
 }
+

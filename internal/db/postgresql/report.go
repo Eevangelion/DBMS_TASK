@@ -1,7 +1,6 @@
 package psql
 
 import (
-	"errors"
 	"log"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
@@ -13,66 +12,108 @@ type ReportRepository struct {
 	report repositories.IReport
 }
 
-func (r ReportRepository) GetReportByID(ReportID int) (reportOut *models.Report, err error) {
+
+func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select * from public."Reports" where id=$1`
-	rows, err := DB.Query(qry, ReportID)
-	if err != nil {
-		log.Println("Searching joke by id error:", err)
-	}
+	var amount int
 	var id, receiver_joke_id, sender_id, receiver_id int
 	var description string
-	id = -1
+	qry := `select * from public."Reports" where id=$1`
+	qry2 := `select count("Reports".id) from public."Reports" where id=$1`
+	err = DB.QueryRow(qry2, report_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get report by ID (amount):", err)
+		return nil, err
+	}
+	if amount == 0 {
+		return reportOut, nil
+	}
+	err = DB.QueryRow(qry, report_id).Scan(&id, &description, &receiver_joke_id, &sender_id, &receiver_id)
+	if err != nil {
+		log.Println("Error while trying to get report by ID:", err)
+		return nil, err
+	}
+	return &models.Report{
+		ID:             report_id,
+		Description:    description,
+		ReceiverJokeId: receiver_joke_id,
+		SenderId:       sender_id,
+		ReceiverId:     receiver_id,
+	}, nil
+}
+
+func (r ReportRepository) GetAllReports() (reportsOut *models.ReportResponse, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return nil, err
+	}
+	var amount int
+	qry2 := `select count(id) from public."Reports"`
+	err = DB.QueryRow(qry2).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get all reports(amount):", err)
+		return nil, err
+	}
+	reportsOut = &models.ReportResponse{
+		Reports: nil,
+		Amount:  amount,
+	}
+	qry := `select * from public."Reports"`
+	rows, err := DB.Query(qry)
+	defer rows.Close()
+	if err != nil {
+		log.Println("Error while trying to get all reports:", err)
+		return nil, err
+	}
 	for rows.Next() {
+		var id, receiver_joke_id, sender_id, receiver_id int
+		var description string
 		err := rows.Scan(&id, &description, &receiver_joke_id, &sender_id, &receiver_id)
 		if err != nil {
-			log.Println("Err while scanning rows:", err)
+			log.Println("Error while scanning rows:", err)
+			return nil, err
 		}
-	}
-	defer rows.Close()
-	if id != -1 {
-		return &models.Report{
+		NewReport := models.Report{
 			ID:             id,
 			Description:    description,
 			ReceiverJokeId: receiver_joke_id,
 			SenderId:       sender_id,
 			ReceiverId:     receiver_id,
-		}, nil
+
+		}
+		reportsOut.Reports = append(reportsOut.Reports, NewReport)
 	}
-	return nil, errors.New("Report with this id does not exist!")
+	return reportsOut, nil
 }
 
-func (r ReportRepository) Create(report *models.Report) (reportOut *models.Report, err error) {
+func (r ReportRepository) Create(report *models.Report) (id int64, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return -1, err
 	}
-	qry := `INSERT INTO public."Reports" (header, description, rating, author_id) values ($1, $2, $3, $4)`
-	result, err := DB.Exec(qry, report.Description, report.ReceiverJokeId, report.SenderId, report.ReceiverId)
+	qry := `INSERT INTO public."Reports" (description, receiver_joke_id, sender_id, receiver_id) values ($1, $2, $3, $4) RETURNING id`
+	err = DB.QueryRow(qry, report.Description, report.ReceiverJokeId, report.SenderId, report.ReceiverId).Scan(&id)
 	if err != nil {
-		log.Println("Report creation error:", err)
+		log.Println("Error while trying to create report:", err)
+		return -1, err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		log.Println("Joke searching while adding joke error:", err)
-	}
-	reportOut, err = r.GetReportByID(int(id))
-	return reportOut, err
+	return id, err
 }
 
-func (r ReportRepository) Delete(report *models.Report) (err error) {
+func (r ReportRepository) Delete(report_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return err
 	}
 	qry := `DELETE FROM public."Reports" where id=$1`
-	_, err = DB.Exec(qry, report.ID)
+	_, err = DB.Exec(qry, report_id)
 	if err != nil {
 		log.Println("Error while trying to delete report:", err)
 		return err
