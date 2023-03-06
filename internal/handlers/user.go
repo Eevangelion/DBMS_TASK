@@ -436,11 +436,13 @@ func ChangeUserNameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	decoder := json.NewDecoder(r.Body)
 	var new_name string
-	err = decoder.Decode(&new_name)
+	var f map[string]string
+	err = decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	new_name = f["name"]
 	user_id := claims.User_ID
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
@@ -464,13 +466,15 @@ func ChangeUserPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	user_id := claims.User_ID
 	decoder := json.NewDecoder(r.Body)
-	var new_transformed_password string
-	err = decoder.Decode(&new_transformed_password)
+	var f map[string]string
+	var new_password string
+	err = decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	new_transformed_password = utils.GeneratePasswordHash(new_transformed_password)
+	new_password = f["password"]
+	new_transformed_password := utils.GeneratePasswordHash(new_password)
 	err = db.UserRepo.ChangeUserPassword(user_id, new_transformed_password)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

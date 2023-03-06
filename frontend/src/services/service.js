@@ -319,7 +319,9 @@ export const jokeService = createApi({
                     url: `/user/change_name/`,
                     method: 'PUT',
                     headers: {authorization: token},
-                    body: name
+                    body: {
+                        name
+                    }
                 }
             },
             invalidatesTags: ['Users']
@@ -331,7 +333,9 @@ export const jokeService = createApi({
                     url: `/user/change_password/`,
                     method: 'PUT',
                     headers: {authorization: token},
-                    body: password
+                    body: {
+                        password
+                    }
                 }
             }
         }),

@@ -16,7 +16,7 @@ const Subscribes = (props) => {
     const [pageContent, setContent] = useState(<></>);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
     const isActive = useSelector(state => state.pagesReducer.subscribesIsActive);
-    const userID = useSelector(state => state.userReducer.userID);
+    const userID = localStorage.getItem("userID");
 
     const {
         data: response,
@@ -26,25 +26,33 @@ const Subscribes = (props) => {
 
     useEffect(() => {
         if (!loadingJokes) {
-            const {jokes, amount} = response;
-            if (!jokes) {
+            if (response) {
+                const {jokes, amount} = response;
+                if (!jokes) {
+                    setContent(
+                        <>
+                            <div className={styles.txt}>Пользователи, на которых вы подписаны, пока ничего не опубликовали</div>
+                        </>
+                    );
+                }
+                else {
+                    const posts = jokes.map((joke) =>
+                    {
+                        return <JokePost key={joke.id} joke={joke}/>
+                    });
+                    setContent(
+                        <>
+                            <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>
+                            <ul className={styles.jokePostList}>
+                                {posts}
+                            </ul>
+                        </>
+                    );
+                }
+            } else {
                 setContent(
                     <>
                         <div className={styles.txt}>Пользователи, на которых вы подписаны, пока ничего не опубликовали</div>
-                    </>
-                );
-            }
-            else {
-                const posts = jokes.map((joke) =>
-                {
-                    return <JokePost key={joke.id} joke={joke}/>
-                });
-                setContent(
-                    <>
-                        <div className={styles.txt}>Всего опубликовано: {amount}</div> <br/>
-                        <ul className={styles.jokePostList}>
-                            {posts}
-                        </ul>
                     </>
                 );
             }
@@ -73,7 +81,7 @@ const Subscribes = (props) => {
             </div>;
         }
     }
-    const amount = response.amount; 
+    const amount = response ? response.amount : 0; 
 
     return (
         <div className={styles.mainPage}>

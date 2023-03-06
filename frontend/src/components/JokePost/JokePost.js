@@ -71,9 +71,17 @@ const JokePost = (props) => {
         else event.preventDefault();
     };
 
-    const handleClose = () => {
+    const handleClose = (event) => {
         setAnchorEl(null);
     };
+
+    const handleSendReport = (event) => {
+        if (props.joke.author_id === Number(userID)) {
+            event.preventDefault();
+            return;
+        }
+        handleClose(); 
+    }
 
     const handleClickDeleteJoke = (event) => {
         if (props.joke.author_id !== Number(userID)) {
@@ -213,7 +221,7 @@ const JokePost = (props) => {
                         }}  
                         >
                         <Link style={linkStyle} state={{ backgroundLocation: location }} onClick={handleClickDeleteJoke}>Удалить шутку</Link>
-                        <Link to={`/create_report/${props.joke.id}`} style={linkStyle} state={{ backgroundLocation: location }} onClick={handleClose}>Отправить жалобу</Link>
+                        <Link to={`/create_report/${props.joke.id}`} style={linkStyle} state={{ backgroundLocation: location }} onClick={handleSendReport}>Отправить жалобу</Link>
                     </Popover>
                 </div>
             </div>
