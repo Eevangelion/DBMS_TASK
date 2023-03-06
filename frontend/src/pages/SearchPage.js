@@ -25,7 +25,7 @@ const SearchPage = (props) => {
         data: response,
         isLoading: loadingSearch,
         error,
-    } = useGetSearchResultQuery({q: queryArg, t: typeArg, page: pageState, sortBy: activeButton});
+    } = useGetSearchResultQuery({q: queryArg ? queryArg : "", t: typeArg ? typeArg : "", page: pageState, sortBy: activeButton});
 
     useEffect(() => {
         if (!loadingSearch) {
@@ -55,7 +55,7 @@ const SearchPage = (props) => {
                     );
                 }
             } else {
-                const people = response; 
+                const people = response ? response : []; 
 
                 if (!people) {
                     setContent(

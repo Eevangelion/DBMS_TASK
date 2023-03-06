@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useParams } from 'react-router-dom';
-import { useUnsubscribeToUserMutation } from "../../services/service";
+import { useGetUserByIDQuery, useUnsubscribeToUserMutation } from "../../services/service";
 import { selectPage } from "../../store/reducers/page";
 import { useDispatch } from "react-redux";
 import styles from './Unsubscribe.module.css';
@@ -14,6 +14,10 @@ const Unsubscribe = (props) => {
     const navigate = useNavigate();
     const {receiverID} = useParams();
     const [subscribe] = useUnsubscribeToUserMutation();
+    const {
+        data: user,
+        isLoading
+    } = useGetUserByIDQuery(receiverID);
     const handleClick = async () => {
         await subscribe(receiverID);
         navigate(-1);
@@ -23,9 +27,12 @@ const Unsubscribe = (props) => {
         dispatch(selectPage({page: 'subscribes', state: true}));
     };
 
+    if (isLoading) {
+        return <></>;
+    }
     return (
         <div className={styles.modalWindow}>
-            Отписаться от пользователя {props.username}?
+            Отписаться от пользователя {user.name}?
             <div className={styles.buttons}>
                 <button className={styles.createButton} onClick={handleClick}>
                     Да

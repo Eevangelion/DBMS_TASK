@@ -14,22 +14,20 @@ import (
 func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
-	claims, err := utils.ValidateAccessToken(token)
+	_, err := utils.ValidateAccessToken(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
 	}
-	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no rights")
-		return
-	}
 	decoder := json.NewDecoder(r.Body)
 	var tag_name string
-	err = decoder.Decode(&tag_name)
+	var f map[string]string
+	err = decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	tag_name = f["name"]
 	id, err := db.TagRepo.Create(tag_name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -42,22 +40,20 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
-	claims, err := utils.ValidateAccessToken(token)
+	_, err := utils.ValidateAccessToken(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
 	}
-	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no rights")
-		return
-	}
 	decoder := json.NewDecoder(r.Body)
 	var tag_name string
-	err = decoder.Decode(&tag_name)
+	var f map[string]string
+	err = decoder.Decode(&f)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	tag_name = f["name"]
 	err = db.TagRepo.Delete(tag_name)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

@@ -74,13 +74,9 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
-	claims, err := utils.ValidateAccessToken(token)
+	_, err := utils.ValidateAccessToken(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
-		return
-	}
-	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no rights")
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
@@ -112,13 +108,9 @@ func DeleteReportHandler(w http.ResponseWriter, r *http.Request) {
 func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
-	claims, err := utils.ValidateAccessToken(token)
+	_, err := utils.ValidateAccessToken(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
-		return
-	}
-	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no rights")
 		return
 	}
 	params := mux.Vars(r)
@@ -139,13 +131,9 @@ func GetReportByIDHandler(w http.ResponseWriter, r *http.Request) {
 func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
-	claims, err := utils.ValidateAccessToken(token)
+	_, err := utils.ValidateAccessToken(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
-		return
-	}
-	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no rights")
 		return
 	}
 	reportOut, err := db.ReportRepo.GetAllReports()
@@ -203,13 +191,9 @@ func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 func DenyReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
-	claims, err := utils.ValidateAccessToken(token)
+	_, err := utils.ValidateAccessToken(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
-		return
-	}
-	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no rights")
 		return
 	}
 	decoder := json.NewDecoder(r.Body)

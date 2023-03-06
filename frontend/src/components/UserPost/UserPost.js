@@ -28,7 +28,7 @@ const UserPost = (props) => {
                     className="sub-button"
                     style={isActive ? {} : {backgroundColor: "#043653", color: "#aaa"}}
                     state={{ backgroundLocation: location}}
-                    onClick={(event) => {if (!isActive || userID === userInfo.id) event.preventDefault()}}
+                    onClick={(event) => {if (!isActive || Number(userID) === userInfo.id) event.preventDefault()}}
             >{subscribed ? 'Отписаться' : 'Подписаться'}</Link>
         </div>
     )

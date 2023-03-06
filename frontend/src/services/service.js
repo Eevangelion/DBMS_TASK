@@ -181,7 +181,7 @@ export const jokeService = createApi({
                     url: `/tag/create/`,
                     headers: {authorization: token},
                     method: 'POST',
-                    body: name, 
+                    body: {name}, 
                 }
             },
             providesTags: ['Tags'],
@@ -193,7 +193,7 @@ export const jokeService = createApi({
                     url: `/tag/delete/`,
                     method: 'DELETE',
                     headers: {authorization: token},
-                    body: name, 
+                    body: {name}, 
                 }
             },
             providesTags: ['Tags'],
