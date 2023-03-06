@@ -447,3 +447,18 @@ func (u UserRepository) GetUserJokesCount(user_id int) (amount int, err error) {
 	return amount, nil
 
 }
+
+func (u UserRepository) SetRemainingReports() {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return
+	}
+	qry := `UPDATE public."Users" SET remaining_reports=3`
+	_, err = DB.Exec(qry)
+	if err != nil {
+		log.Println("Error while trying to change remaining users reports:", err)
+		return
+	}
+	return
+}

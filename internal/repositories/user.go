@@ -22,6 +22,7 @@ type IUser interface {
 	GetCheckIfUserSubscribed(sender_id int, receiver_id int) (check bool, err error)
 	GetUserJokesCount(user_id int) (amount int, err error)
 	GetUserUnbanDate(user_id int) (unban_date string, err error)
+	SetRemainingReports()
 
 	Ban(user_id int) (err error) // for 1 week (update unban date)
 	CreateUser(user *models.UserRequestRegister) (id int64, err error)
