@@ -20,7 +20,7 @@ func CreateTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no rights")
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
@@ -48,7 +48,7 @@ func DeleteTagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: no rights")
 		return
 	}
 	decoder := json.NewDecoder(r.Body)

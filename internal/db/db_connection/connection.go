@@ -53,7 +53,7 @@ func CreateTables(DB *sql.DB) (err error) {
 		unban_date date NOT NULL DEFAULT '1861-03-03'::date,
 		transformed_password character varying(128) COLLATE pg_catalog."default" NOT NULL,
 		CONSTRAINT "Users_pkey" PRIMARY KEY (id),
-		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name, email),
+		CONSTRAINT "Uniq_users_characteristics" UNIQUE (name),
 		CONSTRAINT "ReportsAreRemaining" CHECK (remaining_reports >= 0) NOT VALID
 	);
 

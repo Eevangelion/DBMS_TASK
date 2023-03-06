@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/go-co-op/gocron v1.18.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
@@ -21,6 +22,8 @@ require (
 	github.com/jackc/pgx/v4 v4.17.2 // indirect
 	github.com/jackc/pgx/v5 v5.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	golang.org/x/crypto v0.3.0 // indirect
+	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
 )
