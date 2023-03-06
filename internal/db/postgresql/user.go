@@ -1,11 +1,6 @@
 package psql
 
 import (
-	"errors"
-	"log"
-	"time"
-
-	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
 	"github.com/Sakagam1/DBMS_TASK/internal/models"
 	"github.com/Sakagam1/DBMS_TASK/internal/repositories"
 )
@@ -13,6 +8,7 @@ import (
 type UserRepository struct {
 	user repositories.IUser
 }
+
 
 func (u UserRepository) GetUserByID(user_id int) (userOut *models.User, err error) {
 	DB, err := connection.GetConnectionToDB()

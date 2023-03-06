@@ -18,7 +18,6 @@ func GetUserRepository() repositories.IUser {
 	}
 	return UserRepo
 }
-
 func GetJokeRepository() repositories.IJoke {
 	if JokeRepo == nil {
 		if config.GetConfig().DebugMode == true {
