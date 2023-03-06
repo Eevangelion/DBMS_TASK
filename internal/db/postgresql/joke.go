@@ -12,6 +12,7 @@ type JokeRepository struct {
 	joke repositories.IJoke
 }
 
+
 func (j JokeRepository) SubscribeToUser(receiver_id int, sender_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
@@ -470,6 +471,7 @@ func (j JokeRepository) GetJokeByID(joke_id int) (jokeOut *models.Joke, err erro
 		log.Println("Connection error:", err)
 		return nil, err
 	}
+
 	var amount int
 	var rating, author_id int
 	var header, description, creation_date string

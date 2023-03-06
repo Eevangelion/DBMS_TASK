@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/Sakagam1/DBMS_TASK/internal/config"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -38,7 +39,6 @@ func GetConnectionToDB() (DB *sql.DB, err error) {
 	}
 	return Connection, nil
 }
-
 func CreateTables(DB *sql.DB) (err error) {
 	qry := `begin;
 	

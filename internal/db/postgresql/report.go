@@ -12,6 +12,7 @@ type ReportRepository struct {
 	report repositories.IReport
 }
 
+
 func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
@@ -83,6 +84,7 @@ func (r ReportRepository) GetAllReports() (reportsOut *models.ReportResponse, er
 			ReceiverJokeId: receiver_joke_id,
 			SenderId:       sender_id,
 			ReceiverId:     receiver_id,
+
 		}
 		reportsOut.Reports = append(reportsOut.Reports, NewReport)
 	}

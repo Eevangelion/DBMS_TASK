@@ -12,6 +12,7 @@ type TagRepository struct {
 	tag repositories.ITag
 }
 
+
 func (t TagRepository) GetTagByID(tag_id int) (tagOut *models.Tag, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
