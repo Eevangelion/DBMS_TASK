@@ -2,6 +2,7 @@ package psql
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	connection "github.com/Sakagam1/DBMS_TASK/internal/db/db_connection"
@@ -226,7 +227,7 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 		log.Println("Connection error:", err)
 		return nil, err
 	}
-	qry := `select * from public."Users" where lower("Users".name) LIKE '%` + keyword + `%' LIMIT $1 OFFSET $2`
+	qry := `select * from public."Users" where lower("Users".name) LIKE '%` + strings.ToLower(keyword) + `%' LIMIT $1 OFFSET $2`
 	rows, err := DB.Query(qry, pageSize, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {

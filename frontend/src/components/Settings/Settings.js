@@ -18,7 +18,11 @@ const Settings = () => {
     const [changePassword] = useChangePasswordMutation();
 
     const handleChangeUsername = (name) => {
-        changeName(name);
+        changeName(name).then((response) => {
+            if (response && !response.error) {
+                localStorage.setItem("userName", name);
+            }
+        });
         navigate(`/user/${name}`);
         dispatch(selectPage({page: 'userPage', state: true}));
     };
