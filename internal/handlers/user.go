@@ -442,6 +442,11 @@ func ChangeUserNameHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
+	userOut, err := db.UserRepo.GetUserByUsername(new_name)
+	if userOut != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: user with this name already exist")
+		return
+	}
 	new_name = f["name"]
 	user_id := claims.User_ID
 	if err != nil {
