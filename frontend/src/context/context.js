@@ -1,8 +1,9 @@
 import React, { createContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useGetTokenMutation } from '../services/auth';
-import { selectUser } from '../store/reducers/user';
+import { useGetUnbanDateQuery } from '../services/service';
+import LoadingModal from '../components/LoadingModal/LoadingModal';
 
 export const AuthContext = createContext(null);
 
@@ -13,44 +14,45 @@ export const AuthProvider = ({ children }) => {
     const [refreshTokens] = useGetTokenMutation();
     const expTime = localStorage.getItem("token_exp_time");
     const token = localStorage.getItem("access_token");
-    const user = useSelector(state => state.userReducer);
 
 
     const signOut = () => {
         localStorage.clear();
-        dispatch(selectUser({data: 'userID', state: undefined}));
-        dispatch(selectUser({data: 'username', state: undefined}));
-        dispatch(selectUser({data: 'userRole', state: undefined}));
         navigate("/login");
         window.scrollTo(0,0);
     }
 
-    if (token && expTime - Date.now()/1000 < 0) {
-        refreshTokens().then((response) => {
-            if (response.error) {
-                signOut();
+    useEffect(() => {
+        if (token && expTime - Date.now()/1000 < 0) {
+            refreshTokens().then((response) => {
+                console.log(response);
+                if (response.error && response.error.status === 401) {
+                    localStorage.clear();
+                    navigate("/login");
+                    window.scrollTo(0,0);
+                    return;
+                }
+                const tokens = response.data;
+                const accessToken = tokens.jwt_token;
+                const refreshToken = tokens.refresh_token;
+                const base64Url = accessToken.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const data = JSON.parse(jsonPayload);
+                localStorage.setItem("userID", data.user_id);
+                localStorage.setItem("userName", data.username);
+                localStorage.setItem("userRole", data.role);
+                localStorage.setItem("access_token", accessToken);
+                localStorage.setItem("token_exp_time", data.exp);
+                localStorage.setItem("refresh_token", refreshToken);
                 return;
-            }
-            const tokens = response.data;
-            const accessToken = tokens.jwt_token;
-            const refreshToken = tokens.refresh_token;
-            const base64Url = accessToken.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            const data = JSON.parse(jsonPayload);
-            localStorage.setItem("access_token", accessToken);
-            localStorage.setItem("token_exp_time", data.exp);
-            localStorage.setItem("refresh_token", refreshToken);
-            dispatch(selectUser({data: 'userID', state: data.user_id}));
-            dispatch(selectUser({data: 'userName', state: data.username}));
-            dispatch(selectUser({data: 'userRole', state: data.role}));
-            return;
-        })
-    }
+            })
+        }
+    }, [expTime, token, dispatch, refreshTokens, navigate]);
 
-    const value = { user, signOut };
+    const value = { signOut };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
@@ -73,14 +75,36 @@ export const RequireAdmin = ({children}) => {
         navigate("/login");
     }
 
-    const user = useSelector(state => state.userReducer);
+    const userRole = localStorage.getItem("userRole");
 
     useEffect(() => {
-        if (user && user.userRole !== 'admin') {
+        if (userRole !== 'admin') {
             navigate('../');
             window.scrollTo(0,0);
         }
-    }, [user, navigate])
+    }, [userRole, navigate])
+
+    return children;
+}
+
+export const RequireNotBanned = ({children}) => {
+    const navigate = useNavigate();
+    const {
+        data: unparsedUnbanDate,
+        isLoading
+    } = useGetUnbanDateQuery();
+
+    useEffect(() => {
+        const unbanDate = Math.round((Date.now() - Date.parse(unparsedUnbanDate))/1000);
+        if (!isLoading && unbanDate < 0) {
+            navigate('/banned/');
+            window.scrollTo(0, 0);
+        }
+    }, [isLoading, unparsedUnbanDate, navigate])
+
+    if (isLoading) {
+        return <LoadingModal />
+    }
 
     return children;
 }

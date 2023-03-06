@@ -32,7 +32,7 @@ const Settings = () => {
             </div>
             <div className={styles.modalBody}>
                 <div className={styles.changeUsernameForm}>
-                    <text>Смена имени</text>
+                    <p>Смена имени</p>
                     <div className={styles.changeUsername}>
                         <textarea   className={styles.newUsername} 
                                     placeholder="Введите новое имя" 
@@ -48,7 +48,7 @@ const Settings = () => {
                     </div>
                 </div>
                 <div className={styles.changePasswordForm}>
-                    <text>Смена пароля</text> 
+                    <p>Смена пароля</p> 
                     <div className={styles.changePassword}>
                         <textarea   className={styles.newPassword} 
                                     placeholder="Введите новый пароль" 

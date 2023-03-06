@@ -49,13 +49,12 @@ func (u UserRepository) GetUserByID(user_id int) (userOut *models.User, err erro
 	}, nil
 }
 
-func (u UserRepository) GetUserUnbanDate(user_id int) (string, error) {
+func (u UserRepository) GetUserUnbanDate(user_id int) (unban_date string, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
 		return "", err
 	}
-	var unban_date string
 	qry := `select unban_date from public."Users" where id=$1`
 	err = DB.QueryRow(qry, user_id).Scan(&unban_date)
 	if err != nil {

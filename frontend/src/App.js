@@ -15,8 +15,9 @@ import AuthPage from './pages/Auth';
 import OAuthRedirect from './components/OAuthRedirect/OAuthRedirect';
 import JokeModal from './components/JokeModal/JokeModal';
 import RegisterPage from './pages/Register';
+import BannedPage from './pages/BannedPage';
 import Unsubscribe from './components/Unsubscribe/Unsubscribe';
-import {AuthProvider, RequireAuth, RequireAdmin} from './context/context';
+import {AuthProvider, RequireAuth, RequireAdmin, RequireNotBanned} from './context/context';
 import DevelopSettings from './components/DevelopSettings/DevelopSettings';
 const App = () => {
   let location = useLocation();
@@ -24,27 +25,86 @@ const App = () => {
   return (
     <AuthProvider>
       <Routes location={state?.backgroundLocation || location}>
-        <Route index element={<RequireAuth><Feed /></RequireAuth>}/>
-        <Route path='feed/' element={<RequireAuth><Feed /></RequireAuth>}/>
-        <Route path='subscribes/' element={<RequireAuth><Subscribes /></RequireAuth>}/>
-        <Route path='user/:username' element={<RequireAuth><UserPage /></RequireAuth>}/>
-        <Route path='search/:type/:query?' element={<RequireAuth><SearchPage /></RequireAuth>}/>
+        <Route index element={<RequireAuth>
+                                <RequireNotBanned>
+                                  <Feed />
+                                </RequireNotBanned>
+                              </RequireAuth>}/>
+        <Route path='feed/' element={<RequireAuth>
+                                      <RequireNotBanned>
+                                        <Feed />
+                                      </RequireNotBanned>
+                                    </RequireAuth>}/>
+        <Route path='subscribes/' element={<RequireAuth>
+                                            <RequireNotBanned>
+                                              <Subscribes />
+                                            </RequireNotBanned>
+                                          </RequireAuth>}/>
+        <Route path='user/:username' element={<RequireAuth>
+                                                <RequireNotBanned>
+                                                  <UserPage />
+                                                </RequireNotBanned>
+                                              </RequireAuth>}/>
+        <Route path='search/:type/:query?' element={<RequireAuth>
+                                                      <RequireNotBanned>
+                                                        <SearchPage />
+                                                      </RequireNotBanned>
+                                                    </RequireAuth>}/>
         <Route path='login/' element={<AuthPage />} />
         <Route path='register/' element={<RegisterPage />} />
         <Route path='oauth/' element={<OAuthRedirect /> } />
-        <Route path="tagredactor/" element={<RequireAdmin><TagRedactor /></RequireAdmin>} />
-        <Route path="reportslist/" element={<RequireAdmin><ReportsList /></RequireAdmin>}/>
+        <Route path="tagredactor/" element={<RequireAdmin>
+                                              <RequireNotBanned>
+                                                <TagRedactor />
+                                              </RequireNotBanned>
+                                            </RequireAdmin>} />
+        <Route path="reportslist/" element={<RequireAdmin>
+                                              <RequireNotBanned>
+                                                <ReportsList />
+                                              </RequireNotBanned>
+                                            </RequireAdmin>}/>
+        <Route path="banned/" element={<RequireAuth>
+                                          <BannedPage />
+                                      </RequireAuth>}/>
         <Route path="*" element={<ErrorPage />}/>
       </Routes>
       {state?.backgroundLocation && (
         <Routes>
-            <Route path="/create_joke" element={<RequireAuth><CreateJoke /></RequireAuth>} />
-            <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
-            <Route path="/develop_settings" element={<RequireAdmin><DevelopSettings/></RequireAdmin>} />
-            <Route path="/create_report/:jokeID" element={<RequireAuth><CreateReport /></RequireAuth>} />
-            <Route path="/subscribe/:receiverID" element={<RequireAuth><Subscribe /></RequireAuth>}/>
-            <Route path="/unsubscribe/:receiverID" element={<RequireAuth><Unsubscribe /></RequireAuth>} />
-            <Route path="/joke/:jokeID" element={<RequireAuth><JokeModal /></RequireAuth>} />
+            <Route path="/create_joke" element={<RequireAuth>
+                                                  <RequireNotBanned>
+                                                    <CreateJoke />
+                                                  </RequireNotBanned>
+                                                </RequireAuth>} />
+            <Route path="/settings" element={<RequireAuth>
+                                              <RequireNotBanned>
+                                                <Settings />
+                                              </RequireNotBanned>
+                                            </RequireAuth>} />
+            <Route path="/develop_settings" element={<RequireAdmin>
+                                                      <RequireNotBanned>
+                                                        <DevelopSettings/>
+                                                      </RequireNotBanned>
+                                                    </RequireAdmin>} />
+            <Route path="/create_report/:jokeID" element={<RequireAuth>
+                                                            <RequireNotBanned>
+                                                              <CreateReport />
+                                                            </RequireNotBanned>
+                                                          </RequireAuth>} />
+            <Route path="/subscribe/:receiverID" element={<RequireAuth>
+                                                            <RequireNotBanned>
+                                                              <Subscribe />
+                                                            </RequireNotBanned>
+                                                          </RequireAuth>}/>
+            <Route path="/unsubscribe/:receiverID" element={<RequireAuth>
+                                                              <RequireNotBanned>
+                                                                <Unsubscribe />
+                                                              </RequireNotBanned>
+                                                            </RequireAuth>} />
+            <Route path="/joke/:jokeID" element={<RequireAuth>
+                                                  <RequireNotBanned>
+                                                    <JokeModal />
+                                                  </RequireNotBanned>
+                                                </RequireAuth>} />
         </Routes>
       )}
     </AuthProvider>

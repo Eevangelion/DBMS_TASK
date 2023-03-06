@@ -9,15 +9,12 @@ import TopPanel from "../components/TopPanel/TopPanel";
 import { useGetSearchResultQuery } from "../services/service";
 import UserPost from "../components/UserPost/UserPost";
 import LoadingModal from "../components/LoadingModal/LoadingModal";
-import { useGetTokenMutation } from "../services/auth";
-
 const SearchPage = (props) => {
 
     const [pageState, setPage] = useState(1);
     const [pageContent, setContent] = useState(<></>);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
     const isActive = useSelector(state => state.pagesReducer.searchPageIsActive);
-    const expTime = localStorage.getItem("token_exp_time");
 
     const [searchParams] = useSearchParams();
     const { type: typeArg } = useParams();
@@ -29,30 +26,6 @@ const SearchPage = (props) => {
         isLoading: loadingSearch,
         error,
     } = useGetSearchResultQuery({q: queryArg, t: typeArg, page: pageState, sortBy: activeButton});
-
-    const [refreshTokens] = useGetTokenMutation();
-
-    useEffect(() => {
-        if (expTime - Date.now()/1000 < 0) {
-            refreshTokens().then((response) => {
-                const tokens = response.data;
-                const accessToken = tokens.jwt_token;
-                const refreshToken = tokens.refresh_token;
-                const base64Url = accessToken.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                const data = JSON.parse(jsonPayload);
-                localStorage.setItem("userID", data.user_id);
-                localStorage.setItem("userName", data.username);
-                localStorage.setItem("userRole", data.role);
-                localStorage.setItem("access_token", accessToken);
-                localStorage.setItem("token_exp_time", data.exp);
-                localStorage.setItem("refresh_token", refreshToken);
-            })
-        }
-    }, [expTime, loadingSearch, refreshTokens]);
 
     useEffect(() => {
         if (!loadingSearch) {

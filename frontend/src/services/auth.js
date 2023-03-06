@@ -38,7 +38,7 @@ export const authService = createApi({
                     method: 'POST',
                     body: {
                         name: username,
-                        transformed_password: password,
+                        password: password,
                     },
                 }
             }
@@ -51,7 +51,7 @@ export const authService = createApi({
                     body: {
                         email: email,
                         name: username,
-                        transformed_password: password,
+                        password: password,
                     },
                 }
             }

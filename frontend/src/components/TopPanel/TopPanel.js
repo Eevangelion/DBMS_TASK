@@ -26,7 +26,7 @@ function TopPanel(props) {
         </div>
         
         <div className="search-panel">
-            <FormControl size="small" variant="outlined" style={{width: "10vw", height: "4.5vh", marginTop: "0.25vh", fontSize: "0.8vw"}}>
+            <FormControl size="small" variant="outlined" style={{maxWidth: "10vw", maxHeight: "4.5vh", marginTop: "0.25vh", fontSize: "0.8vw"}}>
                 <InputLabel>Поиск по</InputLabel>
                 <Select
                     onChange={(event) => {

@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { useLoginUserMutation } from "../services/auth";
+import { selectPage } from "../store/reducers/page";
 import styles from "../styles/Auth.module.css";
 
 const clientID = process.env.REACT_APP_CLIENT_ID;
@@ -9,13 +11,14 @@ const AuthPage = () => {
     const handleClick = () => {
         window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientID}`;
     }
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [usernameText, setUsernameText] = useState('');
     const [passwordText, setPasswordText] = useState('');
     const [loginUser] = useLoginUserMutation();
-
-    const handleLogin = (name, password) => {
-        loginUser({username: name, password: password}).then((response) => {
+    localStorage.clear();
+    const handleLogin = async (name, password) => {
+        await loginUser({username: name, password: password}).then((response) => {
             const tokens = response.data;
             const accessToken = tokens.jwt_token;
             const refreshToken = tokens.refresh_token;
@@ -24,14 +27,18 @@ const AuthPage = () => {
             const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
-            const user = JSON.parse(jsonPayload);
-            localStorage.setItem("userID", user.user_id);
-            localStorage.setItem("userName", user.username);
-            localStorage.setItem("userRole", user.role);
+            const data = JSON.parse(jsonPayload);
+            localStorage.setItem("userID", data.user_id);
+            localStorage.setItem("userName", data.username);
+            localStorage.setItem("userRole", data.role);
             localStorage.setItem("access_token", accessToken);
-            localStorage.setItem("token_exp_time", user.exp);
+            localStorage.setItem("token_exp_time", data.exp);
             localStorage.setItem("refresh_token", refreshToken);
         })
+        dispatch(selectPage({page: 'userPage', state: true}));
+        dispatch(selectPage({page: 'feed', state: true}));
+        dispatch(selectPage({page: 'searchPage', state: true}));
+        dispatch(selectPage({page: 'subscribes', state: true}));
         navigate("/feed/");
     };
     return (
@@ -42,7 +49,7 @@ const AuthPage = () => {
             <div className={styles.modalBody}>
                 <div style={{paddingLeft: "4vw"}}>Авторизируйтесь, чтобы пользоваться сайтом</div>
                 <div className={styles.usernameForm}>
-                    <text>Имя</text>
+                    <p>Имя</p>
                     <div className={styles.usernameField}>
                         <input   className={styles.signinUsername} 
                                     placeholder="Введите имя" 
@@ -54,7 +61,7 @@ const AuthPage = () => {
                     </div>
                 </div>
                 <div className={styles.passwordForm}>
-                    <text>Пароль</text> 
+                    <p>Пароль</p> 
                     <div className={styles.passwordField}>
                         <input   className={styles.signinPassword} 
                                     placeholder="Введите пароль" 
@@ -68,7 +75,11 @@ const AuthPage = () => {
                 </div>
                 <button 
                     className={styles.loginButton}
-                    onClick={() => handleLogin(usernameText, passwordText)}
+                    onClick={(event) => {
+                        (usernameText && passwordText) ? 
+                        handleLogin(usernameText, passwordText) : 
+                        event.preventDefault()
+                    }}
                 >
                     Авторизироваться
                 </button>

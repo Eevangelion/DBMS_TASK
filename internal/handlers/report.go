@@ -17,7 +17,7 @@ import (
 func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
-	_, err := utils.ValidateAccessToken(token)
+	claims, err := utils.ValidateAccessToken(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
@@ -32,7 +32,7 @@ func CreateReportHandler(w http.ResponseWriter, r *http.Request) {
 	var report models.Report
 	report.Description = reportRequest.Description
 	report.ReceiverJokeId = reportRequest.ReceiverJokeId
-	report.SenderId = reportRequest.SenderId
+	report.SenderId = claims.User_ID
 	user, err := db.UserRepo.GetUserByID(report.SenderId)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -152,13 +152,9 @@ func GetAllReportsHandler(w http.ResponseWriter, r *http.Request) {
 func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
-	claims, err := utils.ValidateAccessToken(token)
+	_, err := utils.ValidateAccessToken(token)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
-		return
-	}
-	if claims.Role != "admin" {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
@@ -184,6 +180,11 @@ func ApplyReportHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = db.ReportRepo.Delete(report_id)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	err = db.JokeRepo.Delete(report.ReceiverJokeId)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return

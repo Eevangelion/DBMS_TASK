@@ -9,10 +9,10 @@ var User = router.RoutePrefix{
 	Prefix: "/user",
 	SubRoutes: []router.Route{
 		{
-			Name:        "CreateUser",
-			Method:      "POST",
-			Pattern:     "/create_user/",
-			HandlerFunc: handlers.CreateUserHandler,
+			Name:        "GetUnbanDate",
+			Method:      "GET",
+			Pattern:     "/unban_date/",
+			HandlerFunc: handlers.GetUserUnbanDate,
 		},
 		{
 			Name:        "CreateJokeFromUserPage",

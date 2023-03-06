@@ -75,9 +75,9 @@ const JokePost = (props) => {
         setAnchorEl(null);
     };
 
-    const handleClickDeleteJoke = () => {
+    const handleClickDeleteJoke = (event) => {
         if (props.joke.author_id !== Number(userID)) {
-            // modal window with error
+            event.preventDefault();
             return;
         }
         handleClose(); 

@@ -8,6 +8,7 @@ const Profile = (props) => {
     const [userID, setUserID] = useState(0);
     const userPageIsActive = useSelector(state => state.pagesReducer.userPageIsActive);
     const location = useLocation();
+    const currentUserRole = localStorage.getItem("userRole");
     const {
         data: user,
         isLoading: loadingUser,
@@ -44,7 +45,7 @@ const Profile = (props) => {
             {
                 userAccount ?
                 <div className={"settings-link"}>
-                    <Link   to={`/settings`} 
+                    <Link   to={currentUserRole === 'admin' ? '/develop_settings' : `/settings`} 
                             className={userPageIsActive ? "link" : "link-disabled"}
                             state={{ backgroundLocation: location }}
                             onClick={(event) => {if (!userPageIsActive) event.preventDefault()}}
@@ -56,8 +57,7 @@ const Profile = (props) => {
             <div className="profile-info">
                 Роль: {role === "admin" ? "Администратор" : "Пользователь"}<br/>
                 Жалобы: {reports}<br/>
-                {/* Добавлено в избранное: {addedToFavorite.length} <br/> */}
-                Последняя дата разблокировки: {(Date.now() - Date.parse(lastUnbanDate))/1000}
+                Последняя дата разблокировки: {lastUnbanDate.split('T')[0]}
             </div>
             {
                 userAccount ?

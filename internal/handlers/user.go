@@ -164,14 +164,13 @@ func GetUserSettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetUserUnbanDate(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
-	decoder := json.NewDecoder(r.Body)
-	var f map[string]int
-	err := decoder.Decode(&f)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
 	if err != nil {
-		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
 	}
-	user_id := f["user_id"]
+	user_id := claims.User_ID
 	unban_date, err := db.UserRepo.GetUserUnbanDate(user_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
@@ -197,7 +196,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user.TransformedPassword != userRequestLogin.Password {
-		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: "+err.Error())
+		customHTTP.NewErrorResponse(w, http.StatusForbidden, "Error: incorrect password")
 		return
 	}
 	jwt_token, refresh_token, err := utils.CreateTokens(user)

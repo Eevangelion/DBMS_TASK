@@ -335,6 +335,15 @@ export const jokeService = createApi({
                 }
             }
         }),
+        getUnbanDate: build.query({
+            query: () => {
+                const token = localStorage.getItem('access_token');
+                return {
+                    url: `/user/unban_date/`,
+                    headers: {authorization: token},
+                }
+            }
+        }),
     })
 })
 
@@ -365,4 +374,5 @@ export const {
     useChangeUserNameMutation,
     useChangePasswordMutation,
     useApplyReportMutation,
+    useGetUnbanDateQuery,
 } = jokeService;

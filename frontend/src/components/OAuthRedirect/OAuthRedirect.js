@@ -20,14 +20,13 @@ const OAuthRedirect = () => {
     const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
-    const user = JSON.parse(jsonPayload);
-    localStorage.setItem("userID", user.user_id);
-    localStorage.setItem("userName", user.username);
-    localStorage.setItem("userRole", user.role);
+    const data = JSON.parse(jsonPayload);
+    localStorage.setItem("userID", data.user_id);
+    localStorage.setItem("userName", data.username);
+    localStorage.setItem("userRole", data.role);
     localStorage.setItem("access_token", accessToken);
-    localStorage.setItem("token_exp_time", user.exp);
+    localStorage.setItem("token_exp_time", data.exp);
     localStorage.setItem("refresh_token", refreshToken);
-    console.log(user);
     navigate(`/feed/`);
     return;
 }

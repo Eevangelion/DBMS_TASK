@@ -21,7 +21,7 @@ const RegisterPage = () => {
             </div>
             <div className={styles.modalBody}>
                 <div className={styles.emailForm}>
-                    <text>Почта</text>
+                    <p>Почта</p>
                     <div className={styles.emailField}>
                         <input   className={styles.signinEmail} 
                                     placeholder="Введите почту" 
@@ -33,7 +33,7 @@ const RegisterPage = () => {
                     </div>
                 </div>
                 <div className={styles.usernameForm}>
-                    <text>Имя</text>
+                    <p>Имя</p>
                     <div className={styles.usernameField}>
                         <input   className={styles.signinUsername} 
                                     placeholder="Введите имя" 
@@ -45,7 +45,7 @@ const RegisterPage = () => {
                     </div>
                 </div>
                 <div className={styles.passwordForm}>
-                    <text>Пароль</text> 
+                    <p>Пароль</p> 
                     <div className={styles.passwordField}>
                         <input   className={styles.signinPassword} 
                                     placeholder="Введите пароль" 
@@ -61,7 +61,11 @@ const RegisterPage = () => {
             <div className={styles.modalFooter}>
                 <button 
                     className={styles.registerButton}
-                    onClick={() => handleRegister(emailText, usernameText, passwordText)}
+                    onClick={(event) => {
+                        (emailText && usernameText && passwordText) ? 
+                        handleRegister(emailText, usernameText, passwordText) : 
+                        event.preventDefault()
+                    }}
                 >
                     Зарегистрироваться
                 </button>

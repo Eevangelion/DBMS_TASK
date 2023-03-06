@@ -7,7 +7,6 @@ import JokePost from "../components/JokePost/JokePost";
 import JokeSorter from "../components/Sorter/Sorter";
 import TopPanel from "../components/TopPanel/TopPanel";
 import { useGetSubscribedByIDQuery } from "../services/service";
-import { useGetTokenMutation } from "../services/auth";
 import LoadingModal from "../components/LoadingModal/LoadingModal";
 
 
@@ -17,38 +16,13 @@ const Subscribes = (props) => {
     const [pageContent, setContent] = useState(<></>);
     const activeButton = useSelector(state => state.buttonsReducer.sort);
     const isActive = useSelector(state => state.pagesReducer.subscribesIsActive);
-    const userID = localStorage.getItem("userID");
-    const expTime = localStorage.getItem("token_exp_time");
+    const userID = useSelector(state => state.userReducer.userID);
 
     const {
         data: response,
         isLoading: loadingJokes,
         error,
     } = useGetSubscribedByIDQuery({id: userID, page: pageState, sortBy: activeButton});
-
-    const [refreshTokens] = useGetTokenMutation();
-    
-    useEffect(() => {
-        if (expTime - Date.now()/1000 < 0) {
-            refreshTokens().then((response) => {
-                const tokens = response.data;
-                const accessToken = tokens.jwt_token;
-                const refreshToken = tokens.refresh_token;
-                const base64Url = accessToken.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                const user = JSON.parse(jsonPayload);
-                localStorage.setItem("userID", user.user_id);
-                localStorage.setItem("userName", user.username);
-                localStorage.setItem("userRole", user.role);
-                localStorage.setItem("access_token", accessToken);
-                localStorage.setItem("token_exp_time", user.exp);
-                localStorage.setItem("refresh_token", refreshToken);
-            })
-        }
-    }, [expTime, loadingJokes, refreshTokens]);
 
     useEffect(() => {
         if (!loadingJokes) {
