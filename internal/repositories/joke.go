@@ -21,4 +21,5 @@ type IJoke interface {
 	GetJokesByKeyword(keyword string, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error)
 	Create(joke *models.Joke) (id int64, err error)
 	Delete(joke_id int) (err error)
+	CheckIfInFavorite(user_id int, joke_id int) (amount int, err error)
 }

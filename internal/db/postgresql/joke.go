@@ -12,7 +12,6 @@ type JokeRepository struct {
 	joke repositories.IJoke
 }
 
-
 func (j JokeRepository) SubscribeToUser(receiver_id int, sender_id int) (err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
@@ -147,6 +146,21 @@ func (j JokeRepository) DeleteFromFavorite(user_id int, joke_id int) (err error)
 		return err
 	}
 	return nil
+}
+
+func (j JokeRepository) CheckIfInFavorite(user_id int, joke_id int) (amount int, err error) {
+	DB, err := connection.GetConnectionToDB()
+	if err != nil {
+		log.Println("Connection error:", err)
+		return -1, err
+	}
+	qry := `select count(user_id) FROM public."Favorite jokes" where user_id=$1 and joke_id=$2`
+	err = DB.QueryRow(qry, user_id, joke_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to delete from favorite:", err)
+		return -1, err
+	}
+	return amount, nil
 }
 
 func (j JokeRepository) GetUserFavoriteJokes(user_id int, page int, pageSize int, sort_mode string) (jokes []models.Joke, amount int, err error) {

@@ -266,6 +266,33 @@ func DeleteFromFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func CheckIfInFavoriteHandler(w http.ResponseWriter, r *http.Request) {
+	setupCors(&w)
+	token := r.Header.Get("authorization")
+	claims, err := utils.ValidateAccessToken(token)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
+		return
+	}
+	user_id := claims.User_ID
+	var f map[string]int
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&f)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
+		return
+	}
+	var joke_id int
+	joke_id = f["joke_id"]
+	amount, err := db.JokeRepo.CheckIfInFavorite(user_id, joke_id)
+	if err != nil {
+		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
+		return
+	}
+	json.NewEncoder(w).Encode(amount != 0)
+	w.WriteHeader(http.StatusOK)
+}
+
 func GetUserFavoriteJokesHandler(w http.ResponseWriter, r *http.Request) {
 	setupCors(&w)
 	token := r.Header.Get("authorization")
