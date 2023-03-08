@@ -93,7 +93,7 @@ func GetAllTagsHandler(w http.ResponseWriter, r *http.Request) {
 		customHTTP.NewErrorResponse(w, http.StatusUnauthorized, "Error: "+err.Error())
 		return
 	}
-	tags, err := db.TagRepo.GetAllTags()
+	tags, _, err := db.TagRepo.GetAllTags()
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 		return

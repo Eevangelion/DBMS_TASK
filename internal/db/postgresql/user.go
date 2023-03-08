@@ -21,8 +21,8 @@ func (u UserRepository) GetUserByID(user_id int) (userOut *models.User, err erro
 		return nil, err
 	}
 	var amount int
-	qry2 := `select count(name) from public."Users" where id=$1`
-	err = DB.QueryRow(qry2, user_id).Scan(&amount)
+	qry_count := `select count(name) from public."Users" where id=$1`
+	err = DB.QueryRow(qry_count, user_id).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get user by id (amount):", err)
 		return nil, err
@@ -56,6 +56,16 @@ func (u UserRepository) GetUserUnbanDate(user_id int) (unban_date string, err er
 		log.Println("Connection error:", err)
 		return "", err
 	}
+	var amount int
+	qry_count := `select count(name) from public."Users" where id=$1`
+	err = DB.QueryRow(qry_count, user_id).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get user by id (amount):", err)
+		return "", err
+	}
+	if amount == 0 {
+		return "", nil
+	}
 	qry := `select unban_date from public."Users" where id=$1`
 	err = DB.QueryRow(qry, user_id).Scan(&unban_date)
 	if err != nil {
@@ -72,8 +82,8 @@ func (u UserRepository) GetUserByUsername(username string) (userOut *models.User
 		return nil, err
 	}
 	var amount int
-	qry2 := `select count(id) from public."Users" where name=$1`
-	err = DB.QueryRow(qry2, username).Scan(&amount)
+	qry_count := `select count(id) from public."Users" where name=$1`
+	err = DB.QueryRow(qry_count, username).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get user by username (amount):", err)
 		return nil, err
@@ -108,8 +118,8 @@ func (u UserRepository) GetUserByEmail(Email string) (userOut *models.User, err 
 		return nil, err
 	}
 	var amount int
-	qry2 := `select count(id) from public."Users" where email=$1`
-	err = DB.QueryRow(qry2, Email).Scan(&amount)
+	qry_count := `select count(id) from public."Users" where email=$1`
+	err = DB.QueryRow(qry_count, Email).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get user by email (amount):", err)
 		return nil, err
@@ -142,6 +152,17 @@ func (u UserRepository) CreateUser(user *models.UserRequestRegister) (id int64, 
 	if err != nil {
 		log.Println("Connection error:", err)
 		return -1, err
+	}
+	var amount int
+	qry_count := `select count(id) from public."Users" where name=$1`
+	err = DB.QueryRow(qry_count, user.Name).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to create user (amount):", err)
+		return -1, err
+	}
+	if amount != 0 {
+		log.Println("Error while trying to create user: user already exist")
+		return -1, nil
 	}
 	qry := `INSERT INTO public."Users" (name, email, role, transformed_password) values ($1, $2, $3, $4) RETURNING id`
 	err = DB.QueryRow(qry, user.Name, user.Email, "guest", user.Password).Scan(&id)
@@ -185,18 +206,27 @@ func (u UserRepository) Delete(user_id int) (err error) {
 	return nil
 }
 
-func (u UserRepository) GetAll() (users []models.User, err error) {
+func (u UserRepository) GetAll() (users []models.User, amount int, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return nil, -1, err
+	}
+	qry_count := `select count(id) from public."Users"`
+	err = DB.QueryRow(qry_count).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get all users (amount):", err)
+		return nil, -1, err
+	}
+	if amount == 0 {
+		return nil, 0, nil
 	}
 	qry := `select * from public."Users"`
 	rows, err := DB.Query(qry)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while trying to get all users:", err)
-		return nil, err
+		return nil, -1, err
 	}
 	for rows.Next() {
 		var id, reports, remaining_reports int
@@ -204,7 +234,7 @@ func (u UserRepository) GetAll() (users []models.User, err error) {
 		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
-			return nil, err
+			return nil, -1, err
 		}
 		NewUser := models.User{
 			ID:                  id,
@@ -218,21 +248,30 @@ func (u UserRepository) GetAll() (users []models.User, err error) {
 		}
 		users = append(users, NewUser)
 	}
-	return users, nil
+	return users, amount, nil
 }
 
-func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize int) (users []models.UserResponseSearch, err error) {
+func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize int) (users []models.UserResponseSearch, amount int, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
 		log.Println("Connection error:", err)
-		return nil, err
+		return nil, -1, err
+	}
+	qry_count := `select count(id) from public."Users" where lower("Users".name) LIKE '%` + strings.ToLower(keyword) + `%' LIMIT $1 OFFSET $2`
+	err = DB.QueryRow(qry_count).Scan(&amount)
+	if err != nil {
+		log.Println("Error while trying to get people by keyword (amount):", err)
+		return nil, -1, err
+	}
+	if amount == 0 {
+		return nil, 0, nil
 	}
 	qry := `select * from public."Users" where lower("Users".name) LIKE '%` + strings.ToLower(keyword) + `%' LIMIT $1 OFFSET $2`
 	rows, err := DB.Query(qry, pageSize, (page-1)*pageSize)
 	defer rows.Close()
 	if err != nil {
 		log.Println("Error while trying to get people by keyword:", err)
-		return nil, err
+		return nil, -1, err
 	}
 	for rows.Next() {
 		var id, reports, remaining_reports int
@@ -240,7 +279,7 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 		err := rows.Scan(&id, &name, &email, &reports, &remaining_reports, &role, &unban_date, &transformed_password)
 		if err != nil {
 			log.Println("Error while scanning rows:", err)
-			return nil, err
+			return nil, -1, err
 		}
 		amount, err := u.GetUserJokesCount(id)
 		count, err := u.GetSubscribedPeopleCount(id)
@@ -253,7 +292,7 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 		}
 		users = append(users, NewUser)
 	}
-	return users, nil
+	return users, amount, nil
 }
 
 func (u UserRepository) ChangeUserRemainingReports(user_sender_id int) (err error) {
@@ -323,8 +362,8 @@ func (u UserRepository) GetUserByGithubID(user_id int) (userOut *models.GitUser,
 		return nil, err
 	}
 	var amount int
-	qry2 := `select count(git_id) from public."GithubUsers" where git_id=$1`
-	err = DB.QueryRow(qry2, user_id).Scan(&amount)
+	qry_count := `select count(git_id) from public."GithubUsers" where git_id=$1`
+	err = DB.QueryRow(qry_count, user_id).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get github user by id (amount):", err)
 		return nil, err

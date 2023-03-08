@@ -12,7 +12,6 @@ type ReportRepository struct {
 	report repositories.IReport
 }
 
-
 func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report, err error) {
 	DB, err := connection.GetConnectionToDB()
 	if err != nil {
@@ -23,8 +22,8 @@ func (r ReportRepository) GetReportByID(report_id int) (reportOut *models.Report
 	var id, receiver_joke_id, sender_id, receiver_id int
 	var description string
 	qry := `select * from public."Reports" where id=$1`
-	qry2 := `select count("Reports".id) from public."Reports" where id=$1`
-	err = DB.QueryRow(qry2, report_id).Scan(&amount)
+	qry_count := `select count("Reports".id) from public."Reports" where id=$1`
+	err = DB.QueryRow(qry_count, report_id).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get report by ID (amount):", err)
 		return nil, err
@@ -53,8 +52,8 @@ func (r ReportRepository) GetAllReports() (reportsOut *models.ReportResponse, er
 		return nil, err
 	}
 	var amount int
-	qry2 := `select count(id) from public."Reports"`
-	err = DB.QueryRow(qry2).Scan(&amount)
+	qry_count := `select count(id) from public."Reports"`
+	err = DB.QueryRow(qry_count).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get all reports(amount):", err)
 		return nil, err
@@ -84,7 +83,6 @@ func (r ReportRepository) GetAllReports() (reportsOut *models.ReportResponse, er
 			ReceiverJokeId: receiver_joke_id,
 			SenderId:       sender_id,
 			ReceiverId:     receiver_id,
-
 		}
 		reportsOut.Reports = append(reportsOut.Reports, NewReport)
 	}

@@ -83,7 +83,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if tArg == "people" {
-		users, err := db.UserRepo.GetPeopleByKeyword(qArg, page, pageSize)
+		users, _, err := db.UserRepo.GetPeopleByKeyword(qArg, page, pageSize)
 		if err != nil {
 			customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())
 			return
