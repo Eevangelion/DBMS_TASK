@@ -57,6 +57,11 @@ var Joke = router.RoutePrefix{
 			Pattern:     "/removeTag/",
 			HandlerFunc: handlers.DeleteTagFromJokeHandler,
 		},
+		{
+			Name:        "CheckIfJokeInFavorites",
+			Method:      "GET",
+			Pattern:     "/isFavorite/{joke_id}/",
+			HandlerFunc: handlers.CheckIfInFavoriteHandler,
+		},
 	},
 }
-

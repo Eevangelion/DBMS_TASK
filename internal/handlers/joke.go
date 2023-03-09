@@ -275,15 +275,13 @@ func CheckIfInFavoriteHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user_id := claims.User_ID
-	var f map[string]int
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&f)
+	var joke_id int
+	params := mux.Vars(r)
+	joke_id, err = strconv.Atoi(params["joke_id"])
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusBadRequest, "Error: "+err.Error())
 		return
 	}
-	var joke_id int
-	joke_id = f["joke_id"]
 	amount, err := db.JokeRepo.CheckIfInFavorite(user_id, joke_id)
 	if err != nil {
 		customHTTP.NewErrorResponse(w, http.StatusInternalServerError, "Error: "+err.Error())

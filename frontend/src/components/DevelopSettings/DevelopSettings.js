@@ -18,12 +18,19 @@ const DevelopSettings = () => {
     const [changePassword] = useChangePasswordMutation();
 
     const handleChangeUsername = (name) => {
-        changeName(name);
-        navigate(`/user/${name}`);
-        dispatch(selectPage({page: 'userPage', state: true}));
+        changeName(name).then((response) => {
+            if (response && !response.error) {
+                localStorage.setItem("userName", name);
+                navigate(`/user/${name}`);
+                dispatch(selectPage({page: 'userPage', state: true}));
+            } else {
+                setUsernameText("");
+            }
+        })
     };
     const handleChangePassword = (password) => {
         changePassword(password);
+        setPasswordText("");
     };
 
     return (
@@ -35,11 +42,13 @@ const DevelopSettings = () => {
                 <div className={styles.changeUsernameForm}>
                     <p>Смена имени</p>
                     <div className={styles.changeUsername}>
-                        <textarea   className={styles.newUsername} 
+                        <input   className={styles.newUsername} 
                                     placeholder="Введите новое имя" 
                                     onChange={e=>setUsernameText(e.target.value)} 
-                                    value={usernameText} >            
-                        </textarea>
+                                    value={usernameText} 
+                                    autoComplete="off"
+                        >            
+                        </input>
                         <button 
                             className={styles.submitButton}
                             onClick={() => handleChangeUsername(usernameText)}
@@ -51,11 +60,14 @@ const DevelopSettings = () => {
                 <div className={styles.changePasswordForm}>
                     <p>Смена пароля</p> 
                     <div className={styles.changePassword}>
-                        <textarea   className={styles.newPassword} 
+                        <input   className={styles.newPassword} 
                                     placeholder="Введите новый пароль" 
                                     onChange={e=>setPasswordText(e.target.value)} 
-                                    value={passwordText} >
-                        </textarea>
+                                    value={passwordText}
+                                    type="password"  
+                                    autoComplete="off"
+                        >
+                        </input>
                         <button 
                             className={styles.submitButton}
                             onClick={() => handleChangePassword(passwordText)}

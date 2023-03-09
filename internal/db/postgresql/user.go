@@ -257,7 +257,7 @@ func (u UserRepository) GetPeopleByKeyword(keyword string, page int, pageSize in
 		log.Println("Connection error:", err)
 		return nil, -1, err
 	}
-	qry_count := `select count(id) from public."Users" where lower("Users".name) LIKE '%` + strings.ToLower(keyword) + `%' LIMIT $1 OFFSET $2`
+	qry_count := `select count(id) from public."Users" where lower("Users".name) LIKE '%` + strings.ToLower(keyword) + `%'`
 	err = DB.QueryRow(qry_count).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to get people by keyword (amount):", err)

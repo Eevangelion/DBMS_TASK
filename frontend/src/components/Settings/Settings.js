@@ -21,13 +21,16 @@ const Settings = () => {
         changeName(name).then((response) => {
             if (response && !response.error) {
                 localStorage.setItem("userName", name);
+                navigate(`/user/${name}`);
+                dispatch(selectPage({page: 'userPage', state: true}));
+            }else {
+                setUsernameText("");
             }
         });
-        navigate(`/user/${name}`);
-        dispatch(selectPage({page: 'userPage', state: true}));
     };
     const handleChangePassword = (password) => {
         changePassword(password);
+        setPasswordText("");
     };
     return (
         <div className={styles.modalWindow}>
@@ -38,11 +41,13 @@ const Settings = () => {
                 <div className={styles.changeUsernameForm}>
                     <p>Смена имени</p>
                     <div className={styles.changeUsername}>
-                        <textarea   className={styles.newUsername} 
+                        <input   className={styles.newUsername} 
                                     placeholder="Введите новое имя" 
                                     onChange={e=>setUsernameText(e.target.value)} 
-                                    value={usernameText} >            
-                        </textarea>
+                                    value={usernameText}
+                                    autoComplete="off"
+                        >            
+                        </input>
                         <button 
                             className={styles.submitButton}
                             onClick={() => handleChangeUsername(usernameText)}
@@ -54,11 +59,14 @@ const Settings = () => {
                 <div className={styles.changePasswordForm}>
                     <p>Смена пароля</p> 
                     <div className={styles.changePassword}>
-                        <textarea   className={styles.newPassword} 
+                        <input   className={styles.newPassword} 
                                     placeholder="Введите новый пароль" 
                                     onChange={e=>setPasswordText(e.target.value)} 
-                                    value={passwordText} >
-                        </textarea>
+                                    type="password"
+                                    value={passwordText} 
+                                    autoComplete="off"
+                        >
+                        </input>
                         <button 
                             className={styles.submitButton}
                             onClick={() => handleChangePassword(passwordText)}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { FormControl, Select, MenuItem } from '@mui/material';
 import logo from "../../styles/img/logo_test.png";
 import loop from "../../styles/img/loop_test.png";
 import TopPanelButtons from "./TopPanelButtons";
@@ -27,7 +27,6 @@ function TopPanel(props) {
         
         <div className="search-panel">
             <FormControl size="small" variant="outlined" style={{width: "10vw", height: "4.5vh", marginTop: "0.25vh", fontSize: "0.8vw"}}>
-                <InputLabel>Поиск по</InputLabel>
                 <Select
                     onChange={(event) => {
                             handleChangeType(event.target.value)
@@ -35,9 +34,9 @@ function TopPanel(props) {
                     }
                     defaultValue={`keyword`}
                 >
-                    <MenuItem value={`keyword`}>Ключевому слову</MenuItem>
-                    <MenuItem value={`tag`}>Тэгу</MenuItem>
-                    <MenuItem value={`people`}>Имени пользователя</MenuItem>
+                    <MenuItem value={`keyword`}>Поиск по ключевому слову</MenuItem>
+                    <MenuItem value={`tag`}>Поиск по тэгу</MenuItem>
+                    <MenuItem value={`people`}>Поиск по имени пользователя</MenuItem>
                 </Select>
             </FormControl>
             <input 
@@ -46,11 +45,15 @@ function TopPanel(props) {
                 placeholder="Поиск" 
                 value={searchText}
                 onChange={handleChange}
-                required={true}
-                onKeyDown={(e) => {if (e.key === 'Enter') navigate(`/search/${searchType}/?query=${searchText}`)}}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') 
+                        if (searchType === '' || searchText === '') e.preventDefault()
+                        else navigate(`/search/${searchType}/?query=${searchText}`)
+                    }}
             />                    
             <a  className="search-submit"
                 href={`/search/${searchType}/?query=${searchText}`} 
+                onClick={(event) => {if (searchType === '' || searchText === '') event.preventDefault()}}
             >
                 <img className="search-loop-image" src={loop} alt=":("/>
             </a>

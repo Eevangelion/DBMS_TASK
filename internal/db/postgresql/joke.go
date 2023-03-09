@@ -124,7 +124,7 @@ func (j JokeRepository) AddToFavorite(user_id int, joke_id int) (err error) {
 		return err
 	}
 	var amount int
-	qry_count := `select count(receiver_id) from public."Favorite jokes" where user_id=$1 and joke_id=$2`
+	qry_count := `select count(user_id) from public."Favorite jokes" where user_id=$1 and joke_id=$2`
 	err = DB.QueryRow(qry_count, user_id, joke_id).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to add to favorite (amount):", err)
@@ -478,7 +478,7 @@ func (j JokeRepository) AddTagToJoke(joke_id int, tag_id int) (err error) {
 		return err
 	}
 	var amount int
-	qry_count := `select count(receiver_id) from public."TagsJokes" where joke_id=$1 and tag_id=$2`
+	qry_count := `select count(tag_id) from public."TagsJokes" where joke_id=$1 and tag_id=$2`
 	err = DB.QueryRow(qry_count, joke_id, tag_id).Scan(&amount)
 	if err != nil {
 		log.Println("Error while trying to add tag to joke (amount):", err)

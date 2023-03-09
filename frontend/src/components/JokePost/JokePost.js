@@ -4,9 +4,11 @@ import { Link, useLocation } from "react-router-dom";
 import {Popover} from '@mui/material';
 import "./JokePost.css";
 import rateImage from "../../styles/img/logo.png";
+import likedRateImage from "../../styles/img/logo_liked.png";
 import darkRateImage from "../../styles/img/logo_dark.png";
+import darkLikedRateImage from "../../styles/img/logo_liked_dark.png";
 import { useSelector } from "react-redux";
-import { useGetUserByIDQuery, useGetTagsByJokeIDQuery,useAddJokeToFavoritesMutation,useRemoveJokeFromFavoritesMutation, useGetFavoritesByIDQuery, useDeleteJokeMutation } from "../../services/service";
+import { useGetUserByIDQuery, useGetTagsByJokeIDQuery,useAddJokeToFavoritesMutation,useRemoveJokeFromFavoritesMutation, useDeleteJokeMutation, useCheckIfJokeInFavoritesQuery } from "../../services/service";
 
 
 const linkStyle = {
@@ -40,6 +42,10 @@ const JokePost = (props) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const {
+        data: inFavorites,
+        isLoading: loadingCheck
+    } = useCheckIfJokeInFavoritesQuery(props.joke.id);
+    const {
         data: user,
         isLoading: loadingUser,
     } = useGetUserByIDQuery(props.joke.author_id);
@@ -50,20 +56,6 @@ const JokePost = (props) => {
     const [addJokeToFavorites] = useAddJokeToFavoritesMutation();
     const [removeJokeFromFavorites] = useRemoveJokeFromFavoritesMutation();
     const [deleteJoke] = useDeleteJokeMutation();
-
-    const {
-        data: favorites,
-        isLoading: loadingFavorites,
-    } = useGetFavoritesByIDQuery(userID);
-    let addedToFavorite = false;
-    if (!loadingFavorites && favorites.jokes != null) {
-        for (let i = 0; i < favorites.jokes.length; i++) {
-            if (favorites.jokes[i].id === props.joke.id) {
-                addedToFavorite = true;
-                break;
-            }
-        }
-    }
 
     const handleClick = (event) => {
         if (isActive)
@@ -93,7 +85,7 @@ const JokePost = (props) => {
     };
 
     const open = Boolean(anchorEl);
-    const loading = loadingUser || loadingTags || loadingFavorites;
+    const loading = loadingCheck || loadingUser || loadingTags;
 
     if (loading) {
         return <></>;
@@ -185,17 +177,18 @@ const JokePost = (props) => {
                             className="add-to-favorite"
                             onClick={(event) => {
                                 if (isActive) {
-                                    if (!addedToFavorite) {
+                                    if (!inFavorites) {
                                         addJokeToFavorites(props.joke.id);
                                     } else {
                                         removeJokeFromFavorites(props.joke.id);
-                                    }; addedToFavorite = !addedToFavorite;
+                                    };
                                 } else {
                                     event.preventDefault();
                                 }
                             }}
                     >
-                        <img className="rate-image" src={isActive ? rateImage : darkRateImage} alt="?"/>
+                        <img className="rate-image" src={isActive ? (inFavorites ? likedRateImage : rateImage) :
+                             (inFavorites ? darkLikedRateImage : darkRateImage)} alt="?"/>
                     </Link>
             </div>
 

@@ -312,6 +312,16 @@ export const jokeService = createApi({
             },
             providesTags: ['Users']
         }),
+        checkIfJokeInFavorites: build.query({
+            query: (joke_id) => {
+                const token = localStorage.getItem('access_token');
+                return {
+                    url: `/joke/isFavorite/${joke_id}/`,
+                    headers: {authorization: token},
+                }
+            },
+            providesTags: ['Users', 'Jokes']
+        }),
         changeUserName: build.mutation({
             query: (name) => {
                 const token = localStorage.getItem('access_token');
@@ -375,6 +385,7 @@ export const {
     useSubscribeToUserMutation,
     useUnsubscribeToUserMutation,
     useCheckIfUserSubscribedToQuery,
+    useCheckIfJokeInFavoritesQuery,
     useChangeUserNameMutation,
     useChangePasswordMutation,
     useApplyReportMutation,
