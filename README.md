@@ -50,3 +50,10 @@ PostgreSQL
 
 # Тестирование
 Postman
+
+## Начало использования
+Перед использованием необходимо изменить файлы .env в главной и ./frontend директориях (GITHUB_OAUTH_CLIENT_ID = REACT_APP_CLIENT_ID, GITHUB_OAUTH_CLIENT_SECRET - необходимо заполнить полученными данными из Github Oauth, остальное - по желанию)
+
+Для запуска контейнеров в основной директории вводим команду - docker compose up --build
+
+Сайт работает по адресу <REACT_APP_SERVER>:<REACT_APP_PORT>
