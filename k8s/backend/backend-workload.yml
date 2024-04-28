@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  selector:
+    matchLabels:
+      app: FunnyJokes
+      tier: backend
+      track: stable
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: FunnyJokes
+        tier: backend
+        track: stable
+    spec:
+      containers:
+        - name: funny-jokes-backend
+          image: dbms_task-backend
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - name: http
+              containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: funnyJokes-backend-service
+spec:
+  selector:
+    app: FunnyJokes
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: http
