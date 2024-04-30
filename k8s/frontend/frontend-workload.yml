@@ -19,7 +19,7 @@ spec:
       containers:
         - name: funny-jokes-frontend
           image: dbms_task-frontend
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Never"
           ports:
             - name: http
               containerPort: 3000
@@ -45,6 +45,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx
   rules:
   - host: my-funny-jokes.com
     http:

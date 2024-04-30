@@ -11,7 +11,7 @@ services:
     volumes: # Эта штука нужна, чтобы сохранять инфу, если бд дропнется
        - postgres-db:/data/postgres
     ports:
-      - "5432:5432"
+      - "5433:5433"
     networks:
       - network1
     restart: always 

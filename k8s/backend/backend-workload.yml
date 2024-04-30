@@ -19,15 +19,20 @@ spec:
       containers:
         - name: funny-jokes-backend
           image: dbms_task-backend
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "Never"
           ports:
             - name: http
               containerPort: 8000
+          env:
+          - name: DB_HOST
+            value: "postgres"
+          - name: DB_DBNAME
+            value: "funnyjokesdb"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: funnyJokes-backend-service
+  name: funnyjokes-backend-service
 spec:
   selector:
     app: FunnyJokes
