@@ -52,9 +52,23 @@ PostgreSQL
 Postman
 
 ## Начало использования
+# Docker
 Перед использованием необходимо создать файлы .env в главной и ./frontend директориях (Примеры наполнения этих файлов - с припиской .example; 
 GITHUB_OAUTH_CLIENT_ID = REACT_APP_CLIENT_ID, GITHUB_OAUTH_CLIENT_SECRET - необходимо заполнить полученными данными из Github Oauth, остальное - по желанию)
 
 Для запуска контейнеров в основной директории вводим команду - docker compose up --build
 
-Сайт работает по адресу <REACT_APP_SERVER>:<REACT_APP_PORT>
+Сайт работает по адресу localhost:3000
+Adminer работает по адресу localhost:8080
+# Kubernetes
+Перед использованием необходимо создать файлы .env в главной и ./frontend директориях (Примеры наполнения этих файлов - с припиской .example; 
+GITHUB_OAUTH_CLIENT_ID = REACT_APP_CLIENT_ID, GITHUB_OAUTH_CLIENT_SECRET - необходимо заполнить полученными данными из Github Oauth, остальное - по желанию)
+
+1) Запустите minikube
+2) Запустите build.sh файл в основной директории для создания frontend и backend image внутри кластера
+3) Запустите каждый из манифестов в директории ./k8s (kubectl create -f frontend/frontend-workload.yml)
+4) В поде с базой данных создайте базу данных с названием <DB_DBNAME>
+5) Запустите launch.sh для прокидывания портов
+
+Сайт работает по адресу localhost:3000
+Adminer работает по адресу localhost:8080
